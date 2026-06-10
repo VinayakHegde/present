@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Trade Republic interview prep — quick reference (not a slide deck)
+  /  open search   ·   Esc close search   ·   1–9 jump sections   ·   M toggle Meet
+  ?meet=your-code  ·  Enter or Dock → opens Meet in right window (iframe blocked by Google)
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trade Republic · Interview Prep</title>
+  <style>
+    :root {
+      --bg: #0c1222;
+      --panel: #151d2e;
+      --border: #2d3f58;
+      --accent: #f97316;
+      --accent-dim: rgba(249, 115, 22, 0.14);
+      --text: #f0f4fa;
+      --muted: #a8b8d0;
+      --chip: #fcd34d;
+      --nav-w: 240px;
+      --meet-w: 40%;
+      --meet-min: 320px;
+      --meet-max: 55%;
+      --ok: #4ade80;
+      --warn: #fb923c;
+      --focus-ring: 0 0 0 3px rgba(249, 115, 22, 0.45);
+      --text-base: 18px;
+      --line: 1.65;
+      --track-body: 0.03em;
+      --track-ui: 0.04em;
+      --track-wide: 0.08em;
+      --track-caps: 0.1em;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: var(--text-base); }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 1rem;
+      line-height: var(--line);
+      letter-spacing: var(--track-body);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 0.75rem;
+      top: -3rem;
+      z-index: 200;
+      padding: 0.6rem 1rem;
+      background: var(--accent);
+      color: #0c1222;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 0 0 6px 6px;
+    }
+    .skip-link:focus { top: 0; outline: none; box-shadow: var(--focus-ring); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    :focus:not(:focus-visible) { outline: none; }
+
+    kbd {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--panel);
+      font-family: inherit;
+      font-size: 0.85em;
+      color: var(--text);
+      letter-spacing: var(--track-wide);
+    }
+
+    #nav {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: var(--nav-w);
+      background: #080e1a;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.1rem 0;
+      z-index: 50;
+    }
+    #nav .brand {
+      padding: 0 1.1rem 0.85rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.6rem;
+      letter-spacing: var(--track-ui);
+    }
+    #nav .brand span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+      letter-spacing: var(--track-wide);
+      text-transform: uppercase;
+    }
+    #nav a {
+      display: block;
+      padding: 0.55rem 1.1rem;
+      min-height: 2.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      border-left: 3px solid transparent;
+      line-height: 1.4;
+      letter-spacing: var(--track-ui);
+    }
+    #nav a:hover, #nav a.active {
+      color: var(--text);
+      border-left-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    #nav a kbd { margin-left: 0.35rem; font-size: 0.8em; color: var(--muted); }
+    #nav a.nav-priority { font-weight: 600; color: var(--text); }
+    #nav .nav-divider {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--muted);
+      padding: 0.75rem 1.1rem 0.25rem;
+      margin-top: 0.35rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .mobile-jump { display: none; margin-bottom: 1rem; }
+    .mobile-jump label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: var(--track-wide);
+      text-transform: uppercase;
+    }
+    .mobile-jump select {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      font-size: 1rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      min-height: 2.75rem;
+      letter-spacing: var(--track-body);
+    }
+
+    main {
+      margin-left: var(--nav-w);
+      margin-right: var(--meet-w);
+      max-width: none;
+      padding: 1.75rem 2.25rem 4rem;
+      transition: margin-right 0.2s ease;
+    }
+
+    body.meet-collapsed main { margin-right: 0; }
+
+    #meet-resizer {
+      position: fixed;
+      right: var(--meet-w);
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      margin-right: -3px;
+      cursor: col-resize;
+      z-index: 70;
+      background: transparent;
+      transition: right 0.2s ease, background 0.15s;
+    }
+    #meet-resizer:hover,
+    #meet-resizer.dragging { background: var(--accent-dim); }
+    body.meet-collapsed #meet-resizer { display: none; }
+
+    #meet-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--meet-w);
+      min-width: var(--meet-min);
+      background: #080e1a;
+      border-left: 1px solid var(--border);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
+    body.meet-collapsed #meet-panel {
+      transform: translateX(100%);
+      pointer-events: none;
+    }
+
+    .meet-toolbar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .meet-toolbar .meet-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .meet-toolbar input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.82rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+    }
+    .meet-toolbar input:focus-visible { border-color: var(--accent); box-shadow: var(--focus-ring); }
+    .meet-btn {
+      flex-shrink: 0;
+      padding: 0.4rem 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      letter-spacing: var(--track-ui);
+    }
+    .meet-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .meet-btn.primary { background: var(--accent); color: #0c1222; border-color: var(--accent); }
+
+    .meet-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 1.25rem 1rem;
+      background: var(--panel);
+    }
+    .meet-dock-ui {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+      max-width: 20rem;
+      margin: 0 auto;
+      padding-top: 1rem;
+    }
+    .meet-dock-ui .meet-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .meet-dock-ui h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: var(--track-ui);
+    }
+    .meet-dock-ui p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .meet-dock-ui .meet-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .meet-dock-ui .meet-btn { width: 100%; padding: 0.65rem 0.85rem; font-size: 0.88rem; }
+    .meet-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .meet-status.live { color: var(--ok); border-color: rgba(74, 222, 128, 0.35); }
+    .meet-status .dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .meet-status.live .dot { background: var(--ok); }
+    .meet-steps {
+      text-align: left;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0;
+      padding-left: 1.2rem;
+      line-height: 1.6;
+    }
+    .meet-steps li { margin-bottom: 0.35rem; }
+    .meet-steps li::marker { color: var(--accent); }
+
+    #meet-tab {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 65;
+      display: none;
+      writing-mode: vertical-rl;
+      padding: 0.75rem 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: var(--track-caps);
+      text-transform: uppercase;
+      background: var(--accent);
+      color: #0c1222;
+      border: 0;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer;
+    }
+    body.meet-collapsed #meet-tab { display: block; }
+
+    .search-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg);
+      padding: 0.5rem 0 1.1rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-bar.open { display: block; }
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      min-height: 2.75rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      letter-spacing: var(--track-body);
+    }
+    .search-bar input:focus-visible { border-color: var(--accent); box-shadow: var(--focus-ring); }
+    .search-bar input::placeholder { color: var(--muted); letter-spacing: var(--track-ui); }
+    .search-hint { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.5; letter-spacing: var(--track-ui); }
+    #search-status {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      min-height: 1.4em;
+      letter-spacing: var(--track-ui);
+    }
+
+    section { margin-bottom: 2rem; scroll-margin-top: 1.5rem; }
+    section.hidden { display: none; }
+    h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--accent);
+      margin: 0 0 0.85rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.65rem;
+      overflow: hidden;
+    }
+    .card > summary, .card .card-head {
+      padding: 0.85rem 1rem;
+      min-height: 2.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.4;
+      letter-spacing: var(--track-ui);
+    }
+    .card > summary::-webkit-details-marker { display: none; }
+    .card > summary::before { content: "▸ "; color: var(--accent); flex-shrink: 0; font-size: 0.9em; }
+    .card[open] > summary::before { content: "▾ "; }
+    .card > summary:hover { background: rgba(255, 255, 255, 0.03); }
+    .card .body {
+      padding: 0.25rem 1rem 1rem;
+      font-size: 1rem;
+      color: var(--text);
+      border-top: 1px solid var(--border);
+      letter-spacing: var(--track-body);
+    }
+    .card .body p { margin: 0.65rem 0; }
+    .card .body ul { margin: 0.5rem 0; padding-left: 1.35rem; }
+    .card .body li { margin-bottom: 0.45rem; }
+    .card .body li::marker { color: var(--accent); }
+
+    .card.open .card-head { cursor: default; border-bottom: 1px solid var(--border); }
+    .card.open .body { border-top: none; padding-top: 0.25rem; }
+
+    .glance {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 0.65rem;
+    }
+    .glance-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+    }
+    .glance-item .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .glance-item .val {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+      letter-spacing: var(--track-body);
+    }
+
+    .table-wrap { overflow-x: auto; margin: 0.5rem 0; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; min-width: 280px; letter-spacing: var(--track-body); }
+    th, td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
+    th { color: var(--muted); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: var(--track-wide); }
+
+    .chip {
+      display: inline-block;
+      background: rgba(252, 211, 77, 0.18);
+      color: var(--chip);
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: var(--track-ui);
+    }
+    .tag {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+      line-height: 1.4;
+      letter-spacing: var(--track-ui);
+    }
+    .soundbite {
+      background: var(--accent-dim);
+      border-left: 4px solid var(--accent);
+      padding: 0.85rem 1rem;
+      margin: 0.65rem 0;
+      font-size: 1rem;
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.55;
+      letter-spacing: var(--track-body);
+    }
+    .warn { color: var(--warn); font-size: 0.95rem; line-height: 1.55; letter-spacing: var(--track-body); }
+    .ok { color: var(--ok); letter-spacing: var(--track-body); }
+
+    @media (max-width: 1100px) {
+      :root { --meet-w: 36%; }
+    }
+    @media (max-width: 768px) {
+      #nav { display: none; }
+      .mobile-jump { display: block; }
+      main { margin-left: 0; margin-right: 0; padding: 1.25rem 1.1rem 3rem; }
+      #meet-panel, #meet-resizer, #meet-tab { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">Skip to content</a>
+
+<nav id="nav" aria-label="Section navigation">
+  <div class="brand">Trade Republic prep<span>Stage 1 done · awaiting Stage 2</span></div>
+  <a href="#s0" data-sec="0">Glance <kbd>1</kbd></a>
+  <a href="#s1" data-sec="1" class="nav-priority">About me <kbd>2</kbd></a>
+  <a href="#s2" data-sec="2" class="nav-priority">Company <kbd>3</kbd></a>
+  <a href="#s3" data-sec="3" class="nav-priority">Why TR? <kbd>4</kbd></a>
+  <a href="#s4" data-sec="4" class="nav-priority">Why move? <kbd>5</kbd></a>
+  <a href="#s5" data-sec="5" class="nav-priority">Strengths <kbd>6</kbd></a>
+  <a href="#s6" data-sec="6" class="nav-priority">Ask them <kbd>7</kbd></a>
+  <a href="#s7" data-sec="7" class="nav-priority">Role &amp; stack <kbd>8</kbd></a>
+  <div class="nav-divider" aria-hidden="true">Reference</div>
+  <a href="#s8" data-sec="8" class="nav-priority">Stage 2 prep <kbd>9</kbd></a>
+  <a href="#s9" data-sec="9">Likely questions</a>
+  <a href="#s10" data-sec="10">Stories</a>
+  <a href="#s11" data-sec="11">Stack</a>
+  <a href="#s12" data-sec="12">FE revise</a>
+  <a href="#s13" data-sec="13">Light Q&amp;A</a>
+  <a href="#s14" data-sec="14">Pitfalls &amp; success</a>
+  <a href="#s15" data-sec="15">Tracker</a>
+</nav>
+
+<main id="content">
+  <div class="mobile-jump">
+    <label for="mobile-nav">Jump to section</label>
+    <select id="mobile-nav" aria-label="Jump to section">
+      <option value="s0">Glance</option>
+      <option value="s1">About me</option>
+      <option value="s2">Company</option>
+      <option value="s3">Why Trade Republic?</option>
+      <option value="s4">Why looking to move?</option>
+      <option value="s5">Strengths to land</option>
+      <option value="s6">Ask them</option>
+      <option value="s7">Role &amp; stack</option>
+      <option value="s8">Stage 2 prep</option>
+      <option value="s9">Likely questions</option>
+      <option value="s10">Stories</option>
+      <option value="s11">Stack reference</option>
+      <option value="s12">FE revise</option>
+      <option value="s13">Light Q&amp;A</option>
+      <option value="s14">Pitfalls &amp; success</option>
+      <option value="s15">Pipeline tracker</option>
+    </select>
+  </div>
+
+  <div class="search-bar" id="search-bar" role="search" aria-hidden="true">
+    <label class="sr-only" for="q">Filter sections by keyword</label>
+    <input type="search" id="q" placeholder="Filter… e.g. React, Vue, WebSockets, mentoring" autocomplete="off" aria-describedby="search-hint search-status">
+    <div class="search-hint" id="search-hint">Press <kbd>Esc</kbd> to close · sidebar or <kbd>1</kbd>–<kbd>9</kbd> to jump sections</div>
+    <div id="search-status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <!-- 0 GLANCE -->
+  <section id="s0" data-search="glance overview status bernardo stage 1 completed tracker probability" aria-labelledby="h-s0">
+    <h2 id="h-s0">At a glance</h2>
+    <div class="glance">
+      <div class="glance-item"><div class="label">Status</div><div class="val"><span class="ok">In progress</span> · Stage 1 complete</div></div>
+      <div class="glance-item"><div class="label">Role</div><div class="val">Web Engineer</div></div>
+      <div class="glance-item"><div class="label">Stage 1</div><div class="val">Mon 8 Jun · Bernardo Corbella</div></div>
+      <div class="glance-item"><div class="label">Outcome</div><div class="val">Progression path discussed</div></div>
+      <div class="glance-item"><div class="label">Next step</div><div class="val">Await Stage 2 invite <span class="chip">TBC</span></div></div>
+      <div class="glance-item"><div class="label">Stage 2</div><div class="val">~2 hours · remote or London</div></div>
+      <div class="glance-item"><div class="label">Feedback timeline</div><div class="val"><span class="chip">TBC</span> — confirm if Bernardo gave a date</div></div>
+      <div class="glance-item"><div class="label">Your edge</div><div class="val">FE architecture · system design · AI-assisted delivery</div></div>
+    </div>
+    <details class="card" open>
+      <summary>Stage 1 debrief — positive signals</summary>
+      <div class="body">
+        <ul>
+          <li class="ok">✅ Staff Engineer spent time on your background and projects</li>
+          <li class="ok">✅ Technical questions — didn't end quickly</li>
+          <li class="ok">✅ Bernardo explained the next stage explicitly (not a vague "recruitment will be in touch")</li>
+          <li class="ok">✅ AI adoption discussed positively — strong AI-assisted culture with human review</li>
+        </ul>
+        <div class="table-wrap"><table>
+          <tr><th scope="col">Signal</th><th scope="col">Confidence</th></tr>
+          <tr><td>Progress to Stage 2</td><td><strong class="ok">Medium–High</strong></td></tr>
+          <tr><td>Rejection after intro</td><td><strong>Medium–Low</strong></td></tr>
+        </table></div>
+        <p class="ok">Strongest signal: Bernardo described Stage 2 in detail rather than a generic handoff.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>What they're evaluating (full process)</summary>
+      <div class="body">
+        <p>Not a traditional Recruiter → Coding Test → HM funnel. They seem to weight:</p>
+        <p><span class="tag">engineering judgement</span><span class="tag">product mindset</span><span class="tag">system design</span><span class="tag">AI-assisted dev</span><span class="tag">communication</span><span class="tag">technical depth</span></p>
+        <p class="ok">Aligns well with your strengths — especially product delivery, architecture, and AI with guardrails.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 1 ABOUT ME -->
+  <section id="s1" data-search="about myself pitch tell me about yourself react typescript tech lead lantern frontend" aria-labelledby="h-s1">
+    <h2 id="h-s1">About myself</h2>
+    <div class="card open">
+      <div class="card-head">One-line pitch (memorise)</div>
+      <div class="body">
+        <div class="soundbite">"I'm a senior engineer and Tech Lead who ships user-facing financial products in React and TypeScript — from component architecture and performance through to APIs and production ownership. I care about product outcomes, not just tickets, and I've mentored engineers while owning delivery end-to-end."</div>
+      </div>
+    </div>
+    <details class="card" open>
+      <summary>Tell me about yourself (60 sec — keep it short)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Today:</strong> Tech Lead / Senior Engineer at Lantern — B2B finance data platform</li>
+          <li><strong>Expertise:</strong> React, TypeScript, frontend architecture, product delivery</li>
+          <li><strong>Leadership:</strong> Mentoring, technical ownership, system design — senior IC, not pure management</li>
+          <li><strong>Recent win:</strong> Calculated metrics platform — configurable KPIs, export, viz — shipped discovery to production in a week</li>
+          <li><strong>Why interested:</strong> Product-focused engineering at scale, especially user-facing + real-time systems</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Why me (FE angle)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>User-facing delivery:</strong> Own React/TypeScript surfaces professionals rely on daily — export, dashboards, config flows</li>
+          <li><strong>Architecture:</strong> Component design, data-fetch boundaries (React Query), performance on data-heavy views</li>
+          <li><strong>Product outcomes:</strong> ~65% adoption within 5 weeks; quarterly reporting ~4–6h → ~20min — measured impact, not vanity features</li>
+          <li><strong>Real-time / freshness:</strong> Two-tier latency model — pinned snapshots vs live calc; explicit staleness in UI</li>
+          <li><strong>Team multiplier:</strong> Mentored junior FE on test patterns; patterns reused across squad widgets + export API</li>
+          <li><strong>Full-stack when needed:</strong> FastAPI, Postgres, AWS — comfortable on the 30% backend slice</li>
+        </ul>
+        <p class="warn">Lead with <strong>product impact + frontend craft</strong>, not framework trivia.</p>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Expanded soundbite (if they give you room)</summary>
+      <div class="body">
+        <div class="soundbite">"I'm a senior engineer, currently Tech Lead at Lantern. Most of my impact is on the frontend — React and TypeScript products where finance users need to trust what they see. I recently led a calculated metrics platform: configurable KPIs, server-validated numbers, export and visualisation — shipped in a week from discovery to production. I also own enough of the stack to design APIs and data boundaries properly. I'm looking for a role where engineering is close to the product and users — which is why Trade Republic stood out."</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 2 COMPANY -->
+  <section id="s2" data-search="company trade republic fintech investing banking trading 10 million customers" aria-labelledby="h-s2">
+    <h2 id="h-s2">About the company</h2>
+    <details class="card" open>
+      <summary>What Trade Republic is</summary>
+      <div class="body">
+        <p><strong>One of Europe's largest consumer fintechs</strong> — mobile-first broker and banking for retail investors.</p>
+        <ul>
+          <li><strong>10M+</strong> customers across <strong>18 countries</strong></li>
+          <li><strong>€150B+</strong> assets under management</li>
+          <li><strong>Profitable</strong> · <strong>€12.5B</strong> valuation</li>
+          <li>Backed by <strong>Sequoia</strong> and <strong>Founders Fund</strong></li>
+        </ul>
+        <p><span class="tag">trading</span><span class="tag">banking</span><span class="tag">savings</span><span class="tag">investing</span><span class="tag">real-time</span></p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Mission</summary>
+      <div class="body">
+        <div class="soundbite">"Help Europeans save, invest and close the pension gap."</div>
+        <p>Consumer product at massive scale — engineering decisions directly affect millions of people's money.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>What they're building (role context)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Trading</strong> — order flows, market data, execution UX</li>
+          <li><strong>Banking</strong> — accounts, payments, everyday money features</li>
+          <li><strong>Real-time systems</strong> — live prices, portfolio updates, WebSocket-driven UI</li>
+          <li><strong>Investment products</strong> — ETFs, savings plans, pension-oriented features</li>
+        </ul>
+        <p class="ok">Your sweet spot: user-facing surfaces on top of real-time, data-heavy backends.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 3 WHY TRADE REPUBLIC -->
+  <section id="s3" data-search="why trade republic motivation company fit product frontend real-time" aria-labelledby="h-s3">
+    <h2 id="h-s3">Why Trade Republic?</h2>
+    <details class="card" open>
+      <summary>30-second answer (memorise)</summary>
+      <div class="body">
+        <div class="soundbite">"I enjoy building products that have a direct impact on users. Trade Republic is operating at significant scale and solving important problems around saving and investing, while still maintaining a strong engineering culture. The combination of product ownership, frontend engineering and real-time systems is particularly appealing."</div>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Talking points (pick 2–3)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Product impact at scale:</strong> 10M+ users — frontend choices matter; performance and clarity aren't optional</li>
+          <li><strong>Problem domain:</strong> helping people invest and save — meaningful, regulated, high-trust UX</li>
+          <li><strong>Role fit:</strong> 70/30 FE/BE matches how I work — deep frontend craft with enough backend to own features end-to-end</li>
+          <li><strong>Real-time engineering:</strong> trading and portfolio surfaces — interesting FE challenges (WebSockets, stale data, perceived performance)</li>
+          <li><strong>Engineering culture:</strong> senior engineers in the loop early — this intro is engineer-to-engineer, not HR theatre</li>
+          <li><strong>Growth + stability:</strong> profitable, well-funded, expanding across Europe — room to have impact without startup chaos</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 4 WHY MOVE -->
+  <section id="s4" data-search="why looking move career growth product engineering scale" aria-labelledby="h-s4">
+    <h2 id="h-s4">Why looking to move?</h2>
+    <details class="card" open>
+      <summary>30-second answer</summary>
+      <div class="body">
+        <div class="soundbite">"I've delivered a major platform piece at Lantern and I'm ready for the same ownership at larger scale — especially on user-facing products where engineering and product are tightly coupled. Trade Republic combines the technical challenges I want — real-time, data-heavy frontend — with a mission and scale that excite me."</div>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Talking points (stay positive)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Product engineering:</strong> want to work closer to consumer outcomes, not only B2B back-office tooling</li>
+          <li><strong>Scale:</strong> millions of users, real-time expectations — different performance and reliability bar</li>
+          <li><strong>Technical challenges:</strong> trading UX, live data, cross-platform web — stretch without starting from zero</li>
+          <li><strong>Growth:</strong> senior IC scope with mentoring — next step in career, not a sideways move</li>
+        </ul>
+        <p class="warn">Avoid bad-mouthing Lantern. Frame as: <em>"I've grown here; ready for consumer scale and product ownership."</em></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 5 STRENGTHS -->
+  <section id="s5" data-search="strengths frontend architecture product mindset mentoring full stack communicate" aria-labelledby="h-s5">
+    <h2 id="h-s5">Strengths to land</h2>
+    <details class="card" open>
+      <summary>Frontend architecture <span class="chip">biggest strength</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>React + TypeScript</strong> — primary stack; modern patterns, strong typing at boundaries</li>
+          <li><strong>Component design</strong> — composition, encapsulation, reuse across export + viz + config flows</li>
+          <li><strong>Performance</strong> — data-heavy tables/charts; cache strategy; avoid unnecessary re-renders</li>
+          <li><strong>Scalability</strong> — feature flags, incremental rollout, test pyramid (unit → hook → component)</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Product mindset</summary>
+      <div class="body">
+        <ul>
+          <li>Think beyond tickets — <strong>customer outcomes</strong> and <strong>business impact</strong></li>
+          <li>Scoped MVP with finance: 3 KPIs + export + golden fixtures as DoD — said no to 10 metric types week 1</li>
+          <li>Measure adoption (~65% export in 5 weeks) — product engineer, not ticket closer</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Mentoring &amp; ownership</summary>
+      <div class="body">
+        <ul>
+          <li>JD mentions onboarding and mentoring — you have concrete examples</li>
+          <li>4-layer test template with junior FE; they shipped IRR + export tests independently</li>
+          <li>Tech Lead: code review, architecture input, production on-call — zero P1 at GA</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Full-stack capability (30% backend)</summary>
+      <div class="body">
+        <ul>
+          <li>APIs: FastAPI services, BFF boundary, contract-first OpenAPI</li>
+          <li>Databases: Postgres — definitions, snapshots, materialised reads</li>
+          <li>Cloud: AWS deploy + on-call experience</li>
+          <li>Architecture: event-driven patterns map to their Kotlin + WebSocket backend</li>
+        </ul>
+        <p class="ok">Don't oversell backend — frame as <em>"enough to own features end-to-end."</em></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 6 ASK THEM -->
+  <section id="s6" data-search="ask questions them interviewer challenges success ownership" aria-labelledby="h-s6">
+    <h2 id="h-s6">Ask them</h2>
+    <p class="warn">15 minutes — pick <strong>2 questions max</strong>. Save comp/process for later stages.</p>
+    <details class="card" open>
+      <summary>Priority questions (from briefing)</summary>
+      <div class="body">
+        <ul>
+          <li>What are the <strong>biggest engineering challenges</strong> the team is working on today?</li>
+          <li>How much of the role is <strong>frontend versus backend in practice</strong>?</li>
+          <li>What <strong>distinguishes your strongest engineers</strong>?</li>
+          <li>What does <strong>success look like in the first six months</strong>?</li>
+          <li>How does Trade Republic organise <strong>ownership between product, engineering and design</strong>?</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>FE-specific follow-ups (if conversation goes technical)</summary>
+      <div class="body">
+        <ul>
+          <li>How do you handle <strong>real-time market data</strong> on the web — WebSockets, polling, hybrid?</li>
+          <li>What's the split between <strong>React and Vue</strong> today, and where is the team heading?</li>
+          <li>What does the <strong>web platform paved road</strong> look like — design system, testing, deploy?</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 7 ROLE & STACK -->
+  <section id="s7" data-search="job description role web engineer vue react typescript websockets kotlin" aria-labelledby="h-s7">
+    <h2 id="h-s7">Role &amp; stack</h2>
+    <details class="card" open>
+      <summary>Role summary</summary>
+      <div class="body">
+        <p><strong>Web Engineer</strong> · London · introductory engineer conversation</p>
+        <ul>
+          <li><strong>~70% frontend</strong> · <strong>~30% backend</strong> (per recruiter)</li>
+          <li>User-facing features across trading, banking, and investment products</li>
+          <li>Real-time systems — live prices, portfolio state, responsive UX under load</li>
+          <li>Senior IC expectations: ownership, mentoring, architecture input</li>
+          <li>Onboarding and mentoring called out explicitly in JD</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Requirements → your proof</summary>
+      <div class="body">
+        <div class="table-wrap"><table>
+          <tr><th scope="col">Requirement</th><th scope="col">Your proof</th></tr>
+          <tr><td>React + TypeScript (primary FE)</td><td>Lantern product surfaces; React 19, React Query, export/viz</td></tr>
+          <tr><td>Vue (may appear in stack)</td><td>React-primary; comfortable across modern component frameworks</td></tr>
+          <tr><td>Real-time / live data UX</td><td>Two-tier freshness model; explicit staleness; cache invalidation</td></tr>
+          <tr><td>Product ownership</td><td>Calculated metrics: discovery → prod in 1 week; adoption metrics</td></tr>
+          <tr><td>Mentoring &amp; onboarding</td><td>4-layer test mentoring; PR checklist patterns for squad</td></tr>
+          <tr><td>Backend (~30%)</td><td>FastAPI, Postgres, BFF — enough to design API boundaries</td></tr>
+          <tr><td>Event-driven systems</td><td>Async snapshot materialisation; warehouse refresh patterns</td></tr>
+          <tr><td>Scale &amp; reliability</td><td>On-call, zero P1 at GA; feature-flag rollout</td></tr>
+        </table></div>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Stack (from briefing)</summary>
+      <div class="body">
+        <p><span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">Vue</span><span class="tag">WebSockets</span><span class="tag">PostgreSQL</span><span class="tag">Kotlin</span><span class="tag">Event-driven</span></p>
+        <p class="ok">React/TS is your home turf. Vue gap is manageable — concepts transfer. WebSockets + event-driven is the interesting stretch; relate to real-time portfolio/market data.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 8 STAGE 2 PREP -->
+  <section id="s8" data-search="stage 2 technical assessment system design behavioural AI interview bernardo two hours" aria-labelledby="h-s8">
+    <h2 id="h-s8">Stage 2 prep</h2>
+    <p class="warn">Format TBC until invite arrives — prep all three pillars. Expect <strong>~2 hours</strong>, remote or London office.</p>
+    <div class="card open">
+      <div class="card-head">Expected components (from Bernardo)</div>
+      <div class="body">
+        <div class="table-wrap"><table>
+          <tr><th scope="col">#</th><th scope="col">Component</th><th scope="col">Prep focus</th></tr>
+          <tr><td>1</td><td><strong>Technical assessment</strong></td><td>FE judgement · React/TS · real-time UX · component design · trade-offs</td></tr>
+          <tr><td>2</td><td><strong>System design</strong></td><td>Real-time portfolio/market data · WebSockets · event-driven · scale · correctness</td></tr>
+          <tr><td>3</td><td><strong>Behavioural</strong></td><td>Product mindset · ownership · mentoring · scope fights · stakeholder partnership</td></tr>
+        </table></div>
+      </div>
+    </div>
+    <details class="card" open>
+      <summary>① Technical assessment</summary>
+      <div class="body">
+        <ul>
+          <li>Likely FE-leaning given 70/30 split — component architecture, TypeScript boundaries, performance</li>
+          <li>May involve live coding, take-home review, or discussing past work — have calculated metrics ready</li>
+          <li>Real-time patterns: WebSocket reconnect, throttle renders, explicit staleness, graceful degradation</li>
+          <li>Vue gap: same answer as Stage 1 — React-primary, confident ramp on modern frameworks</li>
+          <li>Show <strong>engineering judgement</strong>: what you'd test, what you'd defer, how you'd ship safely</li>
+        </ul>
+        <p class="warn">Revise <strong>Stories</strong> + <strong>FE revise</strong> sections before Stage 2.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>② System design</summary>
+      <div class="body">
+        <p>Practice whiteboarding a Trade Republic-shaped problem:</p>
+        <div class="soundbite">Live portfolio dashboard: market data feed → event bus → snapshot service → WebSocket gateway → React client. Handle disconnect, stale prices, 10M users, regulatory correctness.</div>
+        <ul>
+          <li><strong>Data flow:</strong> source → ingest → normalize → serve → cache → UI — trace end-to-end</li>
+          <li><strong>Real-time:</strong> push vs poll; fan-out; backpressure; client-side batching</li>
+          <li><strong>Correctness:</strong> price timestamps, order state machine, idempotent writes</li>
+          <li><strong>Scale:</strong> read replicas, CDN for static, horizontal WS gateways, regional deploy</li>
+          <li><strong>Your anchor:</strong> calculated metrics two-tier latency — hot snapshots vs cold live calc</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>③ Behavioural</summary>
+      <div class="body">
+        <ul>
+          <li>Product scope fight (3 KPIs MVP vs 10 types)</li>
+          <li>Mentoring (4-layer test template)</li>
+          <li>Production ownership (on-call, zero P1 at GA)</li>
+          <li>Why Trade Republic / why move — still relevant</li>
+          <li>How you partner with PM and design on ownership</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>AI-assisted development <span class="chip">discussed positively in Stage 1</span></summary>
+      <div class="body">
+        <div class="soundbite">"I use AI as an accelerator — test scaffolding, mocks, boilerplate — never for architecture or business rules. Full CI before merge; no customer data in prompts; I own every line that ships."</div>
+        <ul>
+          <li><strong>Their culture:</strong> AI-assisted engineering with human review and oversight — mirrors your Lantern approach</li>
+          <li><strong>Proof points:</strong> Cursor for tests/MSW; ~50% faster fixture work; 50+ tests green; golden fixtures human-owned</li>
+          <li><strong>Guardrails:</strong> rules engine and financial logic never AI-generated; contract-first APIs; PR review unchanged</li>
+          <li><strong>Frame positively:</strong> AI raises the floor on delivery speed; senior engineers raise the ceiling on judgement</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Stage 1 recap (completed — for reference)</summary>
+      <div class="body">
+        <p>15-min engineer intro with <strong>Bernardo Corbella</strong> (Staff Engineer), London. Culture fit + technical curiosity + projects. Went deeper than expected — good sign.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 9 LIKELY QUESTIONS -->
+  <section id="s9" data-search="likely questions tell me about yourself vue systems worked on" aria-labelledby="h-s9">
+    <h2 id="h-s9">Likely questions</h2>
+    <details class="card" open>
+      <summary>Tell me about yourself</summary>
+      <div class="body">
+        <p>Keep it <strong>under 60 seconds</strong>. Structure: Today → Expertise → Leadership → Why interested. See <strong>About me</strong> section.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Why Trade Republic?</summary>
+      <div class="body">
+        <p>Use the memorised 30-second answer in <strong>Why TR?</strong> — product impact, scale, FE + real-time, engineering culture.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>What kinds of systems have you worked on?</summary>
+      <div class="body">
+        <p>Prepare examples across:</p>
+        <ul>
+          <li><strong>User-facing products</strong> — calculated metrics UI, export flows, config surfaces</li>
+          <li><strong>Real-time updates</strong> — snapshot freshness, cache invalidation, loading states that don't lie</li>
+          <li><strong>Data-heavy applications</strong> — finance tables, KPI viz, large dataset performance</li>
+          <li><strong>Platform architecture</strong> — BFF boundary, React Query cache keys, component reuse across squad</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Have you worked with Vue?</summary>
+      <div class="body">
+        <div class="soundbite">"Most of my experience is React-based, but I'm comfortable moving between modern component frameworks. The underlying concepts — composition, reactivity, state management — are very similar and I would be confident becoming productive quickly."</div>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Why are you looking to move?</summary>
+      <div class="body">
+        <p>Positive framing: product engineering, scale, technical challenges, growth. See <strong>Why move?</strong></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 10 STORIES -->
+  <section id="s10" data-search="stories STAR calculated metrics mentoring real-time frontend product" aria-labelledby="h-s10">
+    <h2 id="h-s10">Stories (pick 2–3 for Stage 2)</h2>
+    <p class="warn">Lead with <strong>product + FE craft</strong>. Stage 2 allows deeper dives — have STAR details ready.</p>
+    <details class="card" open>
+      <summary>① Calculated metrics platform (primary — user-facing + product)</summary>
+      <div class="body">
+        <p><strong>S:</strong> Customers rebuilt KPIs in Excel — inconsistent numbers, eroded trust.<br>
+        <strong>T:</strong> Ship configurable, validated metrics in-product with export + viz.<br>
+        <strong>A:</strong> PRD-first week; React/TS surfaces; React Query cache strategy; server-side truth; feature-flag rollout.<br>
+        <strong>R:</strong> ~65% exported within 5 weeks; reporting ~4–6h → ~20min; zero P1 at launch.</p>
+        <p class="ok">FE angle: component architecture, data-fetch boundaries, loading/error states users trust.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>② Real-time freshness / perceived performance</summary>
+      <div class="body">
+        <p>Two-tier model: pinned metrics served from snapshots (~120ms) vs ad-hoc live calc. UI shows <code>lastCalculatedAt</code> — users know when data is stale. React Query dedupe on hot paths. Killed client-side calc spike — would have caused trust incidents.</p>
+        <p class="ok">Maps to Trade Republic: portfolio/market data where freshness and honesty matter.</p>
+      </div>
+    </details>
+    <details class="card">
+      <summary>③ Mentoring (JD explicitly asks for this)</summary>
+      <div class="body">
+        <p>3 sessions with junior FE on 4-layer test template (calc unit → BFF → hook → component). They shipped IRR + export tests independently. Checklist in squad PR template.</p>
+      </div>
+    </details>
+    <details class="card">
+      <summary>④ Product scope fight</summary>
+      <div class="body">
+        <p>PM wanted 10 metric types week 1; finance needed auditability. Scoped MVP: 3 KPIs + export with golden fixtures as DoD. Finance signed off. Shows product engineering, not ticket throughput.</p>
+      </div>
+    </details>
+    <details class="card">
+      <summary>⑤ Production ownership</summary>
+      <div class="body">
+        <p>On-call through design-partner week. Pre-GA FX boundary alert — triaged, golden fixture, hotfix before rollout. Zero P1 at GA. Shows senior reliability without deep infra lecture.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 11 STACK -->
+  <section id="s11" data-search="stack TypeScript Vue React WebSockets PostgreSQL Kotlin event-driven" aria-labelledby="h-s11">
+    <h2 id="h-s11">Stack reference</h2>
+    <details class="card" open>
+      <summary>Their stack (know at headline level)</summary>
+      <div class="body">
+        <div class="table-wrap"><table>
+          <tr><th scope="col">Layer</th><th scope="col">Tech</th><th scope="col">Your angle</th></tr>
+          <tr><td>Frontend</td><td><strong>TypeScript</strong> · <strong>React</strong> · <strong>Vue</strong></td><td>React/TS primary; Vue transferable</td></tr>
+          <tr><td>Real-time</td><td><strong>WebSockets</strong></td><td>Relate to live data UX, reconnect, stale state</td></tr>
+          <tr><td>Backend</td><td><strong>Kotlin</strong> · event-driven</td><td>Concepts from FastAPI/async workers; language is learnable</td></tr>
+          <tr><td>Data</td><td><strong>PostgreSQL</strong></td><td>Definitions, snapshots — you know this pattern</td></tr>
+          <tr><td>Architecture</td><td>Event-driven · microservices</td><td>Invalidation, async materialisation, idempotent workers</td></tr>
+        </table></div>
+      </div>
+    </details>
+    <details class="card">
+      <summary>React vs Vue — if they probe</summary>
+      <div class="body">
+        <ul>
+          <li>Both: component model, props down / events up, composition</li>
+          <li>React: hooks, React Query for server state, explicit re-render model</li>
+          <li>Vue: reactivity system, SFCs — different syntax, same mental model for product engineers</li>
+          <li>Don't pretend production Vue experience — say confident ramp on modern TS frameworks</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 12 FE REVISE -->
+  <section id="s12" data-search="revise react typescript performance websockets component design" aria-labelledby="h-s12">
+    <h2 id="h-s12">FE revise (light — not the focus today)</h2>
+    <p class="warn">Only skim if you have spare time before 11:00. This interview won't go deep.</p>
+    <details class="card" open>
+      <summary>React + TypeScript</summary>
+      <div class="body">
+        <ul>
+          <li>Composition over inheritance; container/presenter where it helps</li>
+          <li>React Query: cache keys, staleTime, invalidation, optimistic updates</li>
+          <li>Type boundaries: API types generated from OpenAPI; never <code>any</code> at edges</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Performance (data-heavy fintech UI)</summary>
+      <div class="body">
+        <ul>
+          <li>Virtualise long lists; memoise expensive derived data</li>
+          <li>Avoid waterfall fetches — parallelise with React Query</li>
+          <li>Skeleton states vs spinners; perceived performance on slow networks</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Real-time / WebSockets (headline)</summary>
+      <div class="body">
+        <ul>
+          <li>Reconnect with backoff; resync state on reconnect</li>
+          <li>Don't block UI on every tick — batch/throttle renders</li>
+          <li>Show connection status; degrade gracefully to polling if needed</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Testing (mention if mentoring comes up)</summary>
+      <div class="body">
+        <ul>
+          <li>RTL for behaviour; MSW for API mocks</li>
+          <li>4-layer parity: calc → BFF → hook → component</li>
+          <li>Golden fixtures for finance correctness</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 13 LIGHT Q&A -->
+  <section id="s13" data-search="questions answers interview likely technical vue websocket" aria-labelledby="h-s13">
+    <h2 id="h-s13">Light Q&amp;A</h2>
+    <details class="card" open><summary>How do you approach frontend architecture?</summary><div class="body">Start from user journeys and data boundaries. Server state in React Query; UI state local. Shared components for repeated patterns (tables, export). Contract-first APIs so FE types stay honest. Feature flags for safe rollout.</div></details>
+    <details class="card"><summary>How do you handle real-time data in the UI?</summary><div class="body">Separate transport (WebSocket/poll) from presentation. Throttle renders; show freshness timestamp; handle disconnect explicitly. Never show stale data as live — finance users notice immediately.</div></details>
+    <details class="card"><summary>React vs Vue — preference?</summary><div class="body">React is my primary stack and I'm productive day one. Vue is familiar in concept — I'd ramp quickly. I care more about product outcomes and team conventions than framework religion.</div></details>
+    <details class="card"><summary>How do you balance speed and quality?</summary><div class="body">Scope MVPs ruthlessly with product. Golden fixtures + tests on correctness paths. Ship behind flags; measure adoption. Calculated metrics: 1 week discovery-to-prod with zero P1 — speed with guardrails.</div></details>
+    <details class="card"><summary>Mentoring example?</summary><div class="body">4-layer test template with junior FE; independent delivery on IRR + export tests; checklist embedded in squad PR template.</div></details>
+    <details class="card"><summary>What distinguishes senior engineers?</summary><div class="body">Ownership beyond their PR — product outcomes, unblocking others, making good scope calls, leaving the codebase better. (Mirror this in how you answer — it's likely what they're listening for.)</div></details>
+  </section>
+
+  <!-- 14 PITFALLS & SUCCESS -->
+  <section id="s14" data-search="pitfalls success criteria do not framework hooks testing libraries" aria-labelledby="h-s14">
+    <h2 id="h-s14">Pitfalls &amp; success criteria</h2>
+    <details class="card" open>
+      <summary>What NOT to do</summary>
+      <div class="body">
+        <p>Don't spend 15 minutes on:</p>
+        <ul>
+          <li>Framework preferences or React vs Vue debates</li>
+          <li>Specific React hooks or API minutiae</li>
+          <li>Testing library comparisons (Jest vs Vitest, etc.)</li>
+          <li>Deep backend / Kotlin lectures</li>
+        </ul>
+        <p>They want: <strong>product engineers · ownership · scale · communication</strong></p>
+      </div>
+    </details>
+    <div class="card open">
+      <div class="card-head">Success criteria — leave them thinking</div>
+      <div class="body">
+        <ul>
+          <li class="ok">✅ Strong senior engineer</li>
+          <li class="ok">✅ Product mindset</li>
+          <li class="ok">✅ Good communicator (concise, structured)</li>
+          <li class="ok">✅ Can mentor others</li>
+          <li class="ok">✅ React/TypeScript expertise</li>
+          <li class="ok">✅ Worth progressing to next stage</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 TRACKER -->
+  <section id="s15" data-search="tracker pipeline akeneo lendable 9fin ophelos aturiya capsa advanced opportunities" aria-labelledby="h-s15">
+    <h2 id="h-s15">Pipeline tracker</h2>
+    <div class="card open">
+      <div class="card-head">Most advanced opportunities (updated post Stage 1)</div>
+      <div class="body">
+        <div class="table-wrap"><table>
+          <tr><th scope="col">#</th><th scope="col">Company</th><th scope="col">Stage</th><th scope="col">Status</th></tr>
+          <tr><td>1</td><td><strong>Akeneo</strong></td><td>Stage 2 Technical Walkthrough</td><td>Booked</td></tr>
+          <tr><td>2</td><td><strong>Lendable</strong></td><td>Hiring Manager Interview</td><td>Booked</td></tr>
+          <tr><td>3</td><td><strong>Trade Republic</strong></td><td>Stage 1 done → awaiting Stage 2</td><td class="ok">In progress</td></tr>
+          <tr><td>4</td><td>9fin</td><td>Recruiter Screen</td><td>Booked</td></tr>
+          <tr><td>5</td><td>Ophelos</td><td>Initial call</td><td>Requested</td></tr>
+          <tr><td>6</td><td>Aturiya AI</td><td>Founder interview</td><td>Awaiting decision</td></tr>
+          <tr><td>7</td><td>Capsa AI</td><td>CV submitted</td><td>Awaiting review</td></tr>
+        </table></div>
+        <p class="ok">Trade Republic moves ahead of submitted-but-unreviewed opportunities after Bernardo outlined Stage 2.</p>
+      </div>
+    </div>
+    <details class="card" open>
+      <summary>While awaiting Stage 2 invite</summary>
+      <div class="body">
+        <ul>
+          <li>Prep <strong>Stage 2</strong> section: technical + system design + behavioural + AI story</li>
+          <li>Practice system design: live portfolio / market data at scale</li>
+          <li>Follow up with recruiter if no invite within expected window <span class="chip">timeline TBC</span></li>
+          <li>Log feedback timeline when confirmed — update glance section</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Stage 2 day-of checklist (when booked)</summary>
+      <div class="body">
+        <ul>
+          <li>Re-read <strong>Stage 2 prep</strong> · <strong>Stories</strong> · <strong>FE revise</strong></li>
+          <li>2 system design runs: portfolio dashboard + order flow UX</li>
+          <li>AI answer ready (accelerator + guardrails)</li>
+          <li>Dock Meet on right · prep on left</li>
+          <li>~2 hours blocked — water, quiet space, charger</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+</main>
+
+<div id="meet-resizer" role="separator" aria-orientation="vertical" aria-label="Resize Meet panel"></div>
+
+<aside id="meet-panel" aria-label="Google Meet">
+  <div class="meet-toolbar">
+    <span class="meet-label">Meet</span>
+    <label class="sr-only" for="meet-url">Google Meet URL or code</label>
+    <input type="url" id="meet-url" placeholder="meet.google.com/abc-defg-hij" autocomplete="off" spellcheck="false">
+    <button type="button" class="meet-btn primary" id="meet-popout" title="Open Meet docked on the right (Enter)">Dock →</button>
+    <button type="button" class="meet-btn" id="meet-collapse" title="Hide panel (M)" aria-label="Hide Meet panel">◂</button>
+  </div>
+  <div class="meet-body">
+    <div class="meet-dock-ui">
+      <div class="meet-icon" aria-hidden="true">📹</div>
+      <div class="meet-status" id="meet-status"><span class="dot" aria-hidden="true"></span><span id="meet-status-text">Not connected</span></div>
+      <h3>Meet can't embed here</h3>
+      <p>Google blocks iframes (<em>refused to connect</em>). Use <strong>Dock →</strong> — Meet opens in a window aligned to this panel; prep stays on the left.</p>
+      <div class="meet-actions">
+        <button type="button" class="meet-btn primary" id="meet-popout-main">Open Meet (docked right)</button>
+        <button type="button" class="meet-btn" id="meet-focus">Focus Meet window</button>
+        <button type="button" class="meet-btn" id="meet-layout">Snap prep window left</button>
+      </div>
+      <ol class="meet-steps">
+        <li>Paste Meet link above</li>
+        <li>Click <strong>Dock →</strong> or press <kbd>Enter</kbd></li>
+        <li>Drag the divider to resize — Meet window follows</li>
+        <li><kbd>J</kbd> focuses Meet · <kbd>M</kbd> hides this panel</li>
+      </ol>
+    </div>
+  </div>
+</aside>
+
+<button type="button" id="meet-tab" aria-label="Show Meet panel">Meet</button>
+
+<script>
+  const sections = [...document.querySelectorAll('main > section')];
+  const navLinks = [...document.querySelectorAll('#nav a[data-sec]')];
+  const searchBar = document.getElementById('search-bar');
+  const search = document.getElementById('q');
+  const searchStatus = document.getElementById('search-status');
+  const mobileNav = document.getElementById('mobile-nav');
+
+  function applySearchFilter() {
+    const q = search.value.trim().toLowerCase();
+    let visible = 0;
+    sections.forEach(sec => {
+      if (!q) {
+        sec.classList.remove('hidden');
+        visible++;
+        return;
+      }
+      const text = (sec.dataset.search || '') + ' ' + sec.textContent;
+      const match = text.toLowerCase().includes(q);
+      sec.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    updateSearchStatus(visible, sections.length, search.value.trim());
+  }
+
+  function openSearch() {
+    searchBar.classList.add('open');
+    searchBar.setAttribute('aria-hidden', 'false');
+    search.focus();
+  }
+
+  function closeSearch() {
+    searchBar.classList.remove('open');
+    searchBar.setAttribute('aria-hidden', 'true');
+    search.value = '';
+    search.blur();
+    sections.forEach(sec => sec.classList.remove('hidden'));
+    updateSearchStatus(sections.length, sections.length, '');
+  }
+
+  function updateSearchStatus(visible, total, query) {
+    if (!query) {
+      searchStatus.textContent = '';
+      return;
+    }
+    searchStatus.textContent = visible === 0
+      ? `No sections match "${query}".`
+      : `Showing ${visible} of ${total} sections for "${query}".`;
+  }
+
+  search.addEventListener('input', applySearchFilter);
+
+  mobileNav.addEventListener('change', () => {
+    const target = document.getElementById(mobileNav.value);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+    }
+  });
+
+  function syncMobileNav(id) {
+    if (mobileNav.value !== id) mobileNav.value = id;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+        syncMobileNav(id);
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  document.addEventListener('keydown', e => {
+    const searchOpen = searchBar.classList.contains('open');
+    const typing = document.activeElement === search
+      || document.activeElement === mobileNav
+      || document.activeElement === meetUrlInput
+      || document.activeElement?.matches('input, textarea, select');
+
+    if (e.key === 'Escape' && searchOpen) {
+      e.preventDefault();
+      closeSearch();
+      return;
+    }
+
+    if (e.key === '/' && !typing) {
+      e.preventDefault();
+      openSearch();
+      return;
+    }
+    if ((e.key === 'm' || e.key === 'M') && !typing) {
+      e.preventDefault();
+      toggleMeetPanel();
+      return;
+    }
+    if ((e.key === 'j' || e.key === 'J') && !typing) {
+      e.preventDefault();
+      focusMeet();
+      return;
+    }
+    if (typing) return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 9) {
+      const target = document.getElementById('s' + (n - 1));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+      }
+    }
+  });
+
+  // —— Google Meet dock (iframe blocked by Google — use popup window) ——
+  const MEET_STORAGE_KEY = 'tr-prep-meet-url';
+  const MEET_WINDOW_NAME = 'interview-meet-dock';
+  const meetUrlInput = document.getElementById('meet-url');
+  const meetStatus = document.getElementById('meet-status');
+  const meetStatusText = document.getElementById('meet-status-text');
+  const meetResizer = document.getElementById('meet-resizer');
+  const root = document.documentElement;
+  let meetDockWindow = null;
+
+  function normalizeMeetUrl(raw) {
+    const v = (raw || '').trim();
+    if (!v) return '';
+    if (/^[a-z]{3}-[a-z]{4}-[a-z]{3}$/i.test(v)) return `https://meet.google.com/${v.toLowerCase()}`;
+    if (/^meet\.google\.com\//i.test(v)) return `https://${v}`;
+    if (v.startsWith('http')) return v;
+    return `https://meet.google.com/${v}`;
+  }
+
+  function getMeetUrl() {
+    return normalizeMeetUrl(meetUrlInput.value);
+  }
+
+  function meetPanelWidthPx() {
+    const pct = parseFloat(getComputedStyle(root).getPropertyValue('--meet-w')) / 100;
+    return Math.round(window.screen.availWidth * pct);
+  }
+
+  function meetDockGeometry() {
+    const w = Math.max(meetPanelWidthPx(), 360);
+    const h = window.screen.availHeight;
+    const left = window.screen.availLeft + window.screen.availWidth - w;
+    const top = window.screen.availTop;
+    return { w, h, left, top };
+  }
+
+  function syncMeetDockGeometry() {
+    if (!meetDockWindow || meetDockWindow.closed) return;
+    const { w, h, left, top } = meetDockGeometry();
+    try {
+      meetDockWindow.resizeTo(w, h);
+      meetDockWindow.moveTo(left, top);
+    } catch (_) { /* cross-origin or browser restriction */ }
+  }
+
+  function layoutPrepWindow() {
+    const meetW = meetPanelWidthPx();
+    const prepW = window.screen.availWidth - meetW;
+    const h = window.screen.availHeight;
+    try {
+      window.resizeTo(prepW, h);
+      window.moveTo(window.screen.availLeft, window.screen.availTop);
+    } catch (_) {
+      alert('Browser blocked auto-resize. Manually snap this window to the left half of your screen (macOS: hold green button → left tile).');
+    }
+  }
+
+  function setMeetStatus(live, text) {
+    meetStatus.classList.toggle('live', live);
+    meetStatusText.textContent = text;
+  }
+
+  function focusMeet() {
+    if (meetDockWindow && !meetDockWindow.closed) {
+      meetDockWindow.focus();
+      return;
+    }
+    popOutMeet();
+  }
+
+  function popOutMeet() {
+    const url = getMeetUrl();
+    if (!url) {
+      meetUrlInput.focus();
+      return;
+    }
+    localStorage.setItem(MEET_STORAGE_KEY, meetUrlInput.value.trim());
+    const { w, h, left, top } = meetDockGeometry();
+    const features = [
+      `width=${w}`, `height=${h}`, `left=${left}`, `top=${top}`,
+      'menubar=no', 'toolbar=no', 'location=yes', 'status=no', 'resizable=yes', 'scrollbars=yes'
+    ].join(',');
+    if (meetDockWindow && !meetDockWindow.closed) {
+      meetDockWindow.location.href = url;
+      syncMeetDockGeometry();
+      meetDockWindow.focus();
+      setMeetStatus(true, 'Meet docked');
+      return;
+    }
+    meetDockWindow = window.open(url, MEET_WINDOW_NAME, features);
+    if (meetDockWindow) {
+      meetDockWindow.focus();
+      setMeetStatus(true, 'Meet docked');
+      layoutPrepWindow();
+    } else {
+      setMeetStatus(false, 'Popup blocked — allow popups');
+    }
+  }
+
+  function toggleMeetPanel(collapsed) {
+    const next = collapsed ?? !document.body.classList.contains('meet-collapsed');
+    document.body.classList.toggle('meet-collapsed', next);
+    document.getElementById('meet-collapse').textContent = next ? '▸' : '◂';
+    document.getElementById('meet-collapse').setAttribute('aria-label', next ? 'Show Meet panel' : 'Hide Meet panel');
+    if (!next) syncMeetDockGeometry();
+  }
+
+  function setMeetWidth(px) {
+    const max = window.innerWidth * 0.55;
+    const min = 320;
+    const clamped = Math.min(max, Math.max(min, px));
+    const pct = (clamped / window.innerWidth) * 100;
+    root.style.setProperty('--meet-w', `${pct}%`);
+    syncMeetDockGeometry();
+  }
+
+  document.getElementById('meet-popout').addEventListener('click', popOutMeet);
+  document.getElementById('meet-popout-main').addEventListener('click', popOutMeet);
+  document.getElementById('meet-focus').addEventListener('click', focusMeet);
+  document.getElementById('meet-layout').addEventListener('click', layoutPrepWindow);
+  document.getElementById('meet-collapse').addEventListener('click', () => toggleMeetPanel());
+  document.getElementById('meet-tab').addEventListener('click', () => toggleMeetPanel(false));
+  meetUrlInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      popOutMeet();
+    }
+  });
+
+  let resizing = false;
+  meetResizer.addEventListener('mousedown', e => {
+    resizing = true;
+    meetResizer.classList.add('dragging');
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!resizing) return;
+    setMeetWidth(window.innerWidth - e.clientX);
+  });
+  document.addEventListener('mouseup', () => {
+    resizing = false;
+    meetResizer.classList.remove('dragging');
+  });
+
+  window.setInterval(() => {
+    if (meetDockWindow && meetDockWindow.closed) {
+      meetDockWindow = null;
+      setMeetStatus(false, 'Not connected');
+    }
+  }, 1500);
+
+  (function initMeet() {
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = params.get('meet') || params.get('meetUrl');
+    const saved = localStorage.getItem(MEET_STORAGE_KEY);
+    meetUrlInput.value = fromQuery || saved || '';
+  })();
+</script>
+</body>
+</html>
