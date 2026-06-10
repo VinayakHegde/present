@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Lendable interview prep — quick reference (not a slide deck)
+  /  open search   ·   Esc close search   ·   1–9 jump sections   ·   M toggle Meet
+  ?meet=your-code  ·  Enter or Dock → opens Meet in right window (iframe blocked by Google)
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lendable · Interview Prep</title>
+  <style>
+    :root {
+      --bg: #0c1222;
+      --panel: #151d2e;
+      --border: #2d3f58;
+      --accent: #2dd4bf;
+      --accent-dim: rgba(45, 212, 191, 0.14);
+      --text: #f0f4fa;
+      --muted: #a8b8d0;
+      --chip: #fcd34d;
+      --nav-w: 240px;
+      --meet-w: 40%;
+      --meet-min: 320px;
+      --meet-max: 55%;
+      --ok: #4ade80;
+      --warn: #fb923c;
+      --focus-ring: 0 0 0 3px rgba(45, 212, 191, 0.45);
+      --text-base: 18px;
+      --line: 1.65;
+      --track-body: 0.03em;
+      --track-ui: 0.04em;
+      --track-wide: 0.08em;
+      --track-caps: 0.1em;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: var(--text-base); }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 1rem;
+      line-height: var(--line);
+      letter-spacing: var(--track-body);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 0.75rem;
+      top: -3rem;
+      z-index: 200;
+      padding: 0.6rem 1rem;
+      background: var(--accent);
+      color: #0c1222;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 0 0 6px 6px;
+    }
+    .skip-link:focus { top: 0; outline: none; box-shadow: var(--focus-ring); }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    :focus:not(:focus-visible) { outline: none; }
+
+    kbd {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--panel);
+      font-family: inherit;
+      font-size: 0.85em;
+      color: var(--text);
+      letter-spacing: var(--track-wide);
+    }
+
+    #nav {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: var(--nav-w);
+      background: #080e1a;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.1rem 0;
+      z-index: 50;
+    }
+    #nav .brand {
+      padding: 0 1.1rem 0.85rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.6rem;
+      letter-spacing: var(--track-ui);
+    }
+    #nav .brand span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+      letter-spacing: var(--track-wide);
+      text-transform: uppercase;
+    }
+    #nav a {
+      display: block;
+      padding: 0.55rem 1.1rem;
+      min-height: 2.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      border-left: 3px solid transparent;
+      line-height: 1.4;
+      letter-spacing: var(--track-ui);
+    }
+    #nav a:hover, #nav a.active {
+      color: var(--text);
+      border-left-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    #nav a kbd { margin-left: 0.35rem; font-size: 0.8em; color: var(--muted); }
+    #nav a.nav-priority { font-weight: 600; color: var(--text); }
+    #nav .nav-divider {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--muted);
+      padding: 0.75rem 1.1rem 0.25rem;
+      margin-top: 0.35rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .mobile-jump { display: none; margin-bottom: 1rem; }
+    .mobile-jump label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: var(--track-wide);
+      text-transform: uppercase;
+    }
+    .mobile-jump select {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      font-size: 1rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      min-height: 2.75rem;
+      letter-spacing: var(--track-body);
+    }
+
+    main {
+      margin-left: var(--nav-w);
+      margin-right: var(--meet-w);
+      max-width: none;
+      padding: 1.75rem 2.25rem 4rem;
+      transition: margin-right 0.2s ease;
+    }
+
+    body.meet-collapsed main { margin-right: 0; }
+
+    #meet-resizer {
+      position: fixed;
+      right: var(--meet-w);
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      margin-right: -3px;
+      cursor: col-resize;
+      z-index: 70;
+      background: transparent;
+      transition: right 0.2s ease, background 0.15s;
+    }
+    #meet-resizer:hover,
+    #meet-resizer.dragging { background: var(--accent-dim); }
+    body.meet-collapsed #meet-resizer { display: none; }
+
+    #meet-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--meet-w);
+      min-width: var(--meet-min);
+      background: #080e1a;
+      border-left: 1px solid var(--border);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
+    body.meet-collapsed #meet-panel {
+      transform: translateX(100%);
+      pointer-events: none;
+    }
+
+    .meet-toolbar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+    .meet-toolbar .meet-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .meet-toolbar input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.82rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+    }
+    .meet-toolbar input:focus-visible { border-color: var(--accent); box-shadow: var(--focus-ring); }
+    .meet-btn {
+      flex-shrink: 0;
+      padding: 0.4rem 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      letter-spacing: var(--track-ui);
+    }
+    .meet-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .meet-btn.primary { background: var(--accent); color: #0c1222; border-color: var(--accent); }
+
+    .meet-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 1.25rem 1rem;
+      background: var(--panel);
+    }
+    .meet-dock-ui {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+      max-width: 20rem;
+      margin: 0 auto;
+      padding-top: 1rem;
+    }
+    .meet-dock-ui .meet-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .meet-dock-ui h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: var(--track-ui);
+    }
+    .meet-dock-ui p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .meet-dock-ui .meet-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .meet-dock-ui .meet-btn { width: 100%; padding: 0.65rem 0.85rem; font-size: 0.88rem; }
+    .meet-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .meet-status.live { color: var(--ok); border-color: rgba(74, 222, 128, 0.35); }
+    .meet-status .dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .meet-status.live .dot { background: var(--ok); }
+    .meet-steps {
+      text-align: left;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0;
+      padding-left: 1.2rem;
+      line-height: 1.6;
+    }
+    .meet-steps li { margin-bottom: 0.35rem; }
+    .meet-steps li::marker { color: var(--accent); }
+
+    #meet-tab {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 65;
+      display: none;
+      writing-mode: vertical-rl;
+      padding: 0.75rem 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: var(--track-caps);
+      text-transform: uppercase;
+      background: var(--accent);
+      color: #0c1222;
+      border: 0;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer;
+    }
+    body.meet-collapsed #meet-tab { display: block; }
+
+    .search-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg);
+      padding: 0.5rem 0 1.1rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-bar.open { display: block; }
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      min-height: 2.75rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      letter-spacing: var(--track-body);
+    }
+    .search-bar input:focus-visible { border-color: var(--accent); box-shadow: var(--focus-ring); }
+    .search-bar input::placeholder { color: var(--muted); letter-spacing: var(--track-ui); }
+    .search-hint { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.5; letter-spacing: var(--track-ui); }
+    #search-status {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      min-height: 1.4em;
+      letter-spacing: var(--track-ui);
+    }
+
+    section { margin-bottom: 2rem; scroll-margin-top: 1.5rem; }
+    section.hidden { display: none; }
+    h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--accent);
+      margin: 0 0 0.85rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.65rem;
+      overflow: hidden;
+    }
+    .card > summary, .card .card-head {
+      padding: 0.85rem 1rem;
+      min-height: 2.75rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.05rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.4;
+      letter-spacing: var(--track-ui);
+    }
+    .card > summary::-webkit-details-marker { display: none; }
+    .card > summary::before { content: "▸ "; color: var(--accent); flex-shrink: 0; font-size: 0.9em; }
+    .card[open] > summary::before { content: "▾ "; }
+    .card > summary:hover { background: rgba(255, 255, 255, 0.03); }
+    .card .body {
+      padding: 0.25rem 1rem 1rem;
+      font-size: 1rem;
+      color: var(--text);
+      border-top: 1px solid var(--border);
+      letter-spacing: var(--track-body);
+    }
+    .card .body p { margin: 0.65rem 0; }
+    .card .body ul, .card .body ol { margin: 0.5rem 0; padding-left: 1.35rem; }
+    .card .body li { margin-bottom: 0.45rem; }
+    .card .body li::marker { color: var(--accent); }
+
+    .card.open .card-head { cursor: default; border-bottom: 1px solid var(--border); }
+    .card.open .body { border-top: none; padding-top: 0.25rem; }
+
+    .glance {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 0.65rem;
+    }
+    .glance-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+    }
+    .glance-item .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: var(--track-caps);
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .glance-item .val {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+      letter-spacing: var(--track-body);
+    }
+
+    .table-wrap { overflow-x: auto; margin: 0.5rem 0; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; min-width: 280px; letter-spacing: var(--track-body); }
+    th, td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
+    th { color: var(--muted); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: var(--track-wide); }
+
+    .chip {
+      display: inline-block;
+      background: rgba(252, 211, 77, 0.18);
+      color: var(--chip);
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: var(--track-ui);
+    }
+    .tag {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+      line-height: 1.4;
+      letter-spacing: var(--track-ui);
+    }
+    .soundbite {
+      background: var(--accent-dim);
+      border-left: 4px solid var(--accent);
+      padding: 0.85rem 1rem;
+      margin: 0.65rem 0;
+      font-size: 1rem;
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.55;
+      letter-spacing: var(--track-body);
+    }
+    .warn { color: var(--warn); font-size: 0.95rem; line-height: 1.55; letter-spacing: var(--track-body); }
+    .ok { color: var(--ok); letter-spacing: var(--track-body); }
+
+    @media (max-width: 1100px) {
+      :root { --meet-w: 36%; }
+    }
+    @media (max-width: 768px) {
+      #nav { display: none; }
+      .mobile-jump { display: block; }
+      main { margin-left: 0; margin-right: 0; padding: 1.25rem 1.1rem 3rem; }
+      #meet-panel, #meet-resizer, #meet-tab { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">Skip to content</a>
+
+<nav id="nav" aria-label="Section navigation">
+  <div class="brand">Lendable prep<span>Mon 8 Jun · 3:45pm · 45 min</span></div>
+  <a href="#s0" data-sec="0">Glance <kbd>1</kbd></a>
+  <a href="#s1" data-sec="1" class="nav-priority">Positioning <kbd>2</kbd></a>
+  <a href="#s2" data-sec="2" class="nav-priority">Company <kbd>3</kbd></a>
+  <a href="#s3" data-sec="3" class="nav-priority">What they test <kbd>4</kbd></a>
+  <a href="#s4" data-sec="4" class="nav-priority">Ask Richard <kbd>5</kbd></a>
+  <a href="#s5" data-sec="5" class="nav-priority">Role &amp; stack <kbd>6</kbd></a>
+  <a href="#s6" data-sec="6" class="nav-priority">Likely Q&amp;A <kbd>7</kbd></a>
+  <a href="#s7" data-sec="7" class="nav-priority">Stories <kbd>8</kbd></a>
+  <a href="#s8" data-sec="8" class="nav-priority">Measure success <kbd>9</kbd></a>
+  <div class="nav-divider" aria-hidden="true">Reference</div>
+  <a href="#s9" data-sec="9">What this is</a>
+  <a href="#s10" data-sec="10">MCP</a>
+  <a href="#s11" data-sec="11">RAG &amp; knowledge</a>
+  <a href="#s12" data-sec="12">Integrations</a>
+  <a href="#s13" data-sec="13">Security</a>
+  <a href="#s14" data-sec="14">Kubernetes</a>
+  <a href="#s15" data-sec="15">Revise</a>
+  <a href="#s16" data-sec="16">Day-of</a>
+</nav>
+
+<main id="content">
+  <div class="mobile-jump">
+    <label for="mobile-nav">Jump to section</label>
+    <select id="mobile-nav" aria-label="Jump to section">
+      <option value="s0">Glance</option>
+      <option value="s1">Positioning</option>
+      <option value="s2">Company</option>
+      <option value="s3">What they test</option>
+      <option value="s4">Ask Richard</option>
+      <option value="s5">Role &amp; stack</option>
+      <option value="s6">Likely Q&amp;A</option>
+      <option value="s7">Stories</option>
+      <option value="s8">Measure success</option>
+      <option value="s9">What this is</option>
+      <option value="s10">MCP</option>
+      <option value="s11">RAG &amp; knowledge</option>
+      <option value="s12">Integrations</option>
+      <option value="s13">Security</option>
+      <option value="s14">Kubernetes</option>
+      <option value="s15">Revise</option>
+      <option value="s16">Day-of</option>
+    </select>
+  </div>
+
+  <div class="search-bar" id="search-bar" role="search" aria-hidden="true">
+    <label class="sr-only" for="q">Filter sections by keyword</label>
+    <input type="search" id="q" placeholder="Filter… e.g. MCP, RAG, pronto, Kubernetes, Slack" autocomplete="off" aria-describedby="search-hint search-status">
+    <div class="search-hint" id="search-hint">Press <kbd>Esc</kbd> to close · sidebar or <kbd>1</kbd>–<kbd>9</kbd> to jump sections</div>
+    <div id="search-status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <!-- 0 GLANCE -->
+  <section id="s0" data-search="glance overview date role hiring manager richard chamberlain" aria-labelledby="h-s0">
+    <h2 id="h-s0">At a glance</h2>
+    <div class="glance">
+      <div class="glance-item"><div class="label">Interview</div><div class="val">Monday 8 June 2026 · <strong>3:45pm</strong></div></div>
+      <div class="glance-item"><div class="label">Role</div><div class="val">AI Engineer / Senior AI Engineer</div></div>
+      <div class="glance-item"><div class="label">Team</div><div class="val">AI Engineering</div></div>
+      <div class="glance-item"><div class="label">Stage</div><div class="val">Hiring Manager Interview</div></div>
+      <div class="glance-item"><div class="label">Duration</div><div class="val"><strong>45 min</strong> <span class="chip">3:45–4:30</span></div></div>
+      <div class="glance-item"><div class="label">Interviewer</div><div class="val">Richard Chamberlain · Principal Engineer</div></div>
+      <div class="glance-item"><div class="label">Salary</div><div class="val">Up to <strong>£100k</strong></div></div>
+      <div class="glance-item"><div class="label">Location</div><div class="val">Hybrid · London</div></div>
+    </div>
+    <div class="card open">
+      <div class="card-head">What they're really testing</div>
+      <div class="body">
+        <p class="ok">Can you build <strong>real internal AI tooling</strong> — not just talk about AI.</p>
+        <p><span class="tag">developer productivity</span><span class="tag">LLMs</span><span class="tag">embeddings</span><span class="tag">RAG</span><span class="tag">MCP</span><span class="tag">API integrations</span><span class="tag">TypeScript</span><span class="tag">React/Next.js</span><span class="tag">Kubernetes</span><span class="tag">ownership</span><span class="tag">security</span><span class="tag">data governance</span></p>
+        <p class="warn">Keep answers <strong>practical, not theoretical</strong>. Lead with shipped tools and measured impact.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 POSITIONING -->
+  <section id="s1" data-search="positioning about myself pitch intro 90 second strength" aria-labelledby="h-s1">
+    <h2 id="h-s1">Positioning</h2>
+    <div class="card open">
+      <div class="card-head">Core strength (say this clearly)</div>
+      <div class="body">
+        <div class="soundbite">"My strength is combining product engineering, full-stack delivery and AI-assisted engineering workflows. I have led teams, improved delivery practices, and I am very interested in building internal AI tools that genuinely improve developer productivity rather than just adding AI for the sake of it."</div>
+      </div>
+    </div>
+    <details class="card" open>
+      <summary>90-second intro (memorise structure)</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Today:</strong> Tech Lead / Senior Engineer at Lantern — B2B finance data platform; full-stack delivery in TypeScript/React and Python/FastAPI</li>
+          <li><strong>AI in practice:</strong> Cursor, Claude Code, spec-first AIAD workflow — AI for scaffolding, tests, mocks; engineer-owned architecture, rules, and every merge</li>
+          <li><strong>Platform ownership:</strong> Led calculated metrics platform discovery → production in one week; measurable adoption and time saved</li>
+          <li><strong>Leadership:</strong> Cross-team delivery, mentoring, production on-call — senior IC who ships and multiplies others</li>
+          <li><strong>Why Lendable:</strong> Building internal AI tooling at the frontier — pronto, MCP integrations, measurable dev productivity — exactly where I want to apply product engineering + AI craft</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Strengths to land</summary>
+      <div class="body">
+        <ul>
+          <li><strong>AI-assisted engineering adoption:</strong> Cursor, Claude Code, AIAD workflow, guardrails, reviewing AI output</li>
+          <li><strong>Platform/architecture ownership:</strong> calculated metrics — technical direction end-to-end</li>
+          <li><strong>Internal tooling/productivity:</strong> spec-first delivery, test templates, squad patterns that speed others up</li>
+          <li><strong>Cross-team leadership:</strong> product, engineering, finance stakeholders — scope trade-offs with measurable outcomes</li>
+          <li><strong>Quality ownership:</strong> testing, maintainability, observability, CI/CD — 50+ tests green, zero P1 at GA</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 2 COMPANY -->
+  <section id="s2" data-search="company lendable fintech pronto ai engineering internal automation" aria-labelledby="h-s2">
+    <h2 id="h-s2">About Lendable</h2>
+    <details class="card" open>
+      <summary>What Lendable is</summary>
+      <div class="body">
+        <p><strong>Consumer lending fintech</strong> — one of the UK's leading digital lenders, profitable and scaling.</p>
+        <ul>
+          <li>Builds lending products for consumers; strong engineering culture and internal platform investment</li>
+          <li>AI Engineering team focused on <strong>developer productivity</strong> and internal automation — not a side project</li>
+          <li>Small, high-ownership team (~4 engineers + PM) building platform from the ground up</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>pronto — their internal coding agent</summary>
+      <div class="body">
+        <p><strong>pronto</strong> is Lendable's internal AI coding agent. Mission: bring lessons from AI development into one system so everyone benefits.</p>
+        <ul>
+          <li>Combines the coding agent with <strong>measuring AI effectiveness</strong> and <strong>system stability</strong></li>
+          <li>Central to the AI Engineering team's work — build on top of it, extend it, make it safe and useful</li>
+          <li>Integrates company data via connectors (Slack, Jira, GitHub, Snowflake, Google Workspace, Confluence…)</li>
+        </ul>
+        <p class="ok">Ask Richard: <em>How mature is pronto today, and how widely is it used across engineering?</em></p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>AI Engineering team focus (from JD)</summary>
+      <div class="body">
+        <ul>
+          <li>Build AI on top of pronto; knowledge base pipelines and <strong>MCP integrations</strong></li>
+          <li>Create connectors so company data is safely available to AI systems</li>
+          <li>Templates, guardrails, building blocks for non-engineers to experiment safely</li>
+          <li>Internal automation platform: <strong>AWS Bedrock</strong>, <strong>n8n</strong>, custom solutions</li>
+          <li>Ship quickly → measure (time saved, adoption, errors) → iterate</li>
+        </ul>
+        <p><span class="tag">MCP</span><span class="tag">Bedrock</span><span class="tag">n8n</span><span class="tag">pgvector</span><span class="tag">Kubernetes</span><span class="tag">Next.js</span></p>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Why Lendable? (30 sec)</summary>
+      <div class="body">
+        <div class="soundbite">"Three reasons. First, the problem — internal AI tooling that actually moves developer productivity, with measurement built in, not slide-deck AI. Second, the stack — TypeScript, React/Next.js, MCP, Kubernetes, Bedrock — matches how I build and how I already use AI in delivery. Third, the team — small, owning a platform from the ground up, with pronto as a real product engineers use daily. That's the kind of impact I want."</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 3 WHAT THEY TEST -->
+  <section id="s3" data-search="test focus hiring manager build real tooling productivity" aria-labelledby="h-s3">
+    <h2 id="h-s3">What they're testing</h2>
+    <div class="card open">
+      <div class="card-head">Mindset for Richard (Principal Engineer)</div>
+      <div class="body">
+        <p>Richard will probe whether you can <strong>design, build, and operate</strong> internal AI systems — with security and impact, not hype.</p>
+        <div class="table-wrap"><table>
+          <tr><th scope="col">Signal</th><th scope="col">How to show it</th></tr>
+          <tr><td>Build real tools</td><td>Concrete AI workflow examples — what you shipped, who used it, what changed</td></tr>
+          <tr><td>Safe knowledge access</td><td>RAG + permissions + audit — not "dump everything into context"</td></tr>
+          <tr><td>Integration design</td><td>Slack/Jira/GitHub/Snowflake — auth, scoping, rate limits, governance</td></tr>
+          <tr><td>Measurement</td><td>Time saved, adoption, PR cycle time, DORA-style signals — you define success upfront</td></tr>
+          <tr><td>Ownership</td><td>End-to-end: problem → design → ship → monitor → iterate</td></tr>
+          <tr><td>Security mindset</td><td>Hallucination, permissions, data leakage — practical controls, not fear</td></tr>
+          <tr><td>Infra credibility</td><td>Containerised services on K8s — deploy, observability, iteration</td></tr>
+          <tr><td>Prioritisation</td><td>Highest-leverage bottlenecks first — talk to users, measure, don't build toys</td></tr>
+        </table></div>
+      </div>
+    </div>
+    <details class="card">
+      <summary>What NOT to do</summary>
+      <div class="body">
+        <ul>
+          <li>Don't lecture on LLM architecture or transformer internals</li>
+          <li>Don't claim AI wrote your production rules or validation logic</li>
+          <li>Don't propose "connect everything to the agent" without governance</li>
+          <li>Don't answer in theory — always anchor to something you've done or would ship in week 1</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 4 ASK RICHARD -->
+  <section id="s4" data-search="ask questions richard chamberlain pronto bottlenecks governance success" aria-labelledby="h-s4">
+    <h2 id="h-s4">Ask Richard</h2>
+    <p class="warn">45 minutes — pick <strong>3 questions</strong>. Save comp/notice for end if natural.</p>
+    <details class="card" open>
+      <summary>Priority questions (from briefing)</summary>
+      <div class="body">
+        <ol>
+          <li>What are the <strong>biggest developer productivity bottlenecks</strong> Lendable wants this AI Engineering team to solve first?</li>
+          <li>How <strong>mature is pronto</strong> today, and how widely is it used across engineering?</li>
+          <li>How do you currently <strong>measure the success</strong> of AI tooling internally?</li>
+          <li>What does <strong>success look like for this role</strong> in the first 3–6 months?</li>
+          <li>How do you balance <strong>fast experimentation with security and governance</strong>?</li>
+        </ol>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Follow-ups if conversation goes deep</summary>
+      <div class="body">
+        <ul>
+          <li>What's the split between extending pronto vs building new MCP connectors and knowledge pipelines?</li>
+          <li>Who are the primary users today — engineering only, or Finance/Compliance/Product too?</li>
+          <li>How does the team decide build vs buy (Bedrock, n8n, off-the-shelf agents)?</li>
+          <li>What does the paved road look like for shipping a new internal AI tool to prod?</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Logistics (if appropriate)</summary>
+      <div class="body">
+        <ul>
+          <li>Salary band confirmation — briefing says up to <strong>£100k</strong></li>
+          <li>Hybrid expectations — days in London office?</li>
+          <li>Notice period / start timeline</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 5 ROLE & STACK -->
+  <section id="s5" data-search="role stack typescript react next kubernetes bedrock mcp job description" aria-labelledby="h-s5">
+    <h2 id="h-s5">Role &amp; stack</h2>
+    <details class="card" open>
+      <summary>Role summary</summary>
+      <div class="body">
+        <p><strong>AI Engineer / Senior AI Engineer</strong> · AI Engineering · London hybrid · up to £100k</p>
+        <ul>
+          <li>Build AI on pronto; MCP integrations; knowledge base pipelines</li>
+          <li>Connectors for Slack, Jira, GitHub, Google Workspace, Snowflake, Confluence</li>
+          <li>Guardrails and templates so others can use AI safely</li>
+          <li>Ship containerised software to <strong>Kubernetes</strong></li>
+          <li>Measure outcomes and iterate — ownership end-to-end</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Requirements → your proof</summary>
+      <div class="body">
+        <div class="table-wrap"><table>
+          <tr><th scope="col">Requirement</th><th scope="col">Your proof</th></tr>
+          <tr><td>AI tooling used by others</td><td>Cursor/Claude Code adoption on squad; AIAD workflow; test templates others reuse</td></tr>
+          <tr><td>TypeScript + React/Next.js</td><td>Lantern product surfaces; React 19, React Query; internal tooling mindset</td></tr>
+          <tr><td>MCP</td><td>Using MCP in Cursor daily (Jira, etc.); understand protocol + permissions layer</td></tr>
+          <tr><td>LLMs, embeddings, RAG</td><td>Practical patterns for safe retrieval; AI for codegen not domain rules</td></tr>
+          <tr><td>API integrations</td><td>FastAPI BFF, OpenAPI contracts, third-party data pipelines at Lantern</td></tr>
+          <tr><td>Kubernetes / containers</td><td>Containerised deploys; AWS ECS/Docker — map to K8s concepts confidently</td></tr>
+          <tr><td>Ownership &amp; impact</td><td>Calculated metrics: discovery → prod in 1 week; adoption ~65%; reporting 4–6h → ~20min</td></tr>
+          <tr><td>Security &amp; governance</td><td>AI guardrails: human-owned rules/architecture; auth at BFF; no secrets in prompts</td></tr>
+        </table></div>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Stack (know at headline level)</summary>
+      <div class="body">
+        <p><span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">Next.js</span><span class="tag">MCP</span><span class="tag">AWS Bedrock</span><span class="tag">n8n</span><span class="tag">Kubernetes</span><span class="tag">Docker</span><span class="tag">pgvector</span><span class="tag">Slack API</span><span class="tag">Jira API</span><span class="tag">GitHub API</span><span class="tag">Snowflake</span></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 6 LIKELY Q&A -->
+  <section id="s6" data-search="questions answers ai tool workflow knowledge productivity integrations hallucination kubernetes prioritize" aria-labelledby="h-s6">
+    <h2 id="h-s6">Likely Q&amp;A</h2>
+    <p class="warn">Structure: <strong>headline → how you did it → result/metric → what you'd do at Lendable</strong>. Keep under 2 min each.</p>
+
+    <details class="card" open>
+      <summary>① Tell me about an AI tool or workflow you have built or introduced</summary>
+      <div class="body">
+        <p><strong>Primary story — AI-assisted delivery at Lantern:</strong></p>
+        <ul>
+          <li><strong>Problem:</strong> One-week push to ship calculated metrics; test/fixture work was the bottleneck</li>
+          <li><strong>What I introduced:</strong> Cursor + spec-first AIAD workflow — AI for test scaffolding, MSW handlers, BFF boilerplate; strict guardrails on what AI may touch</li>
+          <li><strong>Guardrails:</strong> Rules, validation logic, architecture never via AI; every line reviewed; 4-layer test parity required per contract change</li>
+          <li><strong>Result:</strong> ~50% faster fixture/mock work; 50+ tests green throughout; discovery → production in one week; zero P1 at GA</li>
+        </ul>
+        <p><strong>Secondary — squad adoption:</strong> Shared PR checklist, test templates, patterns junior engineers reused on export API + widgets.</p>
+        <p class="ok">Frame as: <em>internal tooling mindset — make engineers faster with guardrails, not magic.</em></p>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>② How would you expose company knowledge safely to an AI agent?</summary>
+      <div class="body">
+        <ol>
+          <li><strong>Classify data</strong> — public internal docs vs restricted (PII, financials, credentials)</li>
+          <li><strong>Retrieve, don't dump</strong> — RAG with scoped indexes per domain/team; embeddings + metadata filters</li>
+          <li><strong>Permission-aware retrieval</strong> — agent queries as the authenticated user; enforce ACLs at source (GitHub, Jira, Drive)</li>
+          <li><strong>MCP tool boundaries</strong> — narrow tools (searchConfluence, getTicket) not raw DB access; read vs write separated</li>
+          <li><strong>Audit &amp; logging</strong> — what was retrieved, which tools called, prompt/response retention policy</li>
+          <li><strong>Human-in-the-loop</strong> for writes (create ticket, merge PR) and sensitive reads</li>
+        </ol>
+        <div class="soundbite">"The agent should only see what the user is allowed to see, through narrow tools — not a firehose of company data in the system prompt."</div>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>③ How would you measure whether an AI tool improves developer productivity?</summary>
+      <div class="body">
+        <p>Define metrics <strong>before</strong> shipping; baseline first:</p>
+        <ul>
+          <li><strong>Adoption:</strong> DAU/WAU, % engineers using pronto weekly, retention after first use</li>
+          <li><strong>Time saved:</strong> survey + sample task timing (e.g. test scaffolding, incident triage, boilerplate)</li>
+          <li><strong>Flow metrics:</strong> PR cycle time, lead time for changes, deployment frequency (DORA)</li>
+          <li><strong>Quality signals:</strong> defect/rework rate, CI failure rate, incidents attributed to AI-generated code</li>
+          <li><strong>Qualitative:</strong> engineer satisfaction, "would you recommend" — especially from skeptics</li>
+        </ul>
+        <p class="ok">See <strong>Measure success</strong> section for the full list to cite.</p>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>④ How would you design integrations for Slack, Jira, GitHub, Google Workspace and Snowflake?</summary>
+      <div class="body">
+        <p><strong>Common layer:</strong></p>
+        <ul>
+          <li>OAuth/service accounts per system; secrets in vault; rotate tokens</li>
+          <li>Normalised connector interface: <code>search</code>, <code>get</code>, <code>list</code> — MCP tools on top</li>
+          <li>Rate limiting, caching, incremental sync where possible</li>
+          <li>Event webhooks (GitHub push, Jira update) → queue → index update, not poll-everything</li>
+        </ul>
+        <div class="table-wrap"><table>
+          <tr><th scope="col">System</th><th scope="col">Primary use</th><th scope="col">Gotchas</th></tr>
+          <tr><td>Slack</td><td>Thread context, decisions, on-call history</td><td>Channel ACLs; don't index DMs without policy; respect retention</td></tr>
+          <tr><td>Jira</td><td>Tickets, epics, acceptance criteria</td><td>Project-level permissions; stale ticket noise in RAG</td></tr>
+          <tr><td>GitHub</td><td>Code, PRs, ADRs, CI status</td><td>Repo scope; no secrets in code search; branch permissions</td></tr>
+          <tr><td>Google Workspace</td><td>Docs, sheets, calendar context</td><td>Drive sharing model; PII in docs; domain-wide delegation carefully</td></tr>
+          <tr><td>Snowflake</td><td>Structured metrics, reporting</td><td>Read-only role; row-level security; never send raw PII to LLM — aggregate or redact</td></tr>
+        </table></div>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>⑤ How do you manage hallucination, permissions and data leakage risks?</summary>
+      <div class="body">
+        <ul>
+          <li><strong>Grounding:</strong> RAG with citations; require retrieved context for factual claims; "I don't know" over inventing</li>
+          <li><strong>Permissions:</strong> enforce at retrieval + tool call; no elevation without explicit admin tooling</li>
+          <li><strong>Data minimisation:</strong> smallest context window needed; redact PII/secrets before model call</li>
+          <li><strong>Output filtering:</strong> block patterns (API keys, account numbers); scan outbound responses</li>
+          <li><strong>Evals:</strong> golden Q&amp;A sets per domain; regression when prompt/model/index changes</li>
+          <li><strong>Human review:</strong> mandatory for destructive actions and customer-facing output</li>
+          <li><strong>Monitoring:</strong> log tool usage, flag anomalous broad queries, alert on policy violations</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>⑥ What is your experience with Kubernetes and containerised deployment?</summary>
+      <div class="body">
+        <div class="soundbite">"I've shipped containerised services on AWS — Docker images, CI-built artifacts, environment-specific config, health checks, and observability. I understand Kubernetes as the orchestration layer on top of that: deployments, services, ingress, secrets, resource limits, and rollbacks. For internal AI tooling I'd containerise the MCP servers and API gateways, use K8s for consistent deploys across envs, and wire in metrics/tracing from day one — same discipline as any production service, because internal tools still handle sensitive data."</div>
+        <ul>
+          <li><strong>Concrete:</strong> Docker + ECS at Lantern; maps to Pods/Deployments/Services mentally</li>
+          <li><strong>AI-specific:</strong> separate services for embedding/index jobs vs request-serving API; autoscale inference carefully</li>
+          <li><strong>Honest gap:</strong> if K8s YAML day-to-day is lighter, say productive quickly — concepts and production discipline are solid</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>⑦ How would you decide what to build first in the AI engineering team?</summary>
+      <div class="body">
+        <ol>
+          <li><strong>Talk to engineers</strong> — shadow workflows; find repeated manual steps and trust gaps</li>
+          <li><strong>Quantify pain</strong> — frequency × time × number of people; focus on high-leverage bottlenecks</li>
+          <li><strong>Feasibility &amp; risk</strong> — quick win with read-only integrations before write actions</li>
+          <li><strong>Align with pronto roadmap</strong> — extend what's already adopted vs parallel tools</li>
+          <li><strong>Measure from day one</strong> — baseline before launch; 4-week checkpoint</li>
+          <li><strong>Say no</strong> to demos that don't ship — one tool used weekly beats five POCs</li>
+        </ol>
+        <p class="ok">Echo their JD: <em>"Work with PM and engineering lead to identify highest-leverage opportunities."</em></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 7 STORIES -->
+  <section id="s7" data-search="stories STAR cursor claude code aiad calculated metrics mentoring platform" aria-labelledby="h-s7">
+    <h2 id="h-s7">Stories (prepare 2 AI workflow examples)</h2>
+    <p class="warn">Lead with <strong>AI workflow + measurable impact</strong>. Keep each under 90 seconds.</p>
+
+    <details class="card" open>
+      <summary>① AI-assisted engineering adoption (primary)</summary>
+      <div class="body">
+        <p><strong>S:</strong> Tight deadline for calculated metrics platform; test and fixture work threatened the one-week timeline.<br>
+        <strong>T:</strong> Introduce AI-assisted workflow without compromising correctness on financial rules.<br>
+        <strong>A:</strong> Cursor + AIAD spec-first; AI for tests, MSW mocks, boilerplate only; explicit guardrail doc; mandatory human review; 4-layer test parity per API change.<br>
+        <strong>R:</strong> ~50% faster fixture work; 50+ tests green; shipped discovery → prod in 1 week; zero P1; squad adopted checklist patterns.</p>
+      </div>
+    </details>
+
+    <details class="card" open>
+      <summary>② Platform/architecture ownership</summary>
+      <div class="body">
+        <p><strong>S:</strong> Customers rebuilt KPIs in Excel — trust in product numbers eroded.<br>
+        <strong>T:</strong> Own technical direction for configurable, server-validated metrics.<br>
+        <strong>A:</strong> PRD/SDD first; rules engine + validation at boundary; React/TS + FastAPI; feature-flag rollout; on-call through GA.<br>
+        <strong>R:</strong> ~65% adoption in 5 weeks; reporting ~4–6h → ~20min; 2 enterprise onboardings unblocked.</p>
+        <p class="ok">Shows end-to-end ownership — same muscle needed to own pronto extensions and MCP connectors.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary>③ Internal tooling / team multiplier</summary>
+      <div class="body">
+        <p>4-layer test template + PR checklist → junior FE shipped IRR + export tests independently; patterns reused on squad widgets and export API. Internal tooling that compounds.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary>④ Cross-team leadership</summary>
+      <div class="body">
+        <p>Scoped MVP with PM/finance: 3 KPIs + export with golden fixtures as DoD (not 10 metric types week 1). Finance sign-off. Shows prioritisation and stakeholder alignment.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary>⑤ Quality / production ownership</summary>
+      <div class="body">
+        <p>On-call through design-partner week; pre-GA FX boundary alert — golden fixture, hotfix before rollout. Observability + CI guardrails. Zero P1 at GA.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 8 MEASURE SUCCESS -->
+  <section id="s8" data-search="measure success metrics adoption cycle time dora satisfaction errors" aria-labelledby="h-s8">
+    <h2 id="h-s8">Measure success (memorise list)</h2>
+    <div class="card open">
+      <div class="card-head">If asked how you would measure success — use these</div>
+      <div class="body">
+        <ul>
+          <li>Time saved per workflow</li>
+          <li>Developer adoption</li>
+          <li>Pull request cycle time</li>
+          <li>Lead time for changes</li>
+          <li>Reduction in repeated manual tasks</li>
+          <li>Error reduction</li>
+          <li>Satisfaction feedback</li>
+          <li>Quality signals — defects, rework, CI failures on AI-assisted code</li>
+        </ul>
+        <div class="soundbite">"I'd baseline before launch, pick two quantitative and one qualitative metric per tool, and review at 4 weeks — kill or double down based on adoption, not demo applause."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 WHAT THIS IS -->
+  <section id="s9" data-search="interview format hiring manager 45 minute principal engineer" aria-labelledby="h-s9">
+    <h2 id="h-s9">What this interview is</h2>
+    <div class="card open">
+      <div class="card-head">Hiring manager with Principal Engineer</div>
+      <div class="body">
+        <ul>
+          <li><strong>45 minutes</strong> — enough depth for system design and experience probes</li>
+          <li><strong>Not</strong> a coding test — but expect practical technical discussion</li>
+          <li><strong>Is</strong> a filter on: can you build internal AI tooling, think about governance, and drive measurable impact</li>
+          <li>Richard will assess seniority, ownership, and whether you'd strengthen the AI Engineering team</li>
+        </ul>
+        <p class="ok">Leave them thinking: <em>practical builder who uses AI with discipline — would trust them on pronto and MCP integrations.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 MCP -->
+  <section id="s10" data-search="mcp model context protocol tools permissions auditing" aria-labelledby="h-s10">
+    <h2 id="h-s10">MCP (if asked)</h2>
+    <div class="card open">
+      <div class="card-head">Simple answer (memorise)</div>
+      <div class="body">
+        <div class="soundbite">"MCP is a way to give AI agents structured access to tools, systems and data sources through a common protocol. The important part is not just connecting tools, but controlling access, permissions, auditing, and making sure the agent only has the context and actions it should have."</div>
+        <ul>
+          <li><strong>Your experience:</strong> using MCP servers in Cursor (e.g. Jira, browser tools) daily — you understand client/server, tool schemas, and why narrow tools beat mega-prompts</li>
+          <li><strong>At Lendable:</strong> MCP servers per integration; read/write separation; auth passthrough; audit logs</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 RAG -->
+  <section id="s11" data-search="rag embeddings vector knowledge base retrieval pgvector pinecone" aria-labelledby="h-s11">
+    <h2 id="h-s11">RAG &amp; knowledge pipelines</h2>
+    <details class="card" open>
+      <summary>Headline architecture</summary>
+      <div class="body">
+        <p>Ingest → chunk → embed → store (pgvector / Pinecone) → retrieve with metadata filters → prompt with citations → eval.</p>
+        <ul>
+          <li><strong>Chunking:</strong> by doc section / ticket / PR — preserve metadata (source, author, date, ACL)</li>
+          <li><strong>Embeddings:</strong> Bedrock or dedicated model; re-embed on doc change via webhook pipeline</li>
+          <li><strong>Retrieval:</strong> hybrid search (semantic + keyword) for jargon-heavy engineering docs</li>
+          <li><strong>Context assembly:</strong> top-k with diversity; token budget; cite sources in UI</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>Evals (mention confidently)</summary>
+      <div class="body">
+        <ul>
+          <li>Golden questions per domain with expected citations</li>
+          <li>Regression when changing chunk size, model, or index</li>
+          <li>Track hallucination rate and "no answer" rate — both matter</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 12 INTEGRATIONS -->
+  <section id="s12" data-search="integrations slack jira github snowflake google workspace connectors" aria-labelledby="h-s12">
+    <h2 id="h-s12">Integrations (reference)</h2>
+    <details class="card" open>
+      <summary>Design principles</summary>
+      <div class="body">
+        <ul>
+          <li>One connector service per domain — don't build a god-service</li>
+          <li>MCP exposes curated tools; connector handles auth, pagination, caching</li>
+          <li>Sync jobs for index; live API for fresh single-record lookups</li>
+          <li>Security review before each new data source — data classification checklist</li>
+        </ul>
+      </div>
+    </details>
+    <details class="card">
+      <summary>n8n / workflow automation angle</summary>
+      <div class="body">
+        <p>Lendable uses n8n for internal automation. Frame as: orchestration for multi-step workflows (e.g. Jira ticket → Slack notify → index update) while AI/agent layer handles ambiguous reasoning steps.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 13 SECURITY -->
+  <section id="s13" data-search="security governance data leakage pii guardrails compliance" aria-labelledby="h-s13">
+    <h2 id="h-s13">Security &amp; governance</h2>
+    <details class="card" open>
+      <summary>Practical controls (Lendable is regulated fintech)</summary>
+      <div class="body">
+        <ul>
+          <li>Data classification on every connector; block restricted classes from LLM paths</li>
+          <li>Secrets never in prompts or logs; vault + short-lived tokens</li>
+          <li>Model provider choice (Bedrock) for enterprise data residency / DPA</li>
+          <li>Audit trail: who asked what, what tools fired, what docs retrieved</li>
+          <li>Templates + guardrails for non-engineers — safe defaults, no arbitrary MCP installs</li>
+          <li>Partner with security early — not a gate at the end</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 14 KUBERNETES -->
+  <section id="s14" data-search="kubernetes docker containers deploy helm ecs production" aria-labelledby="h-s14">
+    <h2 id="h-s14">Kubernetes &amp; containers</h2>
+    <details class="card" open>
+      <summary>Talking points</summary>
+      <div class="body">
+        <ul>
+          <li>Docker images built in CI; immutable tags; scan for vulnerabilities</li>
+          <li>Config via env/secrets; 12-factor services for MCP servers and APIs</li>
+          <li>Health/readiness probes; graceful shutdown for in-flight LLM requests</li>
+          <li>Horizontal scale for stateless API; separate workers for embedding jobs</li>
+          <li>Observability: latency p95, error rate, token cost per request, tool call failures</li>
+          <li>Map from ECS experience: task definition → Deployment, service discovery → K8s Service, ALB → Ingress</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- 15 REVISE -->
+  <section id="s15" data-search="revise mcp rag embeddings evals llm bedrock quick reference" aria-labelledby="h-s15">
+    <h2 id="h-s15">Revise (30 min skim)</h2>
+    <details class="card" open>
+      <summary>MCP</summary>
+      <div class="body">
+        <p>Client (agent) ↔ MCP server ↔ tools/resources. JSON-RPC. Tool schemas define inputs. Resources for read-only context. Stdio vs SSE transport.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>RAG</summary>
+      <div class="body">
+        <p>Retrieve relevant chunks → augment prompt → generate with citations. Fail gracefully when retrieval empty.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Embeddings</summary>
+      <div class="body">
+        <p>Vector representation of text for semantic similarity. Same model for index and query. Metadata filters critical for ACLs.</p>
+      </div>
+    </details>
+    <details class="card" open>
+      <summary>Evals</summary>
+      <div class="body">
+        <p>Golden sets, human review sample, automated citation checks, regression on model/index changes. Measure precision/recall of retrieval separately from generation quality.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 16 DAY OF -->
+  <section id="s16" data-search="day of checklist before interview monday schedule salary notice period" aria-labelledby="h-s16">
+    <h2 id="h-s16">Day-of checklist</h2>
+    <div class="card open">
+      <div class="card-head">Monday schedule</div>
+      <div class="body">
+        <div class="table-wrap"><table>
+          <tr><th scope="col">Time</th><th scope="col">Company</th><th scope="col">Stage</th><th scope="col">Prep</th></tr>
+          <tr><td>09:30</td><td>9fin</td><td>Recruiter screen</td><td><code>9fin.html</code></td></tr>
+          <tr><td>11:00</td><td>Trade Republic</td><td>Engineer intro (15 min)</td><td><code>trade-republic.html</code></td></tr>
+          <tr><td><strong>15:45</strong></td><td><strong>Lendable</strong></td><td><strong>Hiring manager · Richard</strong></td><td><strong>this page · primary focus</strong></td></tr>
+        </table></div>
+      </div>
+    </div>
+    <div class="card open">
+      <div class="card-head">Final prep checklist</div>
+      <div class="body">
+        <ul>
+          <li>90-second intro rehearsed</li>
+          <li>2 AI workflow examples ready (AI-assisted delivery + platform ownership)</li>
+          <li>MCP one-liner memorised</li>
+          <li>Measure-success list ready</li>
+          <li>Integrations table skimmed (Slack/Jira/GitHub/Drive/Snowflake)</li>
+          <li>Kubernetes answer — practical, honest</li>
+          <li>3 questions for Richard picked</li>
+          <li>Salary (<strong>up to £100k</strong>) and notice period ready</li>
+          <li>Meet link pasted · Dock → for split screen</li>
+        </ul>
+        <p class="warn">15 min before (3:30): re-read <strong>Positioning</strong>, <strong>Likely Q&amp;A</strong> ① and ②, <strong>Ask Richard</strong>. Practical beats theoretical.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="meet-resizer" role="separator" aria-orientation="vertical" aria-label="Resize Meet panel"></div>
+
+<aside id="meet-panel" aria-label="Google Meet">
+  <div class="meet-toolbar">
+    <span class="meet-label">Meet</span>
+    <label class="sr-only" for="meet-url">Google Meet URL or code</label>
+    <input type="url" id="meet-url" placeholder="meet.google.com/abc-defg-hij" autocomplete="off" spellcheck="false">
+    <button type="button" class="meet-btn primary" id="meet-popout" title="Open Meet docked on the right (Enter)">Dock →</button>
+    <button type="button" class="meet-btn" id="meet-collapse" title="Hide panel (M)" aria-label="Hide Meet panel">◂</button>
+  </div>
+  <div class="meet-body">
+    <div class="meet-dock-ui">
+      <div class="meet-icon" aria-hidden="true">📹</div>
+      <div class="meet-status" id="meet-status"><span class="dot" aria-hidden="true"></span><span id="meet-status-text">Not connected</span></div>
+      <h3>Meet can't embed here</h3>
+      <p>Google blocks iframes. Use <strong>Dock →</strong> — Meet opens in a window aligned to this panel; prep stays on the left.</p>
+      <div class="meet-actions">
+        <button type="button" class="meet-btn primary" id="meet-popout-main">Open Meet (docked right)</button>
+        <button type="button" class="meet-btn" id="meet-focus">Focus Meet window</button>
+        <button type="button" class="meet-btn" id="meet-layout">Snap prep window left</button>
+      </div>
+      <ol class="meet-steps">
+        <li>Paste Meet link above</li>
+        <li>Click <strong>Dock →</strong> or press <kbd>Enter</kbd></li>
+        <li>Drag the divider to resize</li>
+        <li><kbd>J</kbd> focuses Meet · <kbd>M</kbd> hides panel</li>
+      </ol>
+    </div>
+  </div>
+</aside>
+
+<button type="button" id="meet-tab" aria-label="Show Meet panel">Meet</button>
+
+<script>
+  const sections = [...document.querySelectorAll('main > section')];
+  const navLinks = [...document.querySelectorAll('#nav a[data-sec]')];
+  const searchBar = document.getElementById('search-bar');
+  const search = document.getElementById('q');
+  const searchStatus = document.getElementById('search-status');
+  const mobileNav = document.getElementById('mobile-nav');
+
+  function applySearchFilter() {
+    const q = search.value.trim().toLowerCase();
+    let visible = 0;
+    sections.forEach(sec => {
+      if (!q) {
+        sec.classList.remove('hidden');
+        visible++;
+        return;
+      }
+      const text = (sec.dataset.search || '') + ' ' + sec.textContent;
+      const match = text.toLowerCase().includes(q);
+      sec.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    updateSearchStatus(visible, sections.length, search.value.trim());
+  }
+
+  function openSearch() {
+    searchBar.classList.add('open');
+    searchBar.setAttribute('aria-hidden', 'false');
+    search.focus();
+  }
+
+  function closeSearch() {
+    searchBar.classList.remove('open');
+    searchBar.setAttribute('aria-hidden', 'true');
+    search.value = '';
+    search.blur();
+    sections.forEach(sec => sec.classList.remove('hidden'));
+    updateSearchStatus(sections.length, sections.length, '');
+  }
+
+  function updateSearchStatus(visible, total, query) {
+    if (!query) {
+      searchStatus.textContent = '';
+      return;
+    }
+    searchStatus.textContent = visible === 0
+      ? `No sections match "${query}".`
+      : `Showing ${visible} of ${total} sections for "${query}".`;
+  }
+
+  search.addEventListener('input', applySearchFilter);
+
+  mobileNav.addEventListener('change', () => {
+    const target = document.getElementById(mobileNav.value);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+    }
+  });
+
+  function syncMobileNav(id) {
+    if (mobileNav.value !== id) mobileNav.value = id;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+        syncMobileNav(id);
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  document.addEventListener('keydown', e => {
+    const searchOpen = searchBar.classList.contains('open');
+    const typing = document.activeElement === search
+      || document.activeElement === mobileNav
+      || document.activeElement === meetUrlInput
+      || document.activeElement?.matches('input, textarea, select');
+
+    if (e.key === 'Escape' && searchOpen) {
+      e.preventDefault();
+      closeSearch();
+      return;
+    }
+
+    if (e.key === '/' && !typing) {
+      e.preventDefault();
+      openSearch();
+      return;
+    }
+    if ((e.key === 'm' || e.key === 'M') && !typing) {
+      e.preventDefault();
+      toggleMeetPanel();
+      return;
+    }
+    if ((e.key === 'j' || e.key === 'J') && !typing) {
+      e.preventDefault();
+      focusMeet();
+      return;
+    }
+    if (typing) return;
+    const n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 9) {
+      const target = document.getElementById('s' + (n - 1));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+      }
+    }
+  });
+
+  const MEET_STORAGE_KEY = 'lendable-prep-meet-url';
+  const MEET_WINDOW_NAME = 'lendable-meet-dock';
+  const meetUrlInput = document.getElementById('meet-url');
+  const meetStatus = document.getElementById('meet-status');
+  const meetStatusText = document.getElementById('meet-status-text');
+  const meetResizer = document.getElementById('meet-resizer');
+  const root = document.documentElement;
+  let meetDockWindow = null;
+
+  function normalizeMeetUrl(raw) {
+    const v = (raw || '').trim();
+    if (!v) return '';
+    if (/^[a-z]{3}-[a-z]{4}-[a-z]{3}$/i.test(v)) return `https://meet.google.com/${v.toLowerCase()}`;
+    if (/^meet\.google\.com\//i.test(v)) return `https://${v}`;
+    if (v.startsWith('http')) return v;
+    return `https://meet.google.com/${v}`;
+  }
+
+  function getMeetUrl() {
+    return normalizeMeetUrl(meetUrlInput.value);
+  }
+
+  function meetPanelWidthPx() {
+    const pct = parseFloat(getComputedStyle(root).getPropertyValue('--meet-w')) / 100;
+    return Math.round(window.screen.availWidth * pct);
+  }
+
+  function meetDockGeometry() {
+    const w = Math.max(meetPanelWidthPx(), 360);
+    const h = window.screen.availHeight;
+    const left = window.screen.availLeft + window.screen.availWidth - w;
+    const top = window.screen.availTop;
+    return { w, h, left, top };
+  }
+
+  function syncMeetDockGeometry() {
+    if (!meetDockWindow || meetDockWindow.closed) return;
+    const { w, h, left, top } = meetDockGeometry();
+    try {
+      meetDockWindow.resizeTo(w, h);
+      meetDockWindow.moveTo(left, top);
+    } catch (_) {}
+  }
+
+  function layoutPrepWindow() {
+    const meetW = meetPanelWidthPx();
+    const prepW = window.screen.availWidth - meetW;
+    const h = window.screen.availHeight;
+    try {
+      window.resizeTo(prepW, h);
+      window.moveTo(window.screen.availLeft, window.screen.availTop);
+    } catch (_) {
+      alert('Browser blocked auto-resize. Manually snap this window to the left half of your screen.');
+    }
+  }
+
+  function setMeetStatus(live, text) {
+    meetStatus.classList.toggle('live', live);
+    meetStatusText.textContent = text;
+  }
+
+  function focusMeet() {
+    if (meetDockWindow && !meetDockWindow.closed) {
+      meetDockWindow.focus();
+      return;
+    }
+    popOutMeet();
+  }
+
+  function popOutMeet() {
+    const url = getMeetUrl();
+    if (!url) {
+      meetUrlInput.focus();
+      return;
+    }
+    localStorage.setItem(MEET_STORAGE_KEY, meetUrlInput.value.trim());
+    const { w, h, left, top } = meetDockGeometry();
+    const features = [
+      `width=${w}`, `height=${h}`, `left=${left}`, `top=${top}`,
+      'menubar=no', 'toolbar=no', 'location=yes', 'status=no', 'resizable=yes', 'scrollbars=yes'
+    ].join(',');
+    if (meetDockWindow && !meetDockWindow.closed) {
+      meetDockWindow.location.href = url;
+      syncMeetDockGeometry();
+      meetDockWindow.focus();
+      setMeetStatus(true, 'Meet docked');
+      return;
+    }
+    meetDockWindow = window.open(url, MEET_WINDOW_NAME, features);
+    if (meetDockWindow) {
+      meetDockWindow.focus();
+      setMeetStatus(true, 'Meet docked');
+      layoutPrepWindow();
+    } else {
+      setMeetStatus(false, 'Popup blocked — allow popups');
+    }
+  }
+
+  function toggleMeetPanel(collapsed) {
+    const next = collapsed ?? !document.body.classList.contains('meet-collapsed');
+    document.body.classList.toggle('meet-collapsed', next);
+    document.getElementById('meet-collapse').textContent = next ? '▸' : '◂';
+    document.getElementById('meet-collapse').setAttribute('aria-label', next ? 'Show Meet panel' : 'Hide Meet panel');
+    if (!next) syncMeetDockGeometry();
+  }
+
+  function setMeetWidth(px) {
+    const max = window.innerWidth * 0.55;
+    const min = 320;
+    const clamped = Math.min(max, Math.max(min, px));
+    const pct = (clamped / window.innerWidth) * 100;
+    root.style.setProperty('--meet-w', `${pct}%`);
+    syncMeetDockGeometry();
+  }
+
+  document.getElementById('meet-popout').addEventListener('click', popOutMeet);
+  document.getElementById('meet-popout-main').addEventListener('click', popOutMeet);
+  document.getElementById('meet-focus').addEventListener('click', focusMeet);
+  document.getElementById('meet-layout').addEventListener('click', layoutPrepWindow);
+  document.getElementById('meet-collapse').addEventListener('click', () => toggleMeetPanel());
+  document.getElementById('meet-tab').addEventListener('click', () => toggleMeetPanel(false));
+  meetUrlInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      popOutMeet();
+    }
+  });
+
+  let resizing = false;
+  meetResizer.addEventListener('mousedown', e => {
+    resizing = true;
+    meetResizer.classList.add('dragging');
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!resizing) return;
+    setMeetWidth(window.innerWidth - e.clientX);
+  });
+  document.addEventListener('mouseup', () => {
+    resizing = false;
+    meetResizer.classList.remove('dragging');
+  });
+
+  window.setInterval(() => {
+    if (meetDockWindow && meetDockWindow.closed) {
+      meetDockWindow = null;
+      setMeetStatus(false, 'Not connected');
+    }
+  }, 1500);
+
+  (function initMeet() {
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = params.get('meet') || params.get('meetUrl');
+    const saved = localStorage.getItem(MEET_STORAGE_KEY);
+    meetUrlInput.value = fromQuery || saved || '';
+  })();
+</script>
+</body>
+</html>
