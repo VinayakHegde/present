@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  README - akeneo.html
+  Calculated Metrics Platform · Technical project walkthrough
+  Arrow keys / Enter: next slide · ⌘+Enter: back · ⌘/Ctrl+Arrow: jump slides
+  Space: next slide | S: speaker notes | F: fullscreen | Esc: overview
+  Target ~19 min present · see Delivery Script appendix for timing
+  P: presentation mode | M: sidebar | H: appendix (prep only - never mention in interview)
+  Serve: from the present/ folder, e.g. python3 -m http.server 8080 then open http://localhost:8080/akeneo.html
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculated Metrics Platform - Product, Architecture &amp; Delivery Walkthrough</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --accent: #10b981;
+      --accent-dark: #047857;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --chip: #fbbf24;
+      --chip-bg: rgba(251, 191, 36, 0.15);
+      --sidebar-w: 220px;
+      --slide-body: 26px;
+      --slide-body-compact: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Left nav */
+    #slide-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      background: #0a0f1e;
+      border-right: 1px solid #1e293b;
+      overflow-y: auto;
+      z-index: 100;
+      padding: 1rem 0;
+      font-size: 0.72rem;
+    }
+
+    #slide-nav h2 {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      margin: 0.75rem 0 0.25rem;
+    }
+
+    #slide-nav a {
+      display: block;
+      padding: 0.35rem 1rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      line-height: 1.35;
+    }
+
+    #slide-nav a:hover,
+    #slide-nav a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    #slide-nav a.section-link {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    #slide-nav a.appendix {
+      color: #f87171;
+      font-size: 0.68rem;
+    }
+
+    /* Reveal overrides */
+    .reveal-viewport { background: var(--bg); }
+
+    .reveal {
+      margin-left: var(--sidebar-w);
+      width: calc(100% - var(--sidebar-w));
+    }
+
+    .reveal .slides { text-align: left; }
+
+    /* Every slide: full height flex column - footer pinned to bottom */
+    .reveal .slides > section {
+      display: flex !important;
+      flex-direction: column;
+      height: 100% !important;
+      box-sizing: border-box;
+      text-align: left;
+    }
+
+    .slide-footer {
+      margin-top: auto;
+      flex-shrink: 0;
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 0.65rem 0 0;
+      font-size: 0.65em;
+      color: var(--text-muted);
+      border-top: 1px solid #1e293b;
+    }
+
+    .slide-footer .section-label { color: var(--accent); }
+
+    /* Notes sit after footer in DOM - keep them out of slide layout */
+    .reveal .slides > section > aside.notes {
+      flex: 0 0 0;
+      height: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      color: var(--text);
+      text-transform: none;
+      letter-spacing: -0.02em;
+    }
+
+    .reveal h1 { font-size: 1.85em; font-weight: 700; }
+    .reveal h2 { font-size: 1.6em; font-weight: 600; color: var(--accent); margin-bottom: 0.55em; }
+    .reveal h3 { font-size: 1.1em; color: var(--text-muted); font-weight: 500; }
+
+    .reveal p, .reveal li {
+      font-size: var(--slide-body);
+      line-height: 1.42;
+      color: var(--text);
+    }
+
+    .reveal ul { margin-left: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .reveal li { margin-bottom: 0.5em; }
+    .reveal li::marker { color: var(--accent); }
+
+    .reveal strong { color: #fff; }
+
+    .reveal .mono, .reveal code {
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.88em;
+      color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+    }
+
+    .chip {
+      display: inline-block;
+      background: var(--chip-bg);
+      color: var(--chip);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      border-radius: 4px;
+      padding: 0.15em 0.5em;
+      font-size: 0.85em;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Title slide */
+    .title-slide {
+      background:
+        linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      justify-content: flex-start;
+      padding: 0.85rem 1.5rem 0;
+    }
+
+    .title-slide .title-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .title-slide h1 { font-size: 1.65em; font-weight: 700; max-width: 95%; margin: 0; line-height: 1.2; color: #fff; }
+    .title-slide li.title-headline {
+      font-size: 1.15em;
+      font-weight: 600;
+      color: var(--accent);
+      padding-left: 0;
+      margin-bottom: 0.45em;
+      line-height: 1.25;
+    }
+    .title-slide li.title-headline::before { content: none; }
+    .title-slide .subtitle { font-size: 0.9em; color: var(--text-muted); margin: 0.35rem 0 0.65rem; line-height: 1.3; }
+    .title-slide .date-line { font-size: 0.65em; color: var(--text-muted); margin-top: 0.65rem; }
+
+    .title-slide ul { list-style: none; padding: 0; margin: 0.75rem 0 0; flex: 1; justify-content: center; }
+    .title-slide li { font-size: 0.88em; padding-left: 1.1em; position: relative; margin-bottom: 0.35em; line-height: 1.38; }
+    .title-slide li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* Section divider */
+    .section-slide {
+      display: flex !important;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center !important;
+      height: 100%;
+    }
+
+    .section-slide .section-num {
+      font-size: 4em;
+      font-weight: 800;
+      color: rgba(16, 185, 129, 0.15);
+      line-height: 1;
+    }
+
+    .section-slide h2 {
+      font-size: 2.25em;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    .section-slide p {
+      color: var(--text-muted);
+      font-size: 1em;
+      margin-top: 0.75rem;
+    }
+
+    /* Before/After mock */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      font-size: 0.75em;
+    }
+
+    /* Problem slide - bullets on top, before | after side by side */
+    .problem-slide .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 0.75rem;
+      font-size: 0.82em;
+    }
+
+    .problem-slide .before-after .ba-panel {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .ba-panel {
+      border: 1px solid #334155;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #1e293b;
+    }
+
+    .ba-panel header {
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ba-panel.before header { background: #334155; color: var(--text-muted); }
+    .ba-panel.after header { background: var(--accent-dark); color: #fff; }
+
+    .ba-body { padding: 0.75rem; }
+
+    .mock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0.6rem;
+      background: #0f172a;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      font-size: 0.8em;
+    }
+
+    .mock-scope {
+      background: var(--accent);
+      color: #04211a;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.85em;
+    }
+
+    .mock-table {
+      border: 1px solid #334155;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mock-table .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.75em;
+      border-bottom: 1px solid #334155;
+    }
+
+    .mock-table .row.head { background: #334155; font-weight: 600; }
+    .mock-table .row.blended { opacity: 0.6; }
+    .mock-table .row.scoped { background: rgba(16, 185, 129, 0.08); }
+
+    .mock-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .mock-kpi {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 0.4rem;
+      text-align: center;
+      font-size: 0.7em;
+    }
+
+    .mock-kpi .val { font-size: 1.3em; font-weight: 700; color: var(--accent); }
+
+    /* HTML flow diagrams - no scroll, presentation-native */
+    .flow-panel {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+      margin-top: 0.55rem;
+    }
+
+    .flow-lane + .flow-lane { margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed #334155; }
+
+    .flow-lane-label {
+      font-size: 0.62em;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0.15rem;
+    }
+
+    .flow-box {
+      flex: 1;
+      min-width: 0;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 0.3rem 0.35rem;
+      text-align: center;
+      font-size: 0.58em;
+      line-height: 1.25;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .flow-box.mine {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+      box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.15);
+    }
+
+    .flow-box strong {
+      display: block;
+      color: #fff;
+      font-size: 1.08em;
+      font-weight: 600;
+    }
+
+    .flow-box span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.88em;
+      margin-top: 0.12em;
+    }
+
+    .flow-arrow {
+      color: var(--accent);
+      font-size: 0.75em;
+      flex-shrink: 0;
+      align-self: center;
+      opacity: 0.85;
+      line-height: 1;
+    }
+
+    .flow-connector {
+      text-align: center;
+      font-size: 0.58em;
+      color: var(--accent);
+      padding: 0.2rem 0 0.05rem;
+      letter-spacing: 0.03em;
+    }
+
+    .arch-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      margin-top: 0.55rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 0.6rem 0.7rem;
+    }
+
+    .arch-row {
+      display: grid;
+      grid-template-columns: 4.8em 1fr;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .arch-label {
+      font-size: 0.58em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .arch-cells {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .arch-cell {
+      flex: 1;
+      min-width: 5em;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 0.35rem 0.45rem;
+      font-size: 0.58em;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .arch-cell.mine {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .arch-cell strong { display: block; color: #fff; font-weight: 600; }
+    .arch-cell span { color: var(--text-muted); font-size: 0.9em; }
+
+    .arch-chevron-row {
+      text-align: center;
+      color: var(--accent);
+      font-size: 0.55em;
+      line-height: 1;
+      opacity: 0.75;
+      padding: 0.05rem 0;
+    }
+
+    .seq-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.3rem;
+      margin-top: 0.55rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+    }
+
+    .seq-step {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 0.35rem 0.3rem;
+      font-size: 0.54em;
+      line-height: 1.25;
+      text-align: center;
+      position: relative;
+    }
+
+    .seq-step.mine { border-color: var(--accent); background: rgba(16, 185, 129, 0.08); }
+
+    .seq-step .seq-num {
+      display: block;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.1em;
+      margin-bottom: 0.15em;
+    }
+
+    .seq-step strong { display: block; color: #fff; font-size: 1.02em; }
+    .seq-step span { color: var(--text-muted); font-size: 0.88em; }
+
+    /* Cache / materialisation tier diagram */
+    .cache-tier {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+    }
+
+    .cache-path {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 0.45rem 0.5rem;
+    }
+
+    .cache-path.hot {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.12);
+    }
+
+    .cache-path-label {
+      font-size: 0.58em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .cache-path.hot .cache-path-label { color: var(--accent); }
+    .cache-path.cold .cache-path-label { color: var(--text-muted); }
+
+    .cache-mini-row {
+      display: flex;
+      align-items: center;
+      gap: 0.15rem;
+      flex-wrap: wrap;
+      font-size: 0.52em;
+      line-height: 1.2;
+    }
+
+    .cache-mini-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 0.2rem 0.3rem;
+      text-align: center;
+      flex: 1;
+      min-width: 2.8em;
+    }
+
+    .cache-path.hot .cache-mini-box.highlight {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .cache-mini-box strong { display: block; color: #fff; font-size: 1.02em; }
+    .cache-mini-box span { color: var(--text-muted); font-size: 0.85em; }
+
+    .cache-mini-arrow { color: var(--accent); font-size: 0.85em; flex-shrink: 0; }
+
+    .cache-path-note {
+      font-size: 0.5em;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      line-height: 1.35;
+      border-top: 1px solid #334155;
+      padding-top: 0.3rem;
+    }
+
+    .cache-path-note em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+    .cache-tier-footer {
+      grid-column: 1 / -1;
+      font-size: 0.52em;
+      color: var(--text-muted);
+      text-align: center;
+      padding-top: 0.35rem;
+      border-top: 1px dashed #334155;
+      line-height: 1.4;
+    }
+
+    .cache-tier-footer strong { color: #fff; }
+
+    .diagram-caption {
+      font-size: 0.68em;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      font-style: italic;
+    }
+
+    .tech-pics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 0.65rem;
+      margin-top: 0.5rem;
+      flex: 1 1 auto;
+      min-height: 22rem;
+      align-items: stretch;
+    }
+
+    .tech-pics img,
+    .tech-pics svg {
+      width: 100%;
+      height: 100%;
+      min-height: 8.5rem;
+      display: block;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      object-fit: contain;
+      background: #1e293b;
+    }
+
+    .tech-pics img.tech-pics-wide,
+    .tech-pics svg.tech-pics-wide {
+      grid-column: 1 / -1;
+      min-height: 11rem;
+    }
+
+    .reveal .slides > section.tech-slide {
+      padding-top: 0.2rem;
+    }
+
+    .reveal .slides > section.tech-slide h2 {
+      font-size: 1.45em;
+      margin-bottom: 0.25em;
+      flex-shrink: 0;
+    }
+
+    .reveal .slides > section.tech-slide .diagram-caption {
+      flex-shrink: 0;
+      margin-top: 0;
+      font-size: 0.65em;
+    }
+
+    .reveal .slides > section.tech-slide .tech-pics + .diagram-caption {
+      margin-top: 0.3rem;
+      font-size: 0.52em;
+      font-style: italic;
+    }
+
+    .reveal .compact-slide li { font-size: var(--slide-body-compact); margin-bottom: 0.35em; }
+
+    .reveal .slides > section.diagram-slide > ul {
+      flex: 0 0 auto;
+      justify-content: flex-start;
+    }
+
+    .reveal .slides > section.diagram-slide .flow-panel,
+    .reveal .slides > section.diagram-slide .arch-stack,
+    .reveal .slides > section.diagram-slide .cache-tier,
+    .reveal .slides > section.diagram-slide .tech-pics,
+    .reveal .slides > section.diagram-slide .before-after,
+    .reveal .slides > section.problem-slide .before-after {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .reveal .slides > section.problem-slide > ul {
+      flex: 0 0 auto;
+      justify-content: flex-start;
+    }
+
+    .reveal .slides > section.ai-slide h2 {
+      font-size: 1.55em;
+      margin-bottom: 0.45em;
+    }
+
+    .reveal .slides > section.ai-slide li {
+      font-size: var(--slide-body);
+      line-height: 1.4;
+      margin-bottom: 0.38em;
+    }
+
+    .reveal .slides > section.challenge-slide h2 {
+      font-size: 1.65em;
+      margin-bottom: 0.45em;
+    }
+
+    .reveal .slides > section.challenge-slide li {
+      font-size: calc(var(--slide-body) + 2px);
+      line-height: 1.4;
+      margin-bottom: 0.4em;
+    }
+    .reveal .diagram-slide h2 { font-size: 1.5em; margin-bottom: 0.4em; }
+
+    /* Progress bar accent */
+    .appendix-banner {
+      background: rgba(248, 113, 113, 0.15);
+      border: 1px solid #f87171;
+      color: #fca5a5;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.75em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .qa-details {
+      margin-bottom: 0.5rem;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #1e293b;
+    }
+
+    .qa-details summary {
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.72em;
+      color: var(--text);
+      list-style: none;
+    }
+
+    .qa-details summary::-webkit-details-marker { display: none; }
+
+    .qa-details summary::before {
+      content: "▸ ";
+      color: var(--accent);
+    }
+
+    .qa-details[open] summary::before { content: "▾ "; }
+
+    .qa-details .answer {
+      padding: 0 0.75rem 0.6rem;
+      font-size: 0.68em;
+      color: var(--text-muted);
+      font-style: italic;
+      border-top: 1px solid #334155;
+    }
+
+    .script-block {
+      font-size: 0.68em;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .script-block .time {
+      color: var(--accent);
+      font-family: "SF Mono", monospace;
+      font-weight: 600;
+    }
+
+    body.sidebar-hidden #slide-nav { display: none; }
+    body.sidebar-hidden .reveal { margin-left: 0; width: 100%; }
+
+    body.appendix-hidden .nav-appendix,
+    body.presentation-mode .nav-appendix { display: none; }
+
+    body.presentation-mode .reveal .progress,
+    body.presentation-mode .reveal .controls { opacity: 0; pointer-events: none; }
+
+    #mode-hud {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 200;
+      padding: 0.45rem 0.75rem;
+      background: rgba(10, 15, 30, 0.92);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    #mode-hud.visible { opacity: 1; }
+
+    #mode-hud kbd {
+      display: inline-block;
+      min-width: 1.1rem;
+      padding: 0.05rem 0.35rem;
+      margin: 0 0.1rem;
+      border: 1px solid #475569;
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 0.9em;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    /* Appendix */
+    .reveal .progress { background: #1e293b; height: 4px; }
+    .reveal .progress span { background: var(--accent); }
+
+    .reveal .controls { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      #slide-nav { display: none; }
+      .reveal { margin-left: 0; width: 100%; }
+    }
+
+    @media (max-height: 820px) {
+      .title-slide { padding: 0.5rem 1.25rem 0; }
+      .title-slide h1 { font-size: 1.25em; }
+      .title-slide li.title-headline { font-size: 0.9em; margin-bottom: 0.3em; }
+      .title-slide .subtitle { font-size: 0.75em; margin-bottom: 0.35rem; }
+      .title-slide ul { margin-top: 0.45rem; }
+      .title-slide li { font-size: 0.7em; margin-bottom: 0.2em; }
+      .title-slide .date-line { margin-top: 0.45rem; font-size: 0.6em; }
+      .title-slide .slide-footer { padding-top: 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="slide-nav" aria-label="Slide navigation">
+  <h2>Calculated Metrics</h2>
+  <a href="#" data-slide="0" class="active">Title</a>
+  <a href="#" data-slide="1" class="section-link">§ Context</a>
+  <a href="#" data-slide="2">Problem</a>
+  <a href="#" data-slide="3">PRD / SDD delivery</a>
+  <a href="#" data-slide="4" class="section-link">§ Approach</a>
+  <a href="#" data-slide="5">Architecture</a>
+  <a href="#" data-slide="6">Decisions</a>
+  <a href="#" data-slide="7">Technologies</a>
+  <a href="#" data-slide="8">AI-assisted</a>
+  <a href="#" data-slide="9" class="section-link">§ Challenges</a>
+  <a href="#" data-slide="10">Challenges</a>
+  <a href="#" data-slide="11" class="section-link">§ Impact</a>
+  <a href="#" data-slide="12">Business</a>
+  <a href="#" data-slide="13">Technical</a>
+  <a href="#" data-slide="14">Lessons</a>
+  <a href="#" data-slide="15">Key takeaways</a>
+  <a href="#" data-slide="16">Close</a>
+  <div class="nav-appendix">
+    <h2>Appendix (prep only)</h2>
+    <a href="#" data-slide="17" class="appendix">Deep-Dive Q&amp;A</a>
+    <a href="#" data-slide="18" class="appendix">Delivery Script</a>
+  </div>
+</nav>
+
+<div id="mode-hud" aria-live="polite"></div>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- SLIDE 0 - Title -->
+    <section data-section="Title" class="title-slide" data-nav-title="Title">
+      <div class="title-body">
+      <h1>Calculated Metrics Platform</h1>
+      <p class="subtitle">Product, Architecture &amp; Delivery Walkthrough</p>
+      <ul>
+        <li class="title-headline">Trusted configurable KPIs replacing manual reporting</li>
+        <li>Customers need <strong>trusted, configurable metrics</strong> from complex source data</li>
+        <li><strong>End-to-end delivery:</strong> definitions → rules engine → validation → API → export</li>
+        <li><strong>Tech Lead:</strong> specification-driven delivery from discovery to production</li>
+      </ul>
+      </div>
+      <div class="slide-footer"><span class="section-label">Title</span></div>
+      <aside class="notes">
+        I'm walking you through a product delivery, not a single UI tweak. The business problem was trust and speed: customers were rebuilding derived metrics outside the platform. I led end-to-end delivery - metric rules, validation, API, export. Frame everything as transform + trust, not finance domain. Stop me anywhere; happy to whiteboard the architecture without slides.
+      </aside>
+    </section>
+
+    <!-- SECTION 1 DIVIDER -->
+    <section data-section="Context" class="section-slide" data-nav-title="Context">
+      <div class="section-num">01</div>
+      <h2>Context</h2>
+      <p>The problem, the team, and my role</p>
+    </section>
+
+    <!-- SLIDE 2 - Problem -->
+    <section data-section="Context" class="problem-slide compact-slide" data-nav-title="Problem">
+      <h2>The business problem</h2>
+      <ul>
+        <li>Source data is rich but <strong>derived KPIs were inconsistent</strong> - different teams, different spreadsheets, different numbers in the same meeting</li>
+        <li>Workaround: <strong>manual Excel models</strong>, support-led exports, delayed <strong>business-critical customer reporting</strong></li>
+        <li>Cost: onboarding friction, <strong>eroded trust in headline numbers</strong>, professional-services load on customer success</li>
+        <li>Requirements: <strong>configurable definitions</strong>, server-side correctness, validation, visualisation, export - at scale</li>
+      </ul>
+      <div class="before-after">
+        <div class="ba-panel before">
+          <header>Before - spreadsheet chaos</header>
+          <div class="ba-body">
+            <div class="mock-header"><span>Finance model v3.xlsx</span><span style="color:#f87171;">⚠ 3 versions</span></div>
+            <div class="mock-table">
+              <div class="row head"><span>Source</span><span>KPI A</span><span>KPI B</span></div>
+              <div class="row blended"><span>Ops spreadsheet</span><span>14.2%</span><span>1.8×</span></div>
+              <div class="row blended"><span>Support export</span><span>13.1%</span><span>1.6×</span></div>
+              <div class="row blended"><span>External deck (manual)</span><span>15.0%</span><span>1.9×</span></div>
+            </div>
+            <div class="mock-kpis">
+              <div class="mock-kpi"><div class="val" style="color:#f87171;">?</div>Inconsistent</div>
+              <div class="mock-kpi"><div class="val">Days</div>Reconcile</div>
+              <div class="mock-kpi"><div class="val">Off-platform</div>Workflow</div>
+            </div>
+          </div>
+        </div>
+        <div class="ba-panel after">
+          <header>After - validated in-product</header>
+          <div class="ba-body">
+            <div class="mock-header"><span>Calculated Metrics</span><span class="mock-scope">✓ Validated</span></div>
+            <div class="mock-table">
+              <div class="row head"><span>Metric</span><span>Definition</span><span>Value</span></div>
+              <div class="row scoped"><span>Net return</span><span>Scope · Q4</span><span>14.2%</span></div>
+              <div class="row scoped"><span>Efficiency ratio</span><span>Scope · Q4</span><span>1.8×</span></div>
+            </div>
+            <div class="mock-kpis">
+              <div class="mock-kpi"><div class="val">1 source</div>Truth</div>
+              <div class="mock-kpi"><div class="val">✓</div>Validated</div>
+              <div class="mock-kpi"><div class="val">Export</div>Customer-ready</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="section-label">Context</span></div>
+      <aside class="notes">
+        Lantern customers were operations and business users who needed trusted numbers for external reporting - same shape as syndication: source in, rules applied, validated out. Do not lead with finance vocabulary unless they ask about the domain.
+      </aside>
+    </section>
+
+    <!-- SLIDE 3 - Team, timeline, delivery model -->
+    <section data-section="Context" class="compact-slide" data-nav-title="PRD / SDD delivery">
+      <h2>Team, timeline &amp; PRD/SDD delivery</h2>
+      <ul>
+        <li><strong>Team (6):</strong> 1 PM, 1 designer, 2 FE, 2 BE - <strong>I led delivery</strong>; squad executed FE/BE to the SDD I wrote · <strong>Timeline:</strong> 1 sprint discovery → production</li>
+        <li><strong>My role (Tech Lead):</strong> I <strong>authored PRD + SDD</strong>, drove contracts &amp; metric-definition model, <strong>orchestrated AI-assisted build</strong> - owned review and every merge</li>
+        <li><strong>Delivery model:</strong> spec-first engineering - problem &amp; acceptance criteria locked before code; AI accelerates implementation, <strong>never</strong> architecture or business rules</li>
+      </ul>
+      <div class="flow-panel">
+        <div class="flow-lane">
+          <div class="flow-lane-label">1 sprint · discovery → production</div>
+          <div class="flow-row">
+            <div class="flow-box mine"><strong>PRD</strong><span>problem · users · acceptance</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box mine"><strong>SDD</strong><span>architecture · contracts · tests</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box mine"><strong>AI build</strong><span>scaffold · mocks · routes</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box mine"><strong>Review</strong><span>rules · merge</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box"><strong>CI</strong><span>lint · types · tests</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box"><strong>Prod</strong><span>Built It, Own It</span></div>
+          </div>
+        </div>
+        <div class="flow-connector">↓ what shipped</div>
+        <div class="flow-lane">
+          <div class="flow-lane-label">Calculated Metrics · runtime</div>
+          <div class="flow-row">
+            <div class="flow-box mine"><strong>Definitions</strong><span>configurable rules</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box mine"><strong>Rules engine</strong><span>server-side derive</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box"><strong>Validate</strong><span>reconciliation</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box mine"><strong>BFF</strong><span>auth · shaping</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box mine"><strong>Export</strong><span>customer-ready output</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Top: how I delivered (PRD/SDD + AI under guardrails). Bottom: transform → validate → export at runtime.</p>
+      <div class="slide-footer"><span class="section-label">Context</span></div>
+      <aside class="notes">
+        This slide is the delivery story. In one sprint we went discovery to production by being ruthless about spec-first work. I wrote the PRD with PM - problem, users, acceptance criteria, success metrics - then the SDD: architecture, API contracts, validation rules, test plan. Only then did AI-assisted implementation kick in for scaffolding, mocks, BFF routes, and test parity. I reviewed every diff; metric definitions and calculation correctness never went through AI. CI was the gate; I owned merge and production. The bottom of the diagram is what shipped: definitions feed the rules engine, we validate before serve, BFF shapes the response, users get visualisation and export. Same pattern I'd use on Activation: spec the transform, validate the output, AI on the boring parts, engineer on the rules.
+      </aside>
+    </section>
+
+    <!-- SECTION 2 DIVIDER -->
+    <section data-section="Approach" class="section-slide" data-nav-title="Approach">
+      <div class="section-num">02</div>
+      <h2>Technical Approach</h2>
+      <p>Architecture, decisions, technologies, and AI-assisted delivery</p>
+    </section>
+
+    <!-- SLIDE 4 - System architecture -->
+    <section data-section="Approach" class="compact-slide diagram-slide" data-nav-title="Architecture">
+      <h2>System architecture</h2>
+      <ul>
+        <li>Source facts → <strong>definitions → rules engine → validation → API → BFF → export</strong> · <strong>Sentry + Grafana</strong> on calc path · UI consumes trusted output</li>
+      </ul>
+      <div class="arch-stack">
+        <div class="arch-row">
+          <div class="arch-label">Sources</div>
+          <div class="arch-cells">
+            <div class="arch-cell"><strong>Warehouse</strong><span>source facts</span></div>
+            <div class="arch-cell"><strong>Postgres</strong><span>config · definitions</span></div>
+          </div>
+        </div>
+        <div class="arch-chevron-row">↓</div>
+        <div class="arch-row">
+          <div class="arch-label">Transform</div>
+          <div class="arch-cells">
+            <div class="arch-cell mine"><strong>Definitions</strong><span>configurable rules</span></div>
+            <div class="arch-cell mine"><strong>Rules engine</strong><span>server-side derive</span></div>
+            <div class="arch-cell"><strong>Validate</strong><span>reconciliation</span></div>
+          </div>
+        </div>
+        <div class="arch-chevron-row">↓</div>
+        <div class="arch-row">
+          <div class="arch-label">Serve</div>
+          <div class="arch-cells">
+            <div class="arch-cell"><strong>API</strong><span>FastAPI · domain service</span></div>
+            <div class="arch-cell"><strong>BFF</strong><span>auth · shaping</span></div>
+            <div class="arch-cell mine"><strong>Export</strong><span>customer-ready output</span></div>
+          </div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-label">Ops</div>
+          <div class="arch-cells">
+            <div class="arch-cell"><strong>K8s</strong><span>I deployed · on-call</span></div>
+            <div class="arch-cell"><strong>Sentry</strong><span>errors</span></div>
+            <div class="arch-cell"><strong>Grafana</strong><span>dashboards</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="diagram-caption">Green = surfaces I worked across for this product.</p>
+      <div class="slide-footer"><span class="section-label">Approach</span></div>
+      <aside class="notes">
+        Walk transform first: source facts in, rules applied, validated out. If they stop the deck and ask you to redraw it - source facts → definitions → rules engine → validation → API → BFF → export; browser never hits the rules engine directly. Built It, Own It on deploy and on-call.
+      </aside>
+    </section>
+
+    <!-- SLIDE 5 - Key design decisions -->
+    <section data-section="Approach" class="compact-slide diagram-slide" data-nav-title="Decisions">
+      <h2>Key design decisions</h2>
+      <ul>
+        <li><strong>Server-side calculation</strong> - single source of truth; <strong>two-tier read model</strong> for latency (diagram below)</li>
+        <li><strong>Config-driven definitions</strong> - schema + review workflow · <strong>Validation before serve</strong> - fail visibly, not silently</li>
+        <li><strong>Contract-first OpenAPI</strong> - compile errors, not prod surprises</li>
+      </ul>
+      <div class="cache-tier">
+        <div class="cache-path hot">
+          <div class="cache-path-label">Hot path - pinned dashboard metrics</div>
+          <div class="cache-mini-row">
+            <div class="cache-mini-box highlight"><strong>Save</strong><span>definition</span></div>
+            <span class="cache-mini-arrow">→</span>
+            <div class="cache-mini-box highlight"><strong>Async</strong><span>materialise</span></div>
+            <span class="cache-mini-arrow">→</span>
+            <div class="cache-mini-box highlight"><strong>Snapshot</strong><span>Postgres</span></div>
+            <span class="cache-mini-arrow">→</span>
+            <div class="cache-mini-box highlight"><strong>UI</strong><span>instant read</span></div>
+          </div>
+          <div class="cache-path-note"><em>~120ms p95</em> dashboard load · <em>lastCalculatedAt</em> always visible</div>
+        </div>
+        <div class="cache-path cold">
+          <div class="cache-path-label">Cold path - ad-hoc / first view</div>
+          <div class="cache-mini-row">
+            <div class="cache-mini-box"><strong>Request</strong><span>new metric</span></div>
+            <span class="cache-mini-arrow">→</span>
+            <div class="cache-mini-box"><strong>Live</strong><span>warehouse calc</span></div>
+            <span class="cache-mini-arrow">→</span>
+            <div class="cache-mini-box"><strong>Validate</strong><span>boundary</span></div>
+            <span class="cache-mini-arrow">→</span>
+            <div class="cache-mini-box"><strong>React Query</strong><span>dedupe + cache</span></div>
+          </div>
+          <div class="cache-path-note"><em>keepPreviousData</em> during refresh · optional promote-to-snapshot if pinned</div>
+        </div>
+        <div class="cache-tier-footer">
+          <strong>Invalidation:</strong> definition change or source-data refresh → async re-materialise · trade-off: brief staleness on hot path vs sub-second UX
+        </div>
+      </div>
+      <p class="diagram-caption">I proposed this split - dashboards stay fast; exploration stays correct and uncached at the rules layer.</p>
+      <div class="slide-footer"><span class="section-label">Approach</span></div>
+      <aside class="notes">
+        The latency decision was a two-tier read model. Pinned dashboard metrics take the hot path: when a definition is saved we async materialise a validated snapshot to Postgres - dashboard reads are a simple lookup, about 120ms p95. We show lastCalculatedAt so users know the freshness contract. Ad-hoc or first-time views take the cold path: live warehouse calculation, validation at the boundary, React Query dedupes identical requests and keepPreviousData avoids blank flashes on refresh. If the user pins that metric, the next save promotes it to the hot path. Invalidation is explicit: definition change or upstream data refresh triggers re-materialisation - we accepted seconds of staleness on pinned metrics to buy sub-second dashboard UX. Same trade-off you'd see on syndication: pre-compute stable feeds, live path for exceptions.
+      </aside>
+    </section>
+
+    <!-- SLIDE 6 - Technologies -->
+    <section data-section="Approach" class="compact-slide diagram-slide tech-slide" data-nav-title="Technologies">
+      <h2>Technologies &amp; why</h2>
+      <p class="diagram-caption" style="margin-top:0;font-style:normal;">Patterns first · production stack · contract-first APIs · 4-layer test parity</p>
+      <div class="tech-pics">
+        <img class="tech-pics-wide" data-pic="tech-stack.svg" alt="Production stack: Postgres, warehouse mart, FastAPI, Next.js BFF, K8s, CI, Sentry and Grafana">
+        <img data-pic="contract-first.svg" alt="OpenAPI contract-first integration with generated clients and warehouse adapter">
+        <img data-pic="layered-testing.svg" alt="Four-layer test parity on every contract change">
+      </div>
+      <div class="slide-footer"><span class="section-label">Approach</span></div>
+      <aside class="notes">
+        Lead with patterns, not languages. Point at the production stack diagram: Postgres for definitions and snapshots, warehouse mart for source facts, FastAPI rules engine on K8s, Next.js BFF, GitHub Actions CI gate, Sentry and Grafana on the calc path. Contract-first: OpenAPI from the SDD, generated clients so BFF and FE get compile-time safety; domain core isolated from warehouse IO via hexagonal adapters. Testing: four layers in the same PR - definition schema, calc unit with golden fixtures, BFF contract forward, UI hooks - fifty-plus tests green throughout. Trust is won in the rules engine, not the UI framework.
+      </aside>
+    </section>
+
+    <!-- SLIDE 7 - AI-assisted engineering -->
+    <section data-section="Approach" class="ai-slide" data-nav-title="AI-assisted">
+      <h2>AI-assisted engineering</h2>
+      <ul>
+        <li><strong>PRD/SDD-first:</strong> PRD and SDD signed off before code - acceptance criteria, architecture, and contracts locked; <strong>AI build only after specs were agreed</strong></li>
+        <li><strong>AI as accelerator, not author:</strong> <strong>Cursor, Claude Code, and Codex</strong> plus <strong>managed coworkers</strong> for development in <strong>AI cloud</strong> - test scaffolding, mock handlers, boilerplate adapters, refactor exploration - <strong>I owned architecture, review, and every merge</strong></li>
+        <li><strong>Guardrails:</strong> full CI on every commit (lint, types, <strong>50+ tests</strong>); no unreviewed AI diffs; <strong>no customer or fund data in prompts</strong></li>
+        <li><strong>Human-led:</strong> metric definitions, validation rules, calculation correctness, security boundaries, cross-team contracts - <strong>never delegated</strong></li>
+        <li><strong>Outcome:</strong> every contract change shipped with <strong>4-layer test parity</strong> in the same PR - mock/fixture work ~50% faster; <strong>50+ tests green</strong> throughout</li>
+      </ul>
+      <div class="slide-footer"><span class="section-label">Approach</span></div>
+      <aside class="notes">
+        PRD/SDD-first was the gate: I wrote the PRD with PM and the SDD before any AI-assisted implementation - acceptance criteria, architecture, API contracts, and test plan locked first. Then Cursor, Claude Code, Codex, and managed coworkers in AI cloud handled repetitive implementation - test scaffolding, MSW handlers, BFF boilerplate from the SDD; I reviewed every line and owned every merge. Managed coworkers worked like parallel junior contributors in the cloud; I still treated output as draft until CI and my review passed. The measurable outcome: we didn't defer tests to a follow-up PR - each contract change landed with four-layer parity (calculation unit, BFF forward, hook, component) in the same merge, and the mock/fixture work was roughly half the time. Fifty-plus tests stayed green through the one-sprint push. Rules, validation logic, and architecture never went through AI.
+        MEMORISE - if asked "how much code was AI generated?": "AI accelerated repetitive work - scaffolding, mocks, and tests - but architecture, contracts, validation rules, and production decisions stayed engineer-owned." Do not say "50%" or "most of it" for code volume; the ~50% on the slide is mock/fixture time saved, not lines of code.
+      </aside>
+    </section>
+
+    <!-- SECTION 3 DIVIDER -->
+    <section data-section="Challenges" class="section-slide" data-nav-title="Challenges">
+      <div class="section-num">03</div>
+      <h2>Challenges</h2>
+      <p>Trust under load, and shipping with the team</p>
+    </section>
+
+    <!-- SLIDE - Challenges -->
+    <section data-section="Challenges" class="challenge-slide" data-nav-title="Challenges">
+      <h2>Challenges</h2>
+      <ul>
+        <li><strong>Correctness:</strong> aggregation rules drifted vs spreadsheets - <strong>golden fixtures</strong> + validation at the boundary</li>
+        <li><strong>Performance:</strong> live calc <strong>3–8s</strong> → two-tier model <strong>~120ms p95</strong>; visible failures over wrong numbers</li>
+        <li><strong>Scope &amp; cross-team:</strong> <strong>3 KPIs + export</strong> for the sprint; <strong>ADR</strong> on upstream valuation mart</li>
+        <li><strong>Ownership:</strong> on-call through launch; pre-GA <strong>FX hotfix</strong>; mentored <strong>4-layer tests</strong>; killed client-side calc</li>
+      </ul>
+      <div class="slide-footer"><span class="section-label">Challenges</span></div>
+      <aside class="notes">
+        Trust and delivery on one slide - go deep in discussion on whichever they pick. Correctness: QTD vs YTD, deal-to-fund roll-ups, golden fixtures from customer-success Excel models. Source data: ValidationError with field path, never approximate. Performance: hot/cold path on slide 5 if they probe. Scope: PM breadth vs finance auditability - MVP = 3 KPIs with golden fixtures as DoD. Cross-team ADR: read-only mart for MVP. Built It Own It: FX boundary alert in Sentry before sprint-end rollout. Mentoring: three sessions, MOIC template, checklist in PR template. Near-miss client-side calc in Q&A if asked.
+      </aside>
+    </section>
+
+    <!-- SECTION 4 DIVIDER -->
+    <section data-section="Impact" class="section-slide" data-nav-title="Impact">
+      <div class="section-num">04</div>
+      <h2>Impact</h2>
+      <p>Business outcomes, technical wins, lessons, and close</p>
+    </section>
+
+    <!-- SLIDE 12 - Business outcomes -->
+    <section data-section="Impact" data-nav-title="Business">
+      <h2>Business outcomes</h2>
+      <ul>
+        <li><strong>Trust:</strong> customers use derived KPIs <strong>in-product</strong> - spreadsheet reconciliation workaround materially reduced</li>
+        <li><strong>Adoption:</strong> around <strong>65%</strong> of operations accounts exported a calculated metric in the first five weeks after launch <em>· product analytics export events</em></li>
+        <li><strong>Time saved:</strong> business-critical reporting workflow from about <strong>4–6 hours to ~20 minutes</strong> <em>· customer-success time-study, 8 accounts</em></li>
+        <li><strong>Support load:</strong> manual-reporting tickets down about <strong>30%</strong> in the first month after launch <em>· customer-success ops ticket tags</em></li>
+      </ul>
+      <div class="slide-footer"><span class="section-label">Impact</span></div>
+      <aside class="notes">
+        Say "around" or "about" for each number - sounds honest, not rehearsed. Adoption = export events in product analytics, first 5 weeks post-launch. Time saved = CS timed 8 accounts doing quarterly packs. Tickets = CS ops tag comparison month-over-month. If a figure is directional, say so. Do not cite appendix question numbers.
+      </aside>
+    </section>
+
+    <!-- SLIDE 13 - Technical outcomes -->
+    <section data-section="Impact" data-nav-title="Technical">
+      <h2>Technical outcomes</h2>
+      <ul>
+        <li><strong>Reliability:</strong> calculation failures in <strong>Sentry + Grafana</strong> - <strong>zero critical production incidents at full launch</strong>; one pre-launch alert (foreign-exchange edge case) caught and fixed before sprint-end rollout</li>
+        <li><strong>Maintainability:</strong> new metric types follow <strong>definition + test template</strong> - not one-off code paths</li>
+        <li><strong>Performance:</strong> pinned dashboard <strong>p95 ~3s → ~120ms</strong> via materialised snapshots</li>
+        <li><strong>Patterns adopted:</strong> contract-first clients, layered tests, validation-at-boundary - reused on <strong>data export API + dashboard widgets</strong> by another squad</li>
+        <li><strong>Delivery efficiency:</strong> spec-first + CI guardrails; 4-layer tests per contract change; <strong>50+ tests green</strong> throughout</li>
+      </ul>
+      <div class="slide-footer"><span class="section-label">Impact</span></div>
+      <aside class="notes">
+        Technical impact supports the business story. Reliability: we watched Sentry and Grafana through the design-partner phase - zero P1 at full GA; one FX boundary alert during partner testing, fixed before all tenants. Performance is the two-tier model paying off. Patterns weren't one-off - the next squad features picked up generated clients, the four-layer test checklist, and validation-at-boundary without me re-selling it. Delivery: one sprint with AI on scaffolding only; every contract change kept full test parity and fifty-plus tests green. If probed on the pre-GA alert, it was exactly the kind of FX edge case from challenge one - caught by golden fixtures we added after.
+      </aside>
+    </section>
+
+    <!-- SLIDE 14 - Lessons -->
+    <section data-section="Impact" data-nav-title="Lessons">
+      <h2>Lessons learned</h2>
+      <ul>
+        <li><strong>Validate correctness before scale</strong> - golden fixtures from real customer models saved months of support debt</li>
+        <li><strong>Config flexibility needs governance</strong> - definition schema + review workflow as important as the engine</li>
+        <li><strong>Phased rollout de-risked trust</strong> - design partners surfaced edge cases before sprint-end full rollout to all customers</li>
+        <li><strong>What I'd do differently:</strong> instrument <strong>export and adoption funnel on day one</strong> (we backfilled after launch); run <strong>data-platform warehouse spike in discovery</strong> - not when build was already underway</li>
+      </ul>
+      <div class="slide-footer"><span class="section-label">Impact</span></div>
+      <aside class="notes">
+        MEMORISE - 60 seconds if asked "what would you do differently?": "Two things. First, instrument export and adoption in the product requirements document on day one - we backfilled after launch, so some impact figures relied on customer-success studies rather than product analytics. Second, run a half-day warehouse spike in discovery - the data-platform dependency surfaced mid-build; the hand-off worked, but earlier would have been calmer. Everything else I would repeat: spec-first, golden fixtures, design partners under a feature flag."
+      </aside>
+    </section>
+
+    <!-- Key takeaways -->
+    <section data-section="Close" class="compact-slide" data-nav-title="Key takeaways">
+      <h2>Key takeaways</h2>
+      <ul>
+        <li>Solved a <strong>high-impact business problem</strong> through product and engineering leadership</li>
+        <li>Designed a <strong>scalable architecture</strong> with clear ownership boundaries and validation controls</li>
+        <li>Delivered from <strong>concept to production</strong> in a fast-moving environment</li>
+        <li>Established <strong>patterns reused</strong> beyond the original project</li>
+        <li>Balanced <strong>speed, quality, and maintainability</strong> through specification-driven delivery</li>
+        <li>Measured success through <strong>customer adoption, operational improvements, and business outcomes</strong></li>
+      </ul>
+      <div class="slide-footer"><span class="section-label">Close</span></div>
+      <aside class="notes">
+        MEMORISE - 30 seconds if asked "why did you choose this project?": "I chose this because it wasn't just a UI feature or an API. It required understanding a business problem, defining rules, designing architecture, validating correctness, coordinating stakeholders, and owning delivery through production. It demonstrates the senior ownership I bring - product thinking, architecture, and delivery in one." Say naturally - not verbatim. One minute max on this slide, then close.
+      </aside>
+    </section>
+
+    <!-- Close -->
+    <section data-section="Close" class="title-slide" data-nav-title="Close">
+      <div class="title-body">
+        <h1>Thank you</h1>
+        <p class="subtitle">Happy to go deep on architecture, correctness, delivery, or mentoring.</p>
+        <p class="date-line">Questions?</p>
+      </div>
+      <div class="slide-footer"><span class="section-label">Close</span></div>
+      <aside class="notes">
+        Pause. Let them steer. Do not mention the appendix or question count. If silence: offer architecture whiteboard, two-tier model, or design-partner rollout.
+      </aside>
+    </section>
+
+    <!-- APPENDIX: Deep-Dive Q&A -->
+    <section data-section="Appendix" data-nav-title="Deep-Dive Q&amp;A">
+      <div class="appendix-banner">⚠ Prep only - practise privately; never reference this in the interview</div>
+      <h2>Hiring Manager Deep-Dive Q&amp;A</h2>
+      <p style="font-size:0.75em;color:var(--text-muted);">For rehearsal only. Answer conversationally - do not sound rehearsed.</p>
+      <div style="max-height:520px;overflow-y:auto;margin-top:0.5rem;">
+        <details class="qa-details"><summary><strong>1. Walk me through data flow from source facts to displayed metric.</strong></summary><div class="answer">Warehouse facts + definition config → calculation service applies rules → validation → BFF shapes → UI/export. Browser never hits calculation service directly.</div></details>
+        <details class="qa-details"><summary><strong>2. Why server-side calculation?</strong></summary><div class="answer">Single source of truth; client/export-then-calculate duplicates logic and drifts. Trust incident if two surfaces disagree.</div></details>
+        <details class="qa-details"><summary><strong>3. How did you model metric definitions?</strong></summary><div class="answer">Versioned JSON schema in Postgres: <strong>metricType</strong>, <strong>scope</strong> (fund / deal / portfolio), <strong>aggregation</strong>, <strong>filters</strong> (date window, currency), <strong>formula refs</strong>, <strong>validation rules</strong>. PM fills name + description; engineer reviews before production enable.</div></details>
+        <details class="qa-details"><summary><strong>4. How is the configuration driven for calculated metrics?</strong></summary><div class="answer">The metric definition is stored as configuration, not hard-coded per metric. A definition includes fields such as metric type, scope, filters, aggregation method, date window, currency handling, formula references, and validation rules. The calculation engine reads that definition and applies it server-side, so adding a new metric usually means adding or extending a definition and tests rather than creating a one-off implementation path.</div></details>
+        <details class="qa-details"><summary><strong>5. Who provides the calculations or formula, and how does that affect load?</strong></summary><div class="answer">The formula comes from the business or domain side, usually Product, Finance/Ops, Customer Success, or an existing customer model. My role was to turn that into an engineering-safe definition: validate assumptions, document edge cases, create golden fixtures from known examples, and make sure the output matched expected results before exposing it to users. From a load perspective, not every metric is calculated live every time. Frequently used or pinned metrics are materialised asynchronously and served from snapshots. Ad-hoc metrics are calculated on demand, validated, and deduped or cached at the request layer.</div></details>
+        <details class="qa-details"><summary><strong>6. How does this architecture scale as more metrics are added?</strong></summary><div class="answer">Scalability comes from separating metric definitions, calculation execution, validation, and serving. New metrics follow the same definition and test template rather than creating isolated code paths. High-usage metrics can be promoted to the materialised path, while exploratory metrics stay on the live calculation path. If volume grows further, the next step would be queue-backed recalculation, partitioned snapshots, and prioritised recompute jobs.</div></details>
+        <details class="qa-details"><summary><strong>7. How do you guarantee correctness when rules change?</strong></summary><div class="answer">Golden fixtures from known models; validation layer; CI on calculation paths; visible failure not silent wrong numbers.</div></details>
+        <details class="qa-details"><summary><strong>8. Wrong or incomplete source data?</strong></summary><div class="answer">Reject at calculation boundary: null valuation → <strong>ValidationError</strong> with field path; missing FX rate → block export, surface <em>"missing rate for {pair} on {date}"</em>; partial portfolio → exclude rows + audit log - never silent blend or approximate.</div></details>
+        <details class="qa-details"><summary><strong>9. Scale 10× portfolios / metrics?</strong></summary><div class="answer">Hot path scales with snapshot reads (O(1) lookup). Cold path needs warehouse indexing + async materialise for anything pinned. At 10× I'd add snapshot partitioning and queue-backed recompute - architecture already separates the two tiers.</div></details>
+        <details class="qa-details"><summary><strong>10. Idempotency / replay?</strong></summary><div class="answer">Materialisation jobs keyed by <strong>(tenantId, definitionId, scopeHash, sourceWatermark)</strong>. Upsert is idempotent; safe replay on same watermark; async worker with dedupe lock - re-run after definition change doesn't double-write snapshots.</div></details>
+        <details class="qa-details"><summary><strong>11. Map to our Node/GCP serverless stack?</strong></summary><div class="answer"><strong>Calc engine</strong> → Node Cloud Functions / Cloud Run (stateless workers). <strong>Definitions + snapshots</strong> → Postgres. <strong>Warehouse reads</strong> → BigQuery mart (read-only). <strong>BFF</strong> → Next.js Route Handlers. <strong>Invalidation</strong> → Pub/Sub on definition save / mart refresh. Same validation-at-boundary + Sentry/Grafana per feed - identical muscle to syndication transforms.</div></details>
+        <details class="qa-details"><summary><strong>12. Biggest architectural near-miss?</strong></summary><div class="answer">Nearly shipped <strong>client-side calculation</strong> for faster dashboards - killed after a 2-hour spike showed Excel-parity failure on an FX month-end edge case. Would have been a trust incident; reinforced server-side-only rule.</div></details>
+        <details class="qa-details"><summary><strong>13. Caching vs live calculation?</strong></summary><div class="answer">Not either/or - two tiers. Pinned dashboard metrics: async materialised snapshots (~120ms p95). Ad-hoc: live calc with React Query dedupe. Invalidation on definition or source refresh. lastCalculatedAt in UI makes staleness explicit - users trust the number because they see when it was computed.</div></details>
+        <details class="qa-details"><summary><strong>14. Testing rule combinations?</strong></summary><div class="answer">Golden fixtures from customer Excel models - one per edge case (null valuation, FX pair, window boundary, roll-up level). Property-style tests on definition combinations so a new metric type can't ship without covering the same four failure modes. Layered CI on every change.</div></details>
+        <details class="qa-details"><summary><strong>15. Observability in prod?</strong></summary><div class="answer">Sentry on calc failures and FE errors; Grafana dashboards on latency and error rates; funnel on metric usage.</div></details>
+        <details class="qa-details"><summary><strong>16. Rollback / feature flags?</strong></summary><div class="answer">Tenant-level flag <span class="mono">calculated-metrics</span> for GA; per-metric-type flags on backlog. Rollback = disable flag - UI falls back to legacy export path; snapshots retained for forensics. Design partners mid-sprint before all-tenant rollout at sprint end.</div></details>
+        <details class="qa-details"><summary><strong>17. Versioning for export consumers?</strong></summary><div class="answer">API versioning + export format stability; breaking changes behind new version.</div></details>
+        <details class="qa-details"><summary><strong>18. Tenancy / who sees which metrics?</strong></summary><div class="answer">Auth service + per-user visibility; BFF enforces scope.</div></details>
+        <details class="qa-details"><summary><strong>19. Prioritisation with PM when scope was huge?</strong></summary><div class="answer">Phased MVP - investor-ready subset first; explicit definition-of-done.</div></details>
+        <details class="qa-details"><summary><strong>20. Stakeholder disagreement?</strong></summary><div class="answer">PM wanted <strong>10 metric types</strong> in sprint one; finance needed every number traceable to a model. I facilitated and wrote the scope doc: MVP = <strong>3 KPIs</strong> (IRR, MOIC, net return) with golden fixtures + validation metadata as DoD; breadth + configurable defs to iteration 2. Finance signed off because "investor-ready" was testable, not subjective.</div></details>
+        <details class="qa-details"><summary><strong>21. How measured success?</strong></summary><div class="answer">Product analytics: export adoption (~65% fund-ops at 5 weeks). CS ops: manual-reporting tickets ~30% down month one. Time-study: quarterly pack 4–6h → ~20min. Qualitative: customers quoting in-product IRR in board materials.</div></details>
+        <details class="qa-details"><summary><strong>22. What would you do differently?</strong></summary><div class="answer">Two things: instrument export/adoption analytics in the PRD on day one - we backfilled post-GA and relied on CS for some impact numbers. And run a data-platform warehouse spike in discovery - the valuation mart dependency surfaced mid-build; the hand-off worked, but earlier would have been calmer.</div></details>
+        <details class="qa-details"><summary><strong>23. Why did you choose this project?</strong></summary><div class="answer">It wasn't a UI tweak or a single API - it required understanding a business problem, defining rules, designing architecture, validating correctness, coordinating stakeholders, and owning delivery through production. It demonstrates senior ownership: product thinking, architecture, and delivery in one.</div></details>
+        <details class="qa-details"><summary><strong>24. Built It, Own It example?</strong></summary><div class="answer">I merged, deployed to K8s, and was on-call through the design-partner phase. Pre-GA <strong>FX boundary alert</strong> in Sentry - I triaged (missing month-end rate), added golden fixture, hotfixed before sprint-end all-tenant rollout. Watched Grafana latency + error dashboards; <strong>zero P1 at GA</strong>.</div></details>
+        <details class="qa-details"><summary><strong>25. Mentoring example?</strong></summary><div class="answer">Three working sessions with junior FE on 4-layer test template: I wrote first <strong>MOIC calculation hook</strong> test; they shipped <strong>IRR + export component</strong> tests independently. Published metric-definition checklist (schema → fixtures → validation → export) in squad PR template - next metric type didn't need bespoke setup.</div></details>
+        <details class="qa-details"><summary><strong>26. Unblock another team?</strong></summary><div class="answer">Data platform squad owned valuation mart. I wrote 3-option ADR: (A) read mart read-only - <strong>recommended for MVP</strong>; (B) new materialised view - their backlog for scale; (C) duplicate facts in domain service - rejected (drift risk). One review meeting; neither team blocked.</div></details>
+        <details class="qa-details"><summary><strong>27. What did you deliberately not build?</strong></summary><div class="answer"><strong>Client-side calc</strong> (correctness - killed after spike). <strong>Generic chart builder</strong> (design-system viz sufficient). <strong>Self-serve metric authoring UI</strong> (explicitly iteration 2, not sprint-one scope creep).</div></details>
+        <details class="qa-details"><summary><strong>28. New marketplace syndication tomorrow - what transfers?</strong></summary><div class="answer">Validation at boundary, contract-first APIs, phased rollout, observability, optioned cross-team hand-offs.</div></details>
+        <details class="qa-details"><summary><strong>29. How do you use AI day-to-day?</strong></summary><div class="answer">Scaffolding, tests, mocks, exploration - not architecture or rules sign-off.</div></details>
+        <details class="qa-details"><summary><strong>30. Guardrails?</strong></summary><div class="answer">CI gate, no secrets in prompts, I own merge and prod behaviour.</div></details>
+        <details class="qa-details"><summary><strong>31. AI for syndication work?</strong></summary><div class="answer">Yes for fixtures and mapping boilerplate; no for compliance rules and prod config without review.</div></details>
+      </div>
+    </section>
+
+    <!-- APPENDIX: Delivery Script -->
+    <section data-section="Appendix" data-nav-title="Delivery Script">
+      <div class="appendix-banner">⚠ Prep only - do not present</div>
+      <h2>19-Minute Delivery Script</h2>
+      <p style="font-size:0.75em;color:var(--text-muted);">Akeneo asked for 15–20 min present. Stay under 19. Skip section dividers with Enter if running long.</p>
+      <div style="max-height:480px;overflow-y:auto;margin-top:0.75rem;">
+        <div class="script-block"><span class="time">Timing guide</span><br>Problem 2 · Team &amp; delivery 2 · Architecture 3 · Decisions 3 · Technologies 1 · AI 1 · Challenges 2 · Impact 3 · Lessons 1 · Key takeaways 1 · Close · Total ≈ 18 min</div>
+        <div class="script-block"><span class="time">[0:00–1:30] Hook</span><br>"Thanks. I'll walk through a product I led at Lantern - a calculated metrics platform. Customers were rebuilding derived KPIs in spreadsheets because they didn't trust in-product numbers. I owned delivery from metric definitions through calculation, API, and visualisation, using a specification-driven approach from discovery to production in one sprint. Stop me anywhere."</div>
+        <div class="script-block"><span class="time">[1:30–4:00] Problem &amp; delivery model</span><br>"Inconsistent derived metrics → Excel workaround → eroded trust. Team of six - 1 PM, 1 designer, 2 FE, 2 BE. As Tech Lead I ran a PRD/SDD-first delivery approach across one sprint: locked acceptance criteria, wrote the system design, then used AI-assisted implementation under my review." <em>(Slide 3 diagram.)</em></div>
+        <div class="script-block"><span class="time">[4:00–8:30] Architecture &amp; decisions</span><br>"Source facts → rules engine → validation → service → BFF → export. Key calls: server-side calculation, config-driven definitions, validation before serve, two-tier read model for latency." <em>(Diagrams.)</em></div>
+        <div class="script-block"><span class="time">[8:30–9:15] AI-assisted delivery (optional)</span><br>"PRD/SDD-first - specs locked before AI build. Used Cursor, Claude Code, Codex, and managed coworkers in AI cloud for test and mock velocity; rules, contracts, and merges stayed engineer-owned with full CI."</div>
+        <div class="script-block"><span class="time">[8:30–10:00] Challenges</span><br>"Hard parts: getting numbers right - golden fixtures, visible validation, two-tier performance; and shipping - scoped sprint, cross-team ADR, on-call through launch, mentoring on test patterns. Happy to go deep on either thread."</div>
+        <div class="script-block"><span class="time">[10:00–13:00] Impact</span><br>"Trust first. Around 65% adoption from product analytics over five weeks; about 30% ticket drop from CS tags; time-study showed 4–6 hours down to ~20 minutes on reporting workflows. Technical: zero critical incidents, patterns reused by squad."</div>
+        <div class="script-block"><span class="time">[14:00–15:00] Lessons</span><br>"Correctness before scale; governance on config; instrument analytics day one next time." <em>(60s 'do differently' answer in speaker notes.)</em></div>
+        <div class="script-block"><span class="time">[15:00–16:00] Key takeaways</span><br>"To close: high-impact problem, scalable architecture with validation controls, concept to production, patterns the squad reused, spec-driven delivery, and measurable adoption and ops outcomes. Happy to go deep on any of these."</div>
+        <div class="script-block"><span class="time">[16:00–17:00] Close</span><br>"Thank you - what would be most useful to explore? Happy to whiteboard the architecture."</div>
+        <div class="script-block"><span class="time">[19:00+] Q&amp;A</span><br>Hand to the deep-dive questions.</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  const LAST_MAIN_SLIDE = 16;
+
+  const uiState = {
+    presentation: false,
+    sidebar: true,
+    appendix: true
+  };
+
+  let hudTimer = null;
+
+  function canAccessAppendix() {
+    return uiState.appendix && !uiState.presentation;
+  }
+
+  function maxSlideIndex() {
+    return canAccessAppendix() ? 18 : LAST_MAIN_SLIDE;
+  }
+
+  function navigateSlideBy(delta) {
+    const { h, v } = Reveal.getIndices();
+    const target = h + delta;
+    if (target < 0 || target > maxSlideIndex()) return;
+    Reveal.slide(target, v, 0);
+  }
+
+  function navigateSlideFull(delta) {
+    navigateSlideBy(delta);
+  }
+
+  function isEnterSlideNav(e) {
+    return e.key === 'Enter' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
+  }
+
+  function isEnterBackSlideNav(e) {
+    return e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey;
+  }
+
+  function isTypingTarget(e) {
+    return !!e.target.closest('input, textarea, select, [contenteditable="true"], summary');
+  }
+
+  function isUiShortcut(e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return false;
+    const key = e.key.toLowerCase();
+    return key === 'p' || key === 'm' || key === 'h';
+  }
+
+  function isQuickSlideNav(e) {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey) return false;
+    return /^Arrow(Left|Right|Up|Down)$/.test(e.key);
+  }
+
+  window.addEventListener('keydown', e => {
+    if (isTypingTarget(e)) return;
+
+    if (isUiShortcut(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      const key = e.key.toLowerCase();
+      if (key === 'p') togglePresentation();
+      else if (key === 'm') toggleSidebar();
+      else if (key === 'h') toggleAppendix();
+      return;
+    }
+
+    if (isQuickSlideNav(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigateSlideBy(1);
+      else navigateSlideBy(-1);
+      return;
+    }
+
+    if (isEnterBackSlideNav(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      navigateSlideFull(-1);
+      return;
+    }
+
+    if (isEnterSlideNav(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      navigateSlideFull(1);
+    }
+  }, true);
+
+  function initTechPics() {
+    const picBase = new URL('pics/', window.location.href);
+    document.querySelectorAll('img[data-pic]').forEach(img => {
+      img.src = new URL(img.dataset.pic, picBase).href;
+    });
+  }
+
+  Reveal.initialize({
+    hash: true,
+    slideNumber: false,
+    progress: true,
+    controls: true,
+    center: false,
+    fragments: false,
+    width: 1100,
+    height: 700,
+    margin: 0.05,
+    transition: 'slide',
+    plugins: [RevealNotes]
+  }).then(() => {
+    initTechPics();
+    patchNavigation();
+    applyUI();
+    updateNav();
+    enforceSlideBounds();
+  });
+
+  function patchNavigation() {
+    ['navigateNext', 'navigateRight', 'navigateDown'].forEach(method => {
+      const original = Reveal[method].bind(Reveal);
+      Reveal[method] = () => {
+        if (!canAccessAppendix() && Reveal.getIndices().h >= LAST_MAIN_SLIDE) return;
+        original();
+      };
+    });
+  }
+
+  Reveal.on('slidechanged', () => {
+    updateNav();
+    enforceSlideBounds();
+  });
+
+  function applyUI() {
+    document.body.classList.toggle('sidebar-hidden', !uiState.sidebar);
+    document.body.classList.toggle('presentation-mode', uiState.presentation);
+    document.body.classList.toggle('appendix-hidden', !uiState.appendix);
+  }
+
+  function enforceSlideBounds() {
+    if (canAccessAppendix()) return;
+    const idx = Reveal.getIndices().h;
+    if (idx > LAST_MAIN_SLIDE) {
+      Reveal.slide(LAST_MAIN_SLIDE, 0, 0, -1);
+    }
+  }
+
+  function showHud(message) {
+    const hud = document.getElementById('mode-hud');
+    hud.textContent = message;
+    hud.classList.add('visible');
+    clearTimeout(hudTimer);
+    hudTimer = setTimeout(() => hud.classList.remove('visible'), 1800);
+  }
+
+  function togglePresentation() {
+    uiState.presentation = !uiState.presentation;
+    applyUI();
+    enforceSlideBounds();
+    showHud('Presentation mode: ' + (uiState.presentation ? 'ON' : 'OFF') + '  ·  P');
+  }
+
+  function toggleSidebar() {
+    uiState.sidebar = !uiState.sidebar;
+    applyUI();
+    showHud('Sidebar: ' + (uiState.sidebar ? 'ON' : 'OFF') + '  ·  M');
+  }
+
+  function toggleAppendix() {
+    uiState.appendix = !uiState.appendix;
+    applyUI();
+    enforceSlideBounds();
+    showHud('Appendix: ' + (uiState.appendix ? 'ON' : 'OFF') + '  ·  H');
+  }
+
+  function updateNav() {
+    const idx = Reveal.getIndices().h;
+    document.querySelectorAll('#slide-nav a[data-slide]').forEach(link => {
+      link.classList.toggle('active', parseInt(link.dataset.slide, 10) === idx);
+    });
+  }
+
+  document.querySelectorAll('#slide-nav a[data-slide]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const idx = parseInt(link.dataset.slide, 10);
+      if (idx > LAST_MAIN_SLIDE && !canAccessAppendix()) return;
+      Reveal.slide(idx);
+    });
+  });
+</script>
+</body>
+</html>

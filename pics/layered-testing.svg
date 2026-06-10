@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" role="img" aria-label="Four-layer testing parity">
+  <rect width="520" height="140" rx="8" fill="#1e293b"/>
+  <text x="16" y="22" fill="#94a3b8" font-size="11" font-weight="600" font-family="system-ui,sans-serif">4-LAYER TEST PARITY &#183; EVERY CONTRACT CHANGE</text>
+  <rect x="16" y="38" width="108" height="58" rx="6" fill="#0f172a" stroke="#334155"/>
+  <text x="24" y="58" fill="#ffffff" font-size="12" font-weight="700" font-family="system-ui,sans-serif">1 &#183; Definition</text>
+  <text x="24" y="74" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">schema &#183; fixtures</text>
+  <text x="128" y="70" fill="#10b981" font-size="14" font-weight="700" font-family="system-ui,sans-serif">&#8594;</text>
+  <rect x="142" y="38" width="108" height="58" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+  <text x="150" y="58" fill="#ffffff" font-size="12" font-weight="700" font-family="system-ui,sans-serif">2 &#183; Calc unit</text>
+  <text x="150" y="74" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">rules &#183; edge cases</text>
+  <text x="254" y="70" fill="#10b981" font-size="14" font-weight="700" font-family="system-ui,sans-serif">&#8594;</text>
+  <rect x="268" y="38" width="108" height="58" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+  <text x="276" y="58" fill="#ffffff" font-size="12" font-weight="700" font-family="system-ui,sans-serif">3 &#183; BFF</text>
+  <text x="276" y="74" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">contract &#183; MSW</text>
+  <text x="380" y="70" fill="#10b981" font-size="14" font-weight="700" font-family="system-ui,sans-serif">&#8594;</text>
+  <rect x="394" y="38" width="110" height="58" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+  <text x="402" y="58" fill="#ffffff" font-size="12" font-weight="700" font-family="system-ui,sans-serif">4 &#183; UI hooks</text>
+  <text x="402" y="74" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">export flows</text>
+  <text x="16" y="124" fill="#10b981" font-size="11" font-weight="600" font-family="system-ui,sans-serif">Same PR &#183; 50+ tests green</text>
+</svg>
