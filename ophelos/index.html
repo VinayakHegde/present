@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Case study and engineering trade-offs</title>
+  <style>
+    :root {
+      --canvas: #f6f7fb;
+      --surface: #ffffff;
+      --surface-muted: #f1f4fa;
+      --foreground: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --border-strong: #64748b;
+      --accent: #1f2a44;
+      --accent-foreground: #ffffff;
+      --focus-ring: #1f2a44;
+      --sidebar-width: 17.5rem;
+      --content-max: 44rem;
+      --radius: 1rem;
+      --radius-sm: 0.375rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 1.5rem;
+    }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--foreground);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 1rem;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .page {
+      max-width: calc(var(--content-max) + var(--sidebar-width) + 4rem);
+      margin: 0 auto;
+      padding: 1.5rem 1rem 4rem;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      .layout {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 2rem;
+      }
+    }
+
+    /* Sidebar */
+    .sidebar-wrap {
+      width: 100%;
+    }
+
+    @media (min-width: 1024px) {
+      .sidebar-wrap {
+        position: sticky;
+        top: 1.5rem;
+        width: var(--sidebar-width);
+        max-height: calc(100dvh - 3rem);
+        flex-shrink: 0;
+        align-self: flex-start;
+        overflow-y: auto;
+      }
+    }
+
+    nav.sidebar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    nav.sidebar .label {
+      margin: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    nav.sidebar ol {
+      list-style: none;
+      margin: 0.75rem 0 0;
+      padding: 0;
+    }
+
+    nav.sidebar li + li { margin-top: 0.125rem; }
+
+    nav.sidebar a {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav.sidebar a:hover {
+      background: var(--surface-muted);
+      color: var(--foreground);
+    }
+
+    nav.sidebar a:target,
+    nav.sidebar a[aria-current="page"] {
+      background: var(--surface-muted);
+      color: var(--foreground);
+      font-weight: 600;
+    }
+
+    nav.sidebar a:target .num,
+    nav.sidebar a[aria-current="page"] .num {
+      background: var(--accent);
+      border-color: var(--border-strong);
+      color: var(--accent-foreground);
+    }
+
+    nav.sidebar .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    /* Main content */
+    main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--foreground);
+    }
+
+    .intro {
+      margin: 0;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      font-size: 0.9375rem;
+    }
+
+    section.content-section {
+      scroll-margin-top: 1.5rem;
+      margin-bottom: 2.5rem;
+      padding: 1.5rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    @media (min-width: 640px) {
+      section.content-section { padding: 1.75rem 1.75rem; }
+    }
+
+    section.content-section:target {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 1px var(--border-strong);
+    }
+
+    section.content-section--highlight {
+      border-color: var(--border-strong);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--surface-muted) 100%);
+    }
+
+    .priority-p0 { font-weight: 600; }
+
+    section.content-section h2 {
+      margin: 0 0 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 1.375rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    section.content-section h2 .sec-num {
+      display: inline-block;
+      margin-right: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    h3 {
+      margin: 1.5rem 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    h3:first-of-type { margin-top: 0; }
+
+    p {
+      margin: 0 0 1rem;
+      color: var(--foreground);
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    ul {
+      margin: 0 0 1rem;
+      padding-left: 1.25rem;
+    }
+
+    ul:last-child { margin-bottom: 0; }
+
+    li {
+      margin-bottom: 0.375rem;
+    }
+
+    li:last-child { margin-bottom: 0; }
+
+    pre.diagram,
+    pre.code-block {
+      margin: 1rem 0;
+      padding: 1rem 1.125rem;
+      overflow-x: auto;
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: var(--foreground);
+      tab-size: 2;
+    }
+
+    table.routes {
+      width: 100%;
+      margin: 1rem 0;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    table.routes th,
+    table.routes td {
+      padding: 0.625rem 0.75rem;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    table.routes th {
+      background: var(--surface-muted);
+      font-weight: 600;
+    }
+
+    table.routes code {
+      font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      font-size: 0.8125rem;
+    }
+
+    code {
+      font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      font-size: 0.875em;
+      background: var(--surface-muted);
+      padding: 0.1em 0.35em;
+      border-radius: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="layout">
+      <div class="sidebar-wrap">
+        <nav class="sidebar" aria-label="Case study sections">
+          <p class="label">Sections</p>
+          <ol>
+            <li><a href="#interview-guide"><span class="num" aria-hidden="true">★</span><span>Interview guide</span></a></li>
+            <li><a href="#overview"><span class="num" aria-hidden="true">1</span><span>Overview</span></a></li>
+            <li><a href="#key-decisions"><span class="num" aria-hidden="true">2</span><span>Key decisions</span></a></li>
+            <li><a href="#app-architecture"><span class="num" aria-hidden="true">3</span><span>Architecture</span></a></li>
+            <li><a href="#production-roadmap"><span class="num" aria-hidden="true">4</span><span>Productionisation</span></a></li>
+            <li><a href="#interview-discussion"><span class="num" aria-hidden="true">5</span><span>Trade-offs &amp; gaps</span></a></li>
+            <li><a href="#ai-guardrails"><span class="num" aria-hidden="true">6</span><span>How I used AI</span></a></li>
+          </ol>
+        </nav>
+      </div>
+
+      <main>
+        <header class="page-header">
+          <h1>Case study and engineering trade-offs</h1>
+          <p class="intro">Internal reviewer notes for the Ophelos take-home. Use this page to lead an <strong>architecture</strong>, <strong>productionisation</strong>, and <strong>AI workflow</strong> discussion — not a product demo walkthrough.</p>
+        </header>
+
+        <!-- Interview guide -->
+        <section id="interview-guide" class="content-section content-section--highlight" aria-labelledby="interview-guide-heading">
+          <h2 id="interview-guide-heading"><span class="sec-num">★</span>How to use this in the interview</h2>
+
+          <p>This is not a product demo script. It is a short guide for discussing <strong>architecture</strong>, <strong>productionisation</strong>, <strong>trade-offs</strong>, and <strong>how AI was used</strong>.</p>
+
+          <h3>Suggested flow</h3>
+          <ol>
+            <li><strong>Frame the problem</strong> — affordability reflection for vulnerable customers; not arrangements or agent tooling.</li>
+            <li><strong>Architecture</strong> — layered design, route groups, what would change for production.</li>
+            <li><strong>Productionisation</strong> — auth, Postgres, observability, share-link hardening.</li>
+            <li><strong>Trade-offs</strong> — what I would defend vs change; biggest risks.</li>
+            <li><strong>AI workflow</strong> — structured phases, review, what I pushed back on.</li>
+          </ol>
+
+          <h3>Three sentences to anchor the discussion</h3>
+          <ul>
+            <li><strong>Architecture:</strong> “Pure domain logic, a single persistence boundary, thin server pages, sync UI components — explainable now, swappable later.”</li>
+            <li><strong>Production:</strong> “The take-home proves the journey; production adds real identity, durable storage, and controls we deliberately deferred.”</li>
+            <li><strong>AI:</strong> “AI sped up drafting; I still owned scope, ran review passes, and kept prompt history so you can see what I accepted vs rejected.”</li>
+          </ul>
+        </section>
+
+        <!-- Section 1: Overview -->
+        <section id="overview" class="content-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading"><span class="sec-num">1.</span>Overview</h2>
+
+          <p>Customer Financial Health is a customer-facing affordability reflection and tracking app. A customer sees their disposable income, an affordability band, plain-language explanation, change vs the last submission, and a support signpost. Each submission creates an immutable snapshot; history is browsable. Stretch goals shipped: currency/country, time-limited share links, and PDF export.</p>
+
+          <p>The brief asked for assessment plus tracking — not repayment-plan booking, collections workflow, or agent tooling. I dropped an early AI suggestion to build an arrangements flow and kept scope tight: one calculation model, append-only snapshots, and a simple persona selector for the demo.</p>
+        </section>
+
+        <!-- Section 2: Key decisions -->
+        <section id="key-decisions" class="content-section" aria-labelledby="key-decisions-heading">
+          <h2 id="key-decisions-heading"><span class="sec-num">2.</span>Key decisions</h2>
+
+          <h3>Product</h3>
+          <ul>
+            <li><strong>Reflection, not advice</strong> — customers see their own figures explained back; no plan booking or regulated-advice framing.</li>
+            <li><strong>Supportive vulnerable-customer posture</strong> — calm tone, visible support signpost, no automated vulnerability classification from numbers.</li>
+            <li><strong>Immutable history</strong> — corrections are new submissions; prior snapshots stay visible.</li>
+          </ul>
+
+          <h3>Technical</h3>
+          <ul>
+            <li><strong>Next.js App Router</strong> — server-rendered customer journey; route groups separate the main app from the share recipient view.</li>
+            <li><strong>SQLite for the demo</strong> — file-based, survives restarts; Postgres is the first production swap behind the same repository boundary.</li>
+            <li><strong>Server Actions for forms</strong> — persona pick, I&amp;E update, share-link mint; PDF is the only binary route handler.</li>
+            <li><strong>Layered code</strong> — pure affordability logic, one DB module, thin async pages, sync presentation components.</li>
+          </ul>
+        </section>
+
+        <!-- Section 3: Architecture -->
+        <section id="app-architecture" class="content-section" aria-labelledby="app-architecture-heading">
+          <h2 id="app-architecture-heading"><span class="sec-num">3.</span>Architecture</h2>
+
+          <p>The app is organised in four layers:</p>
+          <ul>
+            <li><strong>Domain</strong> — affordability calculation, validation, and customer-facing copy. No database or React dependencies.</li>
+            <li><strong>Persistence</strong> — SQLite via Drizzle; snapshots and share links. The only place that touches the database.</li>
+            <li><strong>Server I/O</strong> — pages read the persona cookie and repository; Server Actions handle mutations.</li>
+            <li><strong>UI</strong> — sync components render dashboard, history, forms, and shared statement views.</li>
+          </ul>
+
+          <p><strong>Route groups</strong> keep concerns separate: <code>(main)</code> is the customer journey with navigation; <code>(share)</code> is the recipient view with no persona chrome; <code>(case-study)</code> is this internal notes page.</p>
+
+          <p><strong>Production evolution</strong> is mostly boundary swaps: signed sessions instead of a demo persona cookie, Postgres instead of SQLite, edge hardening on share URLs — not a rewrite of the domain or page structure.</p>
+        </section>
+
+        <!-- Section 4: Productionisation -->
+        <section id="production-roadmap" class="content-section" aria-labelledby="production-roadmap-heading">
+          <h2 id="production-roadmap-heading"><span class="sec-num">4.</span>Productionisation</h2>
+
+          <p>What would need to ship before real customers:</p>
+          <ul>
+            <li><strong>Real authentication</strong> — replace the unsigned persona cookie; re-validate on every mutation.</li>
+            <li><strong>Postgres + backups</strong> — HA storage, connection pooling, point-in-time recovery.</li>
+            <li><strong>Retention and erasure</strong> — TTL on snapshots and share links; right-to-erasure workflow.</li>
+            <li><strong>Share-link hardening</strong> — single-use or revocation, rate limits, consent step before mint.</li>
+            <li><strong>Observability with redaction</strong> — metrics on usage patterns; never log income/expenditure values or bearer tokens.</li>
+            <li><strong>Access-log hygiene</strong> — strip or hash share and PDF URLs at the reverse proxy.</li>
+          </ul>
+
+          <p>What stays the same: pure calculation logic, append-only snapshots, reflection-not-advice framing, and the layered layout.</p>
+        </section>
+
+        <!-- Section 5: Trade-offs -->
+        <section id="interview-discussion" class="content-section" aria-labelledby="interview-discussion-heading">
+          <h2 id="interview-discussion-heading"><span class="sec-num">5.</span>Trade-offs and gaps</h2>
+
+          <h3>Happy to defend for a take-home</h3>
+          <ul>
+            <li>SQLite — zero ops for a reviewer, real migrations, data persists across restarts.</li>
+            <li>Persona cookie — exercises the journey without standing up an IdP.</li>
+            <li>Layered architecture — production changes are boundary swaps, not rewrites.</li>
+            <li>Structured AI workflow — caught scope creep and doc/code mismatches before they landed in code.</li>
+          </ul>
+
+          <h3>Would change first in production</h3>
+          <ul>
+            <li>Auth and Postgres before any new feature surface.</li>
+            <li>Share tokens out of URL paths where possible, to reduce access-log leakage.</li>
+            <li>Browser-level smoke tests for the full submit-and-redirect journey.</li>
+          </ul>
+
+          <h3>Biggest risks today</h3>
+          <ol>
+            <li>Bearer tokens and snapshot ids in reverse-proxy access logs.</li>
+            <li>Unsigned persona cookie — not a real threat model.</li>
+            <li>No retention job — storage limitation not operationalised.</li>
+          </ol>
+        </section>
+
+        <!-- Section 6: AI workflow -->
+        <section id="ai-guardrails" class="content-section content-section--highlight" aria-labelledby="ai-guardrails-heading">
+          <h2 id="ai-guardrails-heading"><span class="sec-num">6.</span>How I used AI</h2>
+
+          <h3>Approach</h3>
+          <p>I worked in phases — understand the problem, write requirements and design, then build in small vertical slices. Cursor with version-controlled rules, a read-only critic pass between phases, and full chat transcripts in the repo.</p>
+
+          <h3>What review caught</h3>
+          <ul>
+            <li>Dropping an arrangements workflow the brief did not ask for.</li>
+            <li>Adding an explicit “not financial advice” notice before it was buried in the UI.</li>
+            <li>Removing a free-text note field (PII risk).</li>
+            <li>Designing share-link security before implementation.</li>
+          </ul>
+
+          <h3>Where I pushed back on AI</h3>
+          <ul>
+            <li>Rejected agent tooling, real auth, and Playwright for the MVP time box.</li>
+            <li>Did not trust library marketing claims without checking (e.g. PDF renderer weight).</li>
+            <li>Did not invent regulatory citations — paraphrases are labelled unverified in discovery notes.</li>
+          </ul>
+
+          <h3>What I would tighten next time</h3>
+          <p>Automated checks that docs and code stay aligned; mandatory critic on design changes; copy linting so supportive tone does not drift. Full prompt history is in the repo if you want to audit decisions.</p>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
