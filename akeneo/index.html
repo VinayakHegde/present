@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Akeneo System Design Interview — two-tier read model diagram (prep only)
+  Serve: python3 -m http.server 8080 → http://localhost:8080/akeneo/
+  Print: Cmd/Ctrl+P — diagram is print-friendly
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculated Metrics · Two-Tier Read Model</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --border: #334155;
+      --accent: #10b981;
+      --data: #38bdf8;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --ok: #4ade80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(16,185,129,0.10), transparent 60%),
+        radial-gradient(1000px 500px at 0% 0%, rgba(56,189,248,0.08), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: none; margin: 0; padding: 1rem; }
+
+    .kicker {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--accent); margin: 0 0 0.5rem;
+    }
+    h1 {
+      margin: 0 0 0.5rem; font-size: 1.5rem; font-weight: 800; color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .sub { margin: 0; color: var(--muted); font-size: 0.92rem; max-width: 70rem; }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin: 1.1rem 0 0.6rem;
+    }
+    .legend span {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.72rem; font-weight: 600; color: var(--text);
+      padding: 0.3rem 0.7rem; border-radius: 999px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    }
+    .legend i { width: 0.7rem; height: 0.7rem; border-radius: 50%; display: inline-block; }
+    .legend .ext i { background: #64748b; box-shadow: 0 0 8px rgba(100,116,139,0.7); }
+    .legend .data i { background: var(--data); box-shadow: 0 0 8px rgba(56,189,248,0.8); }
+    .legend .own i { background: var(--accent); box-shadow: 0 0 8px rgba(16,185,129,0.8); }
+    .legend .hot i { width: 20px; height: 3px; border-radius: 2px; background: var(--accent); box-shadow: 0 0 8px rgba(16,185,129,0.8); }
+    .legend .cold i { width: 20px; height: 3px; border-radius: 2px; background: var(--data); box-shadow: 0 0 8px rgba(56,189,248,0.8); }
+    .legend .async i { width: 20px; height: 0; border-radius: 0; border-top: 2px dashed var(--muted); }
+
+    .diagram-wrap {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      overflow-x: auto;
+      box-shadow: none;
+    }
+    svg { width: 100%; height: auto; min-width: 1080px; display: block; }
+
+    .card { filter: url(#shadow); }
+    .cat-ext  { fill: url(#g-ext);  stroke: #6b7a90; stroke-width: 1.4; }
+    .cat-data { fill: url(#g-data); stroke: var(--data); stroke-width: 1.5; }
+    .cat-own  { fill: url(#g-own);  stroke: var(--accent); stroke-width: 1.5; }
+
+    .box-title { fill: #fff; font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; }
+    .box-sub { fill: var(--muted); font-size: 10px; }
+
+    .edge { stroke: #5b6b82; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .edge-own { stroke: var(--accent); }
+    .edge-data { stroke: var(--data); }
+    .edge-hot { stroke: var(--accent); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .edge-cold { stroke: var(--data); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .edge-dash { stroke-dasharray: 6 5; animation: march 0.9s linear infinite; }
+
+    @keyframes march { to { stroke-dashoffset: -22; } }
+    @media (prefers-reduced-motion: reduce) { .edge-dash { animation: none; } }
+
+    .edge-label {
+      fill: var(--text); font-size: 10.5px; font-weight: 600;
+      paint-order: stroke; stroke: #0a0f1e; stroke-width: 4.5px; stroke-linejoin: round;
+    }
+    .hot-label { fill: #6ee7b7; font-weight: 700; }
+    .cold-label { fill: #7dd3fc; font-weight: 700; }
+
+    .footnote {
+      margin-top: 1rem; font-size: 0.8rem; color: var(--muted);
+      border: 1px solid rgba(74,222,128,0.25);
+      border-left: 3px solid var(--ok);
+      background: linear-gradient(90deg, rgba(74,222,128,0.10), rgba(74,222,128,0.02));
+      border-radius: 10px; padding: 0.7rem 0.9rem;
+    }
+    .footnote strong { color: #fff; }
+    .footnote em { color: var(--ok); font-style: normal; font-weight: 600; }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .diagram-wrap { background: #fff; box-shadow: none; }
+      .box-title { fill: #111; } .box-sub { fill: #444; }
+      .edge-label { fill: #111; stroke: #fff; }
+      .hot-label { fill: #047857; } .cold-label { fill: #0369a1; }
+      .sub, .legend span { color: #444; }
+      .edge-dash { animation: none; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 1280 720" role="img" aria-label="Two-tier read model component diagram">
+      <defs>
+        <linearGradient id="g-ext" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a3650"/><stop offset="1" stop-color="#1a2335"/>
+        </linearGradient>
+        <linearGradient id="g-data" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#123450"/><stop offset="1" stop-color="#0c2032"/>
+        </linearGradient>
+        <linearGradient id="g-own" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#10402f"/><stop offset="1" stop-color="#0b2a20"/>
+        </linearGradient>
+
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1" fill="#16213a"/>
+        </pattern>
+
+        <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity="0.5"/>
+        </filter>
+
+        <marker id="ah" markerWidth="10" markerHeight="10" refX="7.5" refY="3.2" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,3.2 L0,6.4 Z" fill="#5b6b82"/>
+        </marker>
+        <marker id="ah-own" markerWidth="10" markerHeight="10" refX="7.5" refY="3.2" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,3.2 L0,6.4 Z" fill="#10b981"/>
+        </marker>
+        <marker id="ah-data" markerWidth="10" markerHeight="10" refX="7.5" refY="3.2" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L8,3.2 L0,6.4 Z" fill="#38bdf8"/>
+        </marker>
+      </defs>
+
+      <!-- backdrop dot grid -->
+      <rect x="0" y="0" width="1280" height="720" fill="url(#dots)"/>
+
+      <!-- ============ EDGES (under boxes) ============ -->
+
+      <!-- Ingestion (top row, L→R) -->
+      <line class="edge" x1="206" y1="112" x2="234" y2="112" marker-end="url(#ah)"/>
+      <text class="edge-label" x="220" y="62" text-anchor="middle">send docs</text>
+      <line class="edge" x1="412" y1="112" x2="440" y2="112" marker-end="url(#ah)"/>
+      <text class="edge-label" x="426" y="62" text-anchor="middle">write raw</text>
+      <line class="edge edge-data" x1="618" y1="112" x2="646" y2="112" marker-end="url(#ah-data)"/>
+      <text class="edge-label" x="632" y="62" text-anchor="middle">events + raw</text>
+      <line class="edge edge-own" x1="824" y1="112" x2="852" y2="112" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="838" y="62" text-anchor="middle">normalise</text>
+
+      <!-- Materialisation (mid row, L→R) -->
+      <line class="edge edge-own" x1="206" y1="340" x2="234" y2="340" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="220" y="292" text-anchor="middle">on change</text>
+      <line class="edge edge-own edge-dash" x1="412" y1="340" x2="440" y2="340" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="426" y="292" text-anchor="middle">queue</text>
+      <line class="edge edge-own" x1="618" y1="340" x2="646" y2="340" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="632" y="292" text-anchor="middle">write snapshot</text>
+
+      <!-- Async materialisation: Facts Store -> Snapshot Worker (parallel to cold read, no overlap) -->
+      <polyline class="edge edge-data edge-dash" points="900,152 900,236 530,236 530,300" marker-end="url(#ah-data)"/>
+      <text class="edge-label" x="700" y="230" text-anchor="middle">source refresh → recompute</text>
+
+      <!-- Snapshot-ready notification: Materialised Store -> Notification (crosses cold read once, perpendicular) -->
+      <polyline class="edge edge-own edge-dash" points="824,340 1058,340" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="958" y="292" text-anchor="middle">snapshot-ready event</text>
+      <!-- Notification -> Tenant Users (outer track, around validation) -->
+      <polyline class="edge edge-dash" points="1236,340 1252,340 1252,664 324,664 324,600" marker-end="url(#ah)"/>
+      <text class="edge-label" x="690" y="658" text-anchor="middle">notify tenants · email / in-app</text>
+
+      <!-- Read entry (shared) -->
+      <line class="edge" x1="412" y1="560" x2="440" y2="560" marker-end="url(#ah)"/>
+      <text class="edge-label" x="426" y="512" text-anchor="middle">request</text>
+      <line class="edge edge-own" x1="618" y1="560" x2="646" y2="560" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="632" y="512" text-anchor="middle">metric API</text>
+
+      <!-- HOT path: Backend -> Materialised Store (short vertical, no crossings) -->
+      <line class="edge-hot" x1="736" y1="520" x2="736" y2="382" marker-end="url(#ah-own)"/>
+      <text class="edge-label hot-label" x="746" y="455" text-anchor="start">HOT · snapshot read · ~120ms p95</text>
+
+      <!-- COLD path -->
+      <!-- Backend -> Calc Engine -->
+      <line class="edge-cold" x1="824" y1="560" x2="852" y2="560" marker-end="url(#ah-data)"/>
+      <text class="edge-label cold-label" x="838" y="512" text-anchor="middle">COLD · calc</text>
+      <!-- Calc Engine -> Facts Store (clean vertical through empty cell) -->
+      <line class="edge-cold" x1="942" y1="520" x2="942" y2="154" marker-end="url(#ah-data)"/>
+      <text class="edge-label cold-label" x="952" y="445" text-anchor="start">read source facts</text>
+      <!-- Calc Engine -> Validation -->
+      <line class="edge-cold" x1="1030" y1="560" x2="1058" y2="560" marker-end="url(#ah-data)"/>
+      <text class="edge-label cold-label" x="1044" y="512" text-anchor="middle">validate</text>
+      <!-- Validation -> Backend (validated result returns, lower track) -->
+      <polyline class="edge-cold" points="1148,600 1148,632 736,632 736,600" marker-end="url(#ah-data)"/>
+      <text class="edge-label cold-label" x="940" y="626" text-anchor="middle">validated result → backend → BFF</text>
+
+      <!-- Optional promotion: Calc Engine -> Materialisation Queue (crosses hot once, perpendicular) -->
+      <polyline class="edge edge-own edge-dash" points="890,520 890,486 324,486 324,382" marker-end="url(#ah-own)"/>
+      <text class="edge-label" x="540" y="480" text-anchor="middle">promote if pinned</text>
+
+      <!-- ============ BOXES ============ -->
+
+      <!-- TOP ROW: ingestion -->
+      <g>
+        <rect class="card cat-ext" x="30" y="72" width="176" height="80" rx="13"/>
+        <text class="box-title" x="118" y="102" text-anchor="middle">Source origins</text>
+        <text class="box-sub" x="118" y="120" text-anchor="middle">suppliers · partners</text>
+        <text class="box-sub" x="118" y="134" text-anchor="middle">internal teams</text>
+      </g>
+      <g>
+        <rect class="card cat-ext" x="236" y="72" width="176" height="80" rx="13"/>
+        <text class="box-title" x="324" y="102" text-anchor="middle">Extractors</text>
+        <text class="box-sub" x="324" y="120" text-anchor="middle">PDF · Excel</text>
+        <text class="box-sub" x="324" y="134" text-anchor="middle">Email · Slack scan</text>
+      </g>
+      <g>
+        <rect class="card cat-data" x="442" y="72" width="176" height="80" rx="13"/>
+        <text class="box-title" x="530" y="100" text-anchor="middle">Data Lake /</text>
+        <text class="box-title" x="530" y="116" text-anchor="middle">Warehouse</text>
+        <text class="box-sub" x="530" y="134" text-anchor="middle">raw + source facts</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="648" y="72" width="176" height="80" rx="13"/>
+        <text class="box-title" x="736" y="102" text-anchor="middle">Ingestion Worker</text>
+        <text class="box-sub" x="736" y="120" text-anchor="middle">subscribe · dedupe</text>
+        <text class="box-sub" x="736" y="134" text-anchor="middle">normalise</text>
+      </g>
+      <g>
+        <rect class="card cat-data" x="854" y="72" width="176" height="80" rx="13"/>
+        <text class="box-title" x="942" y="100" text-anchor="middle">Normalised</text>
+        <text class="box-title" x="942" y="116" text-anchor="middle">Facts Store</text>
+        <text class="box-sub" x="942" y="134" text-anchor="middle">canonical source facts</text>
+      </g>
+
+      <!-- MIDDLE ROW: configuration + materialisation -->
+      <g>
+        <rect class="card cat-own" x="30" y="300" width="176" height="80" rx="13"/>
+        <text class="box-title" x="118" y="330" text-anchor="middle">Metric Definitions</text>
+        <text class="box-sub" x="118" y="348" text-anchor="middle">scope · filters · agg</text>
+        <text class="box-sub" x="118" y="362" text-anchor="middle">+ validation rules</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="236" y="300" width="176" height="80" rx="13"/>
+        <text class="box-title" x="324" y="328" text-anchor="middle">Materialisation</text>
+        <text class="box-title" x="324" y="344" text-anchor="middle">Queue</text>
+        <text class="box-sub" x="324" y="362" text-anchor="middle">def change · src refresh</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="442" y="300" width="176" height="80" rx="13"/>
+        <text class="box-title" x="530" y="330" text-anchor="middle">Snapshot Worker</text>
+        <text class="box-sub" x="530" y="348" text-anchor="middle">async recompute</text>
+        <text class="box-sub" x="530" y="362" text-anchor="middle">idempotent</text>
+      </g>
+      <g>
+        <rect class="card cat-data" x="648" y="300" width="176" height="80" rx="13"/>
+        <text class="box-title" x="736" y="328" text-anchor="middle">Materialised</text>
+        <text class="box-title" x="736" y="344" text-anchor="middle">Metrics Store</text>
+        <text class="box-sub" x="736" y="362" text-anchor="middle">validated · lastCalcAt</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="1060" y="300" width="176" height="80" rx="13"/>
+        <text class="box-title" x="1148" y="328" text-anchor="middle">Snapshot-Ready</text>
+        <text class="box-title" x="1148" y="344" text-anchor="middle">Notification Svc</text>
+        <text class="box-sub" x="1148" y="362" text-anchor="middle">notify tenants · email</text>
+      </g>
+
+      <!-- BOTTOM ROW: read paths -->
+      <g>
+        <rect class="card cat-ext" x="236" y="520" width="176" height="80" rx="13"/>
+        <text class="box-title" x="324" y="550" text-anchor="middle">Tenant Users</text>
+        <text class="box-sub" x="324" y="568" text-anchor="middle">dashboard · explore</text>
+        <text class="box-sub" x="324" y="582" text-anchor="middle">export</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="442" y="520" width="176" height="80" rx="13"/>
+        <text class="box-title" x="530" y="550" text-anchor="middle">BFF</text>
+        <text class="box-sub" x="530" y="568" text-anchor="middle">auth · request shaping</text>
+        <text class="box-sub" x="530" y="582" text-anchor="middle">Next.js</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="648" y="520" width="176" height="80" rx="13"/>
+        <text class="box-title" x="736" y="550" text-anchor="middle">FastAPI Backend</text>
+        <text class="box-sub" x="736" y="568" text-anchor="middle">metric API · rules</text>
+        <text class="box-sub" x="736" y="582" text-anchor="middle">+ validation</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="854" y="520" width="176" height="80" rx="13"/>
+        <text class="box-title" x="942" y="548" text-anchor="middle">Calculation</text>
+        <text class="box-title" x="942" y="564" text-anchor="middle">Engine</text>
+        <text class="box-sub" x="942" y="582" text-anchor="middle">server-side live calc</text>
+      </g>
+      <g>
+        <rect class="card cat-own" x="1060" y="520" width="176" height="80" rx="13"/>
+        <text class="box-title" x="1148" y="550" text-anchor="middle">Validation Layer</text>
+        <text class="box-sub" x="1148" y="568" text-anchor="middle">golden fixtures</text>
+        <text class="box-sub" x="1148" y="582" text-anchor="middle">fail visibly</text>
+      </g>
+    </svg>
+  </div>
+</main>
+</body>
+</html>
