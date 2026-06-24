@@ -858,6 +858,7 @@
     <h2>Appendix (prep only)</h2>
     <a href="#" data-slide="17" class="appendix">Deep-Dive Q&amp;A</a>
     <a href="#" data-slide="18" class="appendix">Delivery Script</a>
+    <a href="#" data-slide="19" class="appendix">Focus Themes</a>
   </div>
 </nav>
 
@@ -1287,6 +1288,42 @@
       </div>
     </section>
 
+    <!-- APPENDIX: Interview Focus Themes -->
+    <section data-section="Appendix" data-nav-title="Focus Themes">
+      <div class="appendix-banner">⚠ Prep only - rehearse the 'why' behind each decision; weave naturally into answers</div>
+      <h2>Focus Themes - Demonstrating Depth + Product Mindset</h2>
+      <p style="font-size:0.72em;color:var(--text-muted);">Six lenses the panel scores on. Every technical choice should trace back to <strong>customer trust / correctness</strong> - that is the product currency here.</p>
+      <div style="max-height:520px;overflow-y:auto;margin-top:0.4rem;">
+
+        <h3 style="color:var(--accent);font-size:0.82em;margin:0.6rem 0 0.3rem;">1 · Requirement clarification</h3>
+        <details class="qa-details"><summary><strong>What I clarified before writing code</strong></summary><div class="answer">Which KPIs count as <strong>"investor-ready"</strong>? What is the <strong>source of truth</strong> for each formula, and what does "correct" mean (parity with which model)? Who consumes the output - dashboard, export, or board pack - and what's the <strong>freshness</strong> expectation? Turned a vague "add calculated metrics" ask into a versioned <strong>definition spec + acceptance criteria</strong>, and surfaced the hidden valuation-mart dependency early through discovery questions.</div></details>
+        <details class="qa-details"><summary><strong>How I made requirements testable</strong></summary><div class="answer">DoD wasn't "looks right" - it was <strong>3 KPIs (IRR, MOIC, net return) with golden fixtures + validation metadata</strong>. "Investor-ready" became objective, so finance could sign off and engineers knew exactly when they were done.</div></details>
+
+        <h3 style="color:var(--accent);font-size:0.82em;margin:0.9rem 0 0.3rem;">2 · Technical trade-offs</h3>
+        <details class="qa-details"><summary><strong>Server-side vs client-side calculation</strong></summary><div class="answer">Chose server-side for a <strong>single source of truth</strong> over the faster client-side dashboard. Client calc duplicates logic and drifts → two surfaces disagree → trust incident. Validated by a spike that found an FX month-end parity bug.</div></details>
+        <details class="qa-details"><summary><strong>Two-tier read model (hot vs cold)</strong></summary><div class="answer">A <strong>freshness / cost / latency</strong> trade-off, not a tech flex. Pinned metrics = materialised snapshots (~120ms p95); ad-hoc = live calc. <span class="mono">lastCalculatedAt</span> makes staleness explicit so users trust the number.</div></details>
+        <details class="qa-details"><summary><strong>Read-only mart vs duplicating facts; boring stack vs Kafka/Spark</strong></summary><div class="answer">Read the valuation mart read-only to avoid <strong>data drift</strong>, accepting some coupling. Picked Postgres + managed queue + workers over Kafka/Spark - <strong>operability now</strong>, with clear seams (queue-backed recompute, snapshot partitioning) to split when a real bottleneck appears.</div></details>
+
+        <h3 style="color:var(--accent);font-size:0.82em;margin:0.9rem 0 0.3rem;">3 · Security</h3>
+        <details class="qa-details"><summary><strong>Multi-tenant isolation</strong></summary><div class="answer">Every query scoped by <strong>tenantId</strong> with row-level security; BFF enforces per-user visibility; the calculation service is never exposed to the browser. Shared DB with RLS to start, isolate noisy tenants only when needed.</div></details>
+        <details class="qa-details"><summary><strong>Untrusted ingestion (PDF / Excel / mailbox / Slack)</strong></summary><div class="answer">External documents are <strong>untrusted input</strong>: sandboxed extraction, file type/size limits, malware scan, sanitise before parse, never execute. Bad/partial data is rejected at the calculation boundary with a field-level <strong>ValidationError</strong> - never a silent blend.</div></details>
+        <details class="qa-details"><summary><strong>Data protection, secrets, auditability</strong></summary><div class="answer">Financial/PII data → <strong>encrypted at rest</strong> (object store + DB), TLS in transit, least-privilege service accounts. Exports via <strong>signed URLs with expiry</strong>. No secrets in code or AI prompts - secret manager only. <strong>Audit log</strong> on metric reads/exports; the trust boundary means a human verifies before a metric is treated as trusted.</div></details>
+
+        <h3 style="color:var(--accent);font-size:0.82em;margin:0.9rem 0 0.3rem;">4 · Testing</h3>
+        <details class="qa-details"><summary><strong>Golden fixtures + 4-layer template</strong></summary><div class="answer">Golden fixtures from real customer Excel models - one per edge case (null valuation, FX pair, window boundary, roll-up level). A <strong>4-layer template</strong> (calc hook → validation → API contract → export) means a new metric type <strong>can't ship</strong> without covering the same four failure modes.</div></details>
+        <details class="qa-details"><summary><strong>Combinations, idempotency, fail-visibly</strong></summary><div class="answer">Property-style tests across definition combinations; replay/idempotency tests on materialisation jobs keyed by <span class="mono">(tenantId, definitionId, scopeHash, watermark)</span>. CI gates the calc paths; validation <strong>fails visibly</strong> rather than serving a silently-wrong number.</div></details>
+
+        <h3 style="color:var(--accent);font-size:0.82em;margin:0.9rem 0 0.3rem;">5 · AI usage</h3>
+        <details class="qa-details"><summary><strong>Where AI helped - and where it didn't</strong></summary><div class="answer"><strong>Used:</strong> scaffolding, test + fixture generation, mocks, exploration - PRD/SDD locked <em>first</em>. <strong>Not used for sign-off:</strong> calculation rules, security boundaries, data-model and contract decisions. AI accelerated the work; I owned the judgement.</div></details>
+        <details class="qa-details"><summary><strong>Guardrails &amp; traceability</strong></summary><div class="answer">No secrets in prompts; full <strong>CI gate</strong> on AI-assisted code; engineer owns merge and production behaviour. Kept prompt history / session snapshots so AI usage is auditable, not a black box.</div></details>
+
+        <h3 style="color:var(--accent);font-size:0.82em;margin:0.9rem 0 0.3rem;">6 · Product / customer impact</h3>
+        <details class="qa-details"><summary><strong>The problem in customer terms</strong></summary><div class="answer">Customers didn't trust in-product numbers, so they rebuilt derived KPIs in spreadsheets - slow, error-prone, and eroding confidence in the platform. Trust, not features, was the real gap.</div></details>
+        <details class="qa-details"><summary><strong>Measured outcomes</strong></summary><div class="answer">~<strong>65% adoption</strong> in 5 weeks; ~<strong>30% fewer</strong> manual-reporting tickets; quarterly pack <strong>4–6h → ~20min</strong>; customers quoting in-product IRR in board materials. Every architectural decision (server-side, validation, two-tier, trust boundary) traces back to protecting the customer from acting on a wrong number.</div></details>
+
+      </div>
+    </section>
+
   </div>
 </div>
 
@@ -1308,7 +1345,7 @@
   }
 
   function maxSlideIndex() {
-    return canAccessAppendix() ? 18 : LAST_MAIN_SLIDE;
+    return canAccessAppendix() ? 19 : LAST_MAIN_SLIDE;
   }
 
   function navigateSlideBy(delta) {
