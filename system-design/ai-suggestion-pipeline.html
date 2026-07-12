@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human-in-the-Loop AI Suggestion Pipeline · System Design</title>
+  <style>
+    :root{
+      color-scheme: light;
+      --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+      --text:#1b2430; --muted:#5b6878;
+      --accent:#2563eb; --accent-2:#7c3aed;
+      --border:#dfe4ec; --code-bg:#eef1f5;
+      --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+    }
+    :root[data-theme="dark"]{
+      color-scheme: dark;
+      --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+      --text:#e6eaf0; --muted:#9aa7b8;
+      --accent:#5b9dff; --accent-2:#a78bfa;
+      --border:#2a3342; --code-bg:#10151d;
+      --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+    }
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]){
+        color-scheme: dark;
+        --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+        --text:#e6eaf0; --muted:#9aa7b8;
+        --accent:#5b9dff; --accent-2:#a78bfa;
+        --border:#2a3342; --code-bg:#10151d;
+        --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+      }
+    }
+    body{background:var(--bg);color:var(--text);}
+    :root{ --cat: var(--accent); } /* System Design → blue */
+
+    /* Derived shades — all from palette variables */
+    :root{
+      --accent-dim: color-mix(in srgb, var(--accent), transparent 90%);
+      --accent-soft: color-mix(in srgb, var(--accent), transparent 75%);
+      --good-dim: color-mix(in srgb, var(--good), transparent 92%);
+      --good-soft: color-mix(in srgb, var(--good), transparent 70%);
+      --warn-dim: color-mix(in srgb, var(--warn), transparent 90%);
+      --bad-dim: color-mix(in srgb, var(--bad), transparent 90%);
+      --accent2-dim: color-mix(in srgb, var(--accent-2), transparent 90%);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 1.25rem; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--cat) 9%, transparent), transparent 60%),
+        radial-gradient(1000px 500px at -5% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+        var(--bg);
+      background-attachment: fixed;
+      color:var(--text);
+      font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 1rem 1.5rem 4rem; }
+
+    .page-head{max-width:1100px;margin:0 auto;padding:2.4rem 1.5rem .4rem;}
+    .page-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+      text-transform:uppercase;color:var(--cat);
+      background:color-mix(in srgb, var(--cat) 10%, transparent);
+      border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+      border-radius:999px;padding:3px 11px;margin-bottom:.9rem;}
+    .page-head h1{margin:0 0 .4rem;font-size:1.9rem;line-height:1.15;letter-spacing:-.02em;}
+    .page-sub{margin:0;color:var(--muted);font-size:1rem;max-width:72ch;}
+
+    .toc {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 2.25rem; font-size: 0.9rem;
+    }
+    .toc-title {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); font-weight: 700; margin: 0 0 0.5rem;
+    }
+    .toc ol {
+      margin: 0; padding-left: 1.25rem;
+      columns: 2; column-gap: 2rem;
+    }
+    @media (max-width: 640px) { .toc ol { columns: 1; } }
+    .toc li { margin-bottom: 0.25rem; break-inside: avoid; }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    section { margin-bottom: 2.5rem; scroll-margin-top: 1.25rem; }
+    h2 {
+      font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--accent); margin: 0 0 0.85rem; font-weight: 700;
+      padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.55rem;
+    }
+    h2::before { content: ''; width: 9px; height: 9px; border-radius: 3px; background: var(--cat); flex: none; }
+    h3 { font-size: 1rem; color: var(--text); margin: 1.25rem 0 0.5rem; font-weight: 600; }
+    h4 {
+      margin: 1rem 0 0.5rem; font-size: 0.85rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--accent); font-weight: 700;
+    }
+    p { margin: 0.55rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.3rem; }
+    li { margin-bottom: 0.4rem; }
+    li::marker { color: var(--accent); }
+    strong { color: var(--text); }
+    .lede { color: var(--muted); font-size: 0.92rem; margin-top: 0; }
+
+    /* Shared card chrome */
+    .toc, .card, .mini-card, .mvp-tool-card, .journey-card, .arch-wrap, .review-diagram {
+      border-radius: 14px;
+      box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+                  0 10px 28px -16px color-mix(in srgb, var(--text) 18%, transparent);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .card:hover, .mini-card:hover, .mvp-tool-card:hover, .journey-card:hover {
+      border-color: color-mix(in srgb, var(--cat) 45%, var(--border));
+    }
+    .card.col-mvp:hover { border-top-color: var(--accent); }
+    .card.col-not:hover { border-top-color: var(--muted); }
+    .mvp-tool-card:hover { border-top-color: var(--warn); }
+
+    /* Cards */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; margin-bottom: 0.6rem; overflow: hidden;
+    }
+    .card > summary, .card .card-head {
+      padding: 0.8rem 1rem; font-weight: 600; font-size: 0.95rem;
+      list-style: none; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .card > summary { cursor: pointer; }
+    .card > summary::-webkit-details-marker { display: none; }
+    .card > summary::before { content: "▸ "; color: var(--accent); flex-shrink: 0; }
+    .card[open] > summary::before { content: "▾ "; }
+    .card > summary:hover { background: var(--surface-2); }
+    .card .body { padding: 0.2rem 1rem 1rem; border-top: 1px solid var(--border); font-size: 0.93rem; }
+    .card.open .card-head { border-bottom: 1px solid var(--border); }
+    .card.open .body { border-top: none; }
+    .card .body .note {
+      margin-top: 0.65rem; padding: 0.6rem 0.85rem; background: var(--accent-dim);
+      border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; font-size: 0.88rem;
+    }
+    .card .body h4:first-child { margin-top: 0.5rem; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.6rem; margin: 0.75rem 0; }
+    .mini-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 0.9rem;
+    }
+    .mini-card h4 { margin: 0 0 0.4rem; font-size: 0.92rem; color: var(--accent); text-transform: none; letter-spacing: normal; }
+    .mini-card p, .mini-card ul { font-size: 0.88rem; margin: 0.3rem 0; }
+
+    /* Badges */
+    .badge {
+      display: inline-block; padding: 0.12rem 0.5rem; border-radius: 4px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; vertical-align: middle;
+    }
+    .badge-mvp { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-soft); }
+    .badge-trust { background: var(--good-dim); color: var(--good); border: 1px solid var(--good-soft); }
+    .badge-ai { background: var(--accent2-dim); color: var(--accent-2); border: 1px solid color-mix(in srgb, var(--accent-2), transparent 65%); }
+    .badge-decision { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-dim);
+      padding: 0.8rem 1rem; margin: 0.75rem 0; border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+    }
+    .callout-warn { border-left-color: var(--warn); background: var(--warn-dim); }
+    .callout-trust {
+      border-left-color: var(--good); background: var(--good-dim);
+      border: 1px solid var(--good-soft); border-left-width: 4px;
+    }
+    .callout-highlight { font-weight: 600; font-size: 1rem; }
+    .quote {
+      font-size: 1.05rem; font-weight: 600; color: var(--text);
+      padding: 0.75rem 0; border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border); margin: 0.75rem 0;
+    }
+
+    /* Horizontal flow diagrams */
+    .flow-h { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.35rem; margin: 0.75rem 0; }
+    .flow-h .step {
+      flex: 1 1 100px; min-width: 90px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.6rem 0.7rem; text-align: center; font-size: 0.82rem; font-weight: 600;
+    }
+    .flow-h .arrow { display: flex; align-items: center; color: var(--accent); font-size: 1.1rem; flex-shrink: 0; }
+
+    /* User journey */
+    .journey-scroll { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+    .journey-card {
+      flex: 1 1 200px; min-width: 180px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.85rem;
+    }
+    .journey-card .step-title { font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .journey-card dl { margin: 0; }
+    .journey-card dt { font-size: 0.7rem; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
+    .journey-card dd { margin: 0.15rem 0 0; font-size: 0.82rem; }
+
+    /* Architecture layers */
+    .arch-wrap {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1rem; margin: 0.75rem 0; overflow-x: auto;
+    }
+    .arch-layer {
+      margin-bottom: 0.85rem; padding: 0.9rem 1rem; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+    .arch-layer:last-child { margin-bottom: 0; }
+    .arch-layer-heading {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      margin-bottom: 0.75rem; padding-bottom: 0.55rem; border-bottom: 1px solid var(--border);
+    }
+    .arch-layer-num {
+      flex-shrink: 0; width: 1.65rem; height: 1.65rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800;
+    }
+    .arch-layer-title {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text); line-height: 1.3;
+    }
+    .arch-layer-desc { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.4; }
+    .arch-layer-external { border-left: 4px solid var(--muted); }
+    .arch-layer-external .arch-layer-num { background: var(--muted); color: var(--bg); }
+    .arch-layer-owned {
+      border: 2px solid var(--accent-soft); border-left-width: 4px;
+      background: linear-gradient(180deg, var(--accent-dim) 0%, var(--surface) 22%);
+    }
+    .arch-layer-owned .arch-layer-num { background: var(--accent); color: var(--bg); }
+    .arch-layer-trust { border: 2px dashed var(--good); background: var(--good-dim); padding: 1rem 1.15rem; }
+    .arch-layer-trust .arch-layer-num { background: var(--good); color: var(--bg); }
+    .arch-layer-trust .arch-layer-heading { border-bottom-color: var(--good-soft); }
+
+    .arch-external-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.55rem; }
+    @media (min-width: 700px) { .arch-external-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .arch-node {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.6rem 0.65rem; min-width: 0; width: 100%;
+    }
+    .arch-node.external { border-color: color-mix(in srgb, var(--muted), transparent 55%); }
+    .arch-node.owned { border-color: var(--accent-soft); }
+    .arch-node.highlight { border-color: var(--accent); background: var(--accent-dim); }
+    .arch-node.trust-node { border-color: var(--good-soft); }
+    .arch-node-title { font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.25; }
+    .arch-node-sub { font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.35; }
+
+    .arch-owned-flow-wrap { overflow-x: auto; padding-bottom: 0.25rem; }
+    .arch-owned-phases { display: grid; grid-template-columns: 1fr; gap: 0.65rem; }
+    .arch-owned-phase {
+      display: flex; flex-direction: column; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
+    .arch-owned-phase-label {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--accent); text-align: center; padding: 0.45rem 0.4rem;
+      background: var(--accent-dim); border-bottom: 1px solid var(--accent-soft);
+    }
+    .arch-owned-phase-body { padding: 0.55rem; display: flex; flex-direction: column; flex: 1; }
+    .arch-owned-phase-body .arch-node { padding: 0.65rem 0.6rem; }
+    .arch-workflow-arrow-v {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 1.25rem; font-weight: 700; padding: 0.3rem 0; flex-shrink: 0;
+    }
+    .arch-workflow-col-connector {
+      display: none; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 1.5rem; font-weight: 700; padding: 0 0.25rem; align-self: center;
+    }
+    @media (min-width: 900px) {
+      .arch-owned-phases {
+        grid-template-columns: 0.75fr auto 1.1fr auto 1.1fr auto 0.85fr auto 1fr;
+        gap: 0; align-items: stretch; min-width: 860px;
+      }
+      .arch-owned-phase { min-height: 300px; border-radius: 0; border-right: none; }
+      .arch-owned-phases > .arch-owned-phase:first-child { border-radius: 10px 0 0 10px; }
+      .arch-owned-phases > .arch-owned-phase:last-child { border-radius: 0 10px 10px 0; border-right: 1px solid var(--border); }
+      .arch-workflow-col-connector { display: flex; margin-top: 1.75rem; }
+      .arch-owned-flow-wrap { min-width: 860px; }
+    }
+
+    .trust-boundary-layer-flow {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 0.5rem 0.65rem; padding: 0.5rem 0;
+    }
+    .trust-boundary-layer-step {
+      background: var(--surface); border: 1px solid var(--good-soft); border-radius: 8px;
+      padding: 0.55rem 0.85rem; font-weight: 600; font-size: 0.85rem; text-align: center;
+    }
+    .trust-boundary-layer-arrow { color: var(--good); font-size: 1.2rem; font-weight: 700; }
+
+    /* Layer workflow diagrams */
+    .review-diagram {
+      margin: 1rem 0 1.25rem; padding: 1rem; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 10px;
+    }
+    .review-diagram-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.55rem;
+    }
+    .review-diagram-label-center { text-align: center; margin: 0.35rem 0 0.55rem; }
+    .review-diagram-screen {
+      padding: 0.75rem; border: 1px solid var(--accent-soft); border-radius: 8px;
+      background: var(--accent-dim);
+    }
+    .review-diagram-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.45rem; }
+    .review-diagram-row:last-child { margin-bottom: 0; }
+    .review-diagram-row-3 > * { flex: 1 1 140px; }
+    .review-diagram-row-2 > * { flex: 1 1 180px; }
+    .review-diagram-row-spaced { margin-top: 0.45rem; }
+    .review-diagram-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.55rem 0.65rem; font-size: 0.82rem; font-weight: 600;
+      text-align: center; line-height: 1.35;
+    }
+    .review-diagram-box-accent { border-color: var(--accent); background: var(--accent-dim); }
+    .review-diagram-box-spaced { margin-bottom: 0.55rem; }
+    .review-diagram-chip {
+      flex: 1 1 120px; font-size: 0.74rem; color: var(--muted); background: var(--surface);
+      border: 1px dashed var(--border); border-radius: 999px; padding: 0.3rem 0.55rem; text-align: center;
+    }
+    .review-diagram-connector { text-align: center; color: var(--accent); font-size: 1.1rem; line-height: 1; margin: 0.5rem 0; }
+    .review-diagram-outcome {
+      display: flex; flex-direction: column; gap: 0.25rem; padding: 0.65rem 0.75rem;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--surface);
+      font-size: 0.82rem; text-align: center;
+    }
+    .review-diagram-outcome strong { font-size: 0.88rem; color: var(--text); }
+    .review-diagram-outcome span { font-size: 0.76rem; color: var(--muted); line-height: 1.35; }
+    .review-diagram-outcome-accept { border-color: var(--good-soft); }
+    .review-diagram-outcome-accept strong { color: var(--good); }
+    .review-diagram-outcome-edit { border-color: var(--accent-soft); }
+    .review-diagram-outcome-edit strong { color: var(--accent); }
+    .review-diagram-outcome-reject { border-color: color-mix(in srgb, var(--bad), transparent 65%); }
+    .review-diagram-outcome-reject strong { color: var(--bad); }
+    .review-diagram-gate { padding: 0.75rem; border: 2px dashed var(--good); border-radius: 8px; background: var(--good-dim); }
+    .review-diagram-gate-title { font-size: 0.78rem; font-weight: 700; color: var(--good); text-align: center; margin-bottom: 0.55rem; }
+    .review-diagram-gate-branch {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
+      margin-top: 0.55rem; font-size: 0.78rem;
+    }
+    .review-diagram-yes {
+      padding: 0.35rem 0.65rem; border-radius: 999px; background: var(--good-dim);
+      border: 1px solid var(--good-soft); color: var(--good);
+    }
+    .review-diagram-no {
+      padding: 0.35rem 0.65rem; border-radius: 999px; background: var(--bad-dim);
+      border: 1px solid color-mix(in srgb, var(--bad), transparent 70%); color: var(--bad);
+    }
+    .review-diagram-muted {
+      padding: 0.65rem 0.75rem; border-radius: 8px; border: 1px dashed var(--border);
+      background: var(--surface); font-size: 0.78rem; color: var(--muted);
+      text-align: center; line-height: 1.4;
+    }
+    .review-diagram .flow-h { margin: 0.35rem 0 0.55rem; }
+    .review-diagram .flow-h .step { font-size: 0.78rem; padding: 0.5rem 0.55rem; min-width: 72px; }
+
+    /* Tool cards */
+    .mvp-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem; margin-top: 0.65rem; }
+    .mvp-tool-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-top: 3px solid var(--warn); border-radius: 8px; padding: 0.75rem 0.85rem;
+    }
+    .mvp-tool-card h4 { margin: 0 0 0.45rem; font-size: 0.88rem; color: var(--warn); text-transform: none; letter-spacing: normal; }
+    .mvp-tool-card ul { margin: 0; padding-left: 1.15rem; font-size: 0.84rem; }
+    .mvp-tool-card li { margin-bottom: 0.3rem; }
+
+    /* Build sequence */
+    .seq-list { list-style: none; padding: 0; margin: 0.65rem 0; counter-reset: mvpseq; }
+    .seq-list li {
+      counter-increment: mvpseq; position: relative;
+      padding: 0.55rem 0.65rem 0.55rem 2.5rem; margin-bottom: 0.4rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem;
+    }
+    .seq-list li::before {
+      content: counter(mvpseq); position: absolute; left: 0.65rem; top: 50%;
+      transform: translateY(-50%); width: 1.35rem; height: 1.35rem;
+      background: var(--accent-dim); border: 1px solid var(--accent); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: var(--accent); line-height: 1.35rem; text-align: center;
+    }
+
+    /* Columns / tables */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 0.75rem 0; }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+    .col-mvp { border-top: 3px solid var(--accent); }
+    .col-not { border-top: 3px solid var(--muted); }
+
+    .table-wrap { overflow-x: auto; margin: 0.5rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 400px; }
+    th, td { text-align: left; padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--surface-2); }
+    .resp-table th:first-child { width: 42%; }
+
+    /* Code */
+    pre {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 1rem; overflow-x: auto; font-size: 0.82rem; line-height: 1.5; margin: 0.65rem 0;
+    }
+    code, pre, kbd { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--accent); }
+    pre code { color: var(--text); }
+
+    /* Trust grid */
+    .trust-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.5rem; }
+    .trust-item {
+      background: var(--good-dim); border: 1px solid var(--good-soft);
+      border-radius: 6px; padding: 0.55rem 0.7rem; font-size: 0.88rem;
+    }
+
+    /* Phases */
+    .phase { margin-bottom: 0.65rem; }
+    .phase-head { font-weight: 700; color: var(--accent); font-size: 0.92rem; margin-bottom: 0.25rem; }
+
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { padding-left: 1.5rem; position: relative; }
+    .checklist li::before { content: "☐"; position: absolute; left: 0; color: var(--accent); }
+
+    .final-message {
+      background: var(--accent-dim); border: 2px solid var(--accent); border-radius: 12px;
+      padding: 1.25rem 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 700;
+      color: var(--text); margin-top: 1rem;
+    }
+
+    /* Motion — staggered rise, capped for this long page */
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .page-head, main > * { animation: rise .5s ease both; }
+    main > *:nth-child(1){animation-delay:.05s}
+    main > *:nth-child(2){animation-delay:.1s}
+    main > *:nth-child(3){animation-delay:.15s}
+    main > *:nth-child(4){animation-delay:.2s}
+    main > *:nth-child(5){animation-delay:.25s}
+    main > *:nth-child(6){animation-delay:.3s}
+    main > *:nth-child(7){animation-delay:.35s}
+    main > *:nth-child(n+8){animation-delay:.4s}
+    @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+    @media print {
+      * { animation: none !important; }
+      main { max-width: none; padding: 0; }
+      .card, .mini-card, pre { break-inside: avoid; }
+      section { page-break-inside: avoid; margin-bottom: 1.5rem; }
+      details.card { border: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="page-head">
+  <span class="page-badge">System Design</span>
+  <h1>Human-in-the-Loop AI Suggestion Pipeline</h1>
+  <p class="page-sub">Ingest &rarr; impact &rarr; suggest &rarr; review &rarr; learn — an AI pipeline where every generated change passes a validation gate and human review before it lands. Worked example: keeping developer documentation in sync with code for a design-system documentation product.</p>
+</header>
+
+<main>
+
+  <nav class="toc" aria-label="Contents">
+    <p class="toc-title">Contents</p>
+    <ol>
+      <li><a href="#problem">Problem statement</a></li>
+      <li><a href="#framing">Product framing</a></li>
+      <li><a href="#scoping">Scoping questions</a></li>
+      <li><a href="#mvp-scope">MVP scope</a></li>
+      <li><a href="#user-journey">User journey</a></li>
+      <li><a href="#architecture">Architecture overview</a></li>
+      <li><a href="#layer-ingest">Ingestion layer</a></li>
+      <li><a href="#layer-impact">Impact analysis layer</a></li>
+      <li><a href="#layer-suggest">Suggestion engine</a></li>
+      <li><a href="#layer-review">Review layer</a></li>
+      <li><a href="#layer-learn">Learning &amp; evaluation layer</a></li>
+      <li><a href="#components">Component reference</a></li>
+      <li><a href="#tools">Building the MVP with online tools</a></li>
+      <li><a href="#responsibilities">External vs product-owned</a></li>
+      <li><a href="#build-sequence">Build sequence</a></li>
+      <li><a href="#data-model">Data model</a></li>
+      <li><a href="#trust-model">Trust model</a></li>
+      <li><a href="#ai-approach">AI / agentic approach</a></li>
+      <li><a href="#failure-modes">Failure modes</a></li>
+      <li><a href="#scaling">Scaling &amp; evolution</a></li>
+      <li><a href="#metrics">Product metrics</a></li>
+      <li><a href="#trade-offs">Trade-offs</a></li>
+      <li><a href="#security">Security &amp; permissions</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 · PROBLEM -->
+  <section id="problem">
+    <h2>1 · Problem statement</h2>
+    <h4>Summary</h4>
+    <ul>
+      <li>Code changes often make documentation stale.</li>
+      <li>Developer docs live in a third-party headless CMS with a public API.</li>
+      <li>A PR merge can be the trigger event.</li>
+      <li>The system should identify relevant docs and suggest updates.</li>
+      <li>Humans should review before publishing.</li>
+      <li>Feedback should improve future suggestions over time.</li>
+    </ul>
+    <h4>Problem flow</h4>
+    <div class="flow-h" aria-label="Problem flow">
+      <div class="step">Code change</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Documentation drift risk</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Suggested update</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Human review</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Feedback loop</div>
+    </div>
+    <div class="callout">Frame this as a documentation drift problem — code moves faster than docs, and stale docs erode trust.</div>
+  </section>
+
+  <!-- 2 · FRAMING -->
+  <section id="framing">
+    <h2>2 · Product framing</h2>
+    <p>This is a <strong>human-in-the-loop documentation drift system</strong> — not just an AI generation problem.</p>
+    <div class="grid-2">
+      <div class="mini-card"><h4>Detect drift</h4><p>Monitor merged PRs for meaningful doc impact</p></div>
+      <div class="mini-card"><h4>Find context</h4><p>Retrieve relevant existing documentation</p></div>
+      <div class="mini-card"><h4>Generate suggestions</h4><p>Draft updates with rationale</p></div>
+      <div class="mini-card"><h4>Give evidence</h4><p>Show PR, files, why this doc was selected</p></div>
+      <div class="mini-card"><h4>Preserve human control</h4><p>Review, edit, accept, reject — no silent publish</p></div>
+      <div class="mini-card"><h4>Improve over time</h4><p>Feedback loop on retrieval, prompts, ranking</p></div>
+    </div>
+    <div class="callout callout-trust"><span class="badge badge-trust">Trust</span> <strong>The product succeeds only if users trust the suggestions enough to act on them.</strong></div>
+    <div class="callout">Key framing: treat this as a trust and workflow problem first, and an AI generation problem second.</div>
+  </section>
+
+  <!-- 3 · SCOPING QUESTIONS -->
+  <section id="scoping">
+    <h2>3 · Scoping questions</h2>
+    <p class="lede">Questions to answer before building — a few upfront, not endless requirements gathering.</p>
+    <h3>Product questions</h3>
+    <ul class="checklist">
+      <li>Who is the primary reviewer: engineers, technical writers, design system maintainers, product teams?</li>
+      <li>Should the system create drafts or directly publish updates?</li>
+      <li>What is worse initially: missing a doc update or suggesting irrelevant updates?</li>
+      <li>What kind of documentation drift hurts users most today?</li>
+      <li>Are suggestions expected per PR, per release, or on demand?</li>
+    </ul>
+    <h3>Technical questions</h3>
+    <ul class="checklist">
+      <li>Which code host should we assume first: GitHub, GitLab or Bitbucket?</li>
+      <li>What capabilities does the CMS API provide: read, draft, update, publish, version history?</li>
+      <li>How is documentation structured: pages, components, APIs, packages, product areas?</li>
+      <li>Is there ownership metadata for docs or code areas?</li>
+      <li>Do we have access to PR descriptions, changed files and commit metadata?</li>
+    </ul>
+    <h3>Success questions</h3>
+    <ul class="checklist">
+      <li>What would MVP success look like?</li>
+      <li>What user behaviour proves trust?</li>
+      <li>Is precision or recall more important at first?</li>
+      <li>What failure would damage trust most?</li>
+    </ul>
+    <div class="callout callout-highlight">★ Sharpest scoping question: <strong>“Is it worse for the MVP to miss some documentation updates, or to create too many irrelevant suggestions?”</strong></div>
+  </section>
+
+  <!-- 4 · MVP SCOPE -->
+  <section id="mvp-scope">
+    <h2>4 · MVP scope</h2>
+    <div class="two-col">
+      <div class="card open col-mvp"><div class="card-head"><span class="badge badge-mvp">MVP</span> In scope</div><div class="body"><ul>
+        <li>One repository provider, likely GitHub</li>
+        <li>One documentation source via CMS API</li>
+        <li>PR merged trigger</li>
+        <li>Store incoming events durably</li>
+        <li>Async background processing</li>
+        <li>Documentation content indexing</li>
+        <li>Relevant doc retrieval</li>
+        <li>Suggested update with evidence</li>
+        <li>Review / edit / accept / reject UI</li>
+        <li>Create draft update through CMS API</li>
+        <li>Capture feedback and rejection reasons</li>
+      </ul></div></div>
+      <div class="card open col-not"><div class="card-head"><span class="badge badge-decision">Decision</span> Not MVP</div><div class="body"><ul>
+        <li>Auto-publishing</li>
+        <li>Multi-CMS enterprise workflow</li>
+        <li>Multi-repo advanced orchestration</li>
+        <li>Fine-tuned models</li>
+        <li>Complex multi-agent system</li>
+        <li>Perfect recall</li>
+        <li>Full replacement for human documentation ownership</li>
+        <li>Fully automated code-to-doc reasoning</li>
+        <li>Enterprise-grade workflow engine</li>
+      </ul></div></div>
+    </div>
+    <div class="callout"><span class="badge badge-trust">Trust</span> <strong>Start assistive. Earn the right to automate later.</strong></div>
+  </section>
+
+  <!-- 5 · USER JOURNEY -->
+  <section id="user-journey">
+    <h2>5 · User journey</h2>
+    <div class="journey-scroll" role="list">
+      <div class="journey-card" role="listitem"><div class="step-title">PR merged</div><dl><dt>User need</dt><dd>Docs should not silently drift</dd><dt>System action</dt><dd>Capture merge event</dd><dt>Trust</dt><dd>Do not interrupt unless meaningful</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Change detected</div><dl><dt>User need</dt><dd>Relevant changes surfaced</dd><dt>System action</dt><dd>Validate webhook, store event</dd><dt>Trust</dt><dd>Idempotent — no duplicate noise</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Change analysed</div><dl><dt>User need</dt><dd>Understand what changed</dd><dt>System action</dt><dd>Classify files, APIs, components</dd><dt>Trust</dt><dd>Summary grounded in diff</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Relevant docs found</div><dl><dt>User need</dt><dd>Right pages, not everything</dd><dt>System action</dt><dd>Retrieve &amp; rank candidates</dd><dt>Trust</dt><dd>Show why each doc matched</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Suggestion generated</div><dl><dt>User need</dt><dd>Actionable draft, not raw AI</dd><dt>System action</dt><dd>Propose patch + rationale</dd><dt>Trust</dt><dd>Evidence + confidence visible</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">User reviews</div><dl><dt>User need</dt><dd>Easy diff review</dd><dt>System action</dt><dd>Side-by-side UI</dd><dt>Trust</dt><dd>Full control, no auto-publish</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Accept / edit / reject</div><dl><dt>User need</dt><dd>Final say on content</dd><dt>System action</dt><dd>Create CMS draft on accept</dd><dt>Trust</dt><dd>Rejection reasons captured</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Feedback captured</div><dl><dt>User need</dt><dd>System gets smarter</dd><dt>System action</dt><dd>Store action + reasons</dd><dt>Trust</dt><dd>Transparent improvement loop</dd></dl></div>
+      <div class="journey-card" role="listitem"><div class="step-title">Future suggestions improve</div><dl><dt>User need</dt><dd>Fewer bad suggestions</dd><dt>System action</dt><dd>Update retrieval/prompts</dd><dt>Trust</dt><dd>Earn automation gradually</dd></dl></div>
+    </div>
+  </section>
+
+  <!-- 6 · ARCHITECTURE -->
+  <section id="architecture">
+    <h2>6 · Architecture overview</h2>
+
+    <h3>Product scope and success criteria</h3>
+    <p>I would scope this as a <strong>documentation suggestion and review platform</strong>, not an automatic documentation generation system. The goal is not to publish AI-written docs directly, but to detect code changes that may require documentation updates, generate evidence-backed suggestions, and let users review, edit, accept, or reject them.</p>
+    <p><strong>Trust is central</strong>, so every suggestion should explain:</p>
+    <ul>
+      <li>Why it was generated</li>
+      <li>What code change triggered it</li>
+      <li>Which document it affects</li>
+      <li>What confidence level the system has</li>
+    </ul>
+
+    <div class="callout">The key design choice is to keep webhook ingestion lightweight and push analysis into asynchronous jobs. The system should create explainable, reviewable documentation suggestions rather than directly publishing AI-generated changes.</div>
+    <div class="callout">Avoid heavy processing inside the webhook. The ingestion API should validate and store the event quickly, then hand off processing to a background job.</div>
+
+    <h3>Three layers, five phases</h3>
+    <div class="arch-wrap" role="group" aria-label="Architecture: external tools, product-owned core, human review trust boundary">
+
+      <!-- LAYER 1: External -->
+      <div class="arch-layer arch-layer-external">
+        <div class="arch-layer-heading">
+          <span class="arch-layer-num">1</span>
+          <div>
+            <div class="arch-layer-title">External systems / online tools</div>
+            <div class="arch-layer-desc">Systems we integrate with but do not own</div>
+          </div>
+        </div>
+        <div class="arch-external-grid">
+          <div class="arch-node external">
+            <div class="arch-node-title">Code Repository</div>
+            <div class="arch-node-sub">GitHub / GitLab / Bitbucket</div>
+          </div>
+          <div class="arch-node external">
+            <div class="arch-node-title">Headless CMS</div>
+            <div class="arch-node-sub">Public API, pages, drafts, metadata</div>
+          </div>
+          <div class="arch-node external">
+            <div class="arch-node-title">AI Provider</div>
+            <div class="arch-node-sub">LLM API for summarisation and drafting</div>
+          </div>
+          <div class="arch-node external">
+            <div class="arch-node-title">Users / Reviewers</div>
+            <div class="arch-node-sub">Engineers, technical writers, maintainers</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYER 2: Product-owned -->
+      <div class="arch-layer arch-layer-owned">
+        <div class="arch-layer-heading">
+          <span class="arch-layer-num">2</span>
+          <div>
+            <div class="arch-layer-title">Product-owned core</div>
+            <div class="arch-layer-desc">Parts our product needs to build and own</div>
+          </div>
+        </div>
+        <div class="arch-owned-flow-wrap">
+          <div class="arch-owned-phases">
+
+            <div class="arch-owned-phase">
+              <div class="arch-owned-phase-label">Ingest</div>
+              <div class="arch-owned-phase-body">
+                <div class="arch-node owned highlight">
+                  <div class="arch-node-title">Repository Event</div>
+                  <div class="arch-node-sub">PR merged / release event</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned highlight">
+                  <div class="arch-node-title">Change Ingestion API</div>
+                  <div class="arch-node-sub">Validate, store, return quickly</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Event Store</div>
+                  <div class="arch-node-sub">Durable event log and replay</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Job Queue</div>
+                  <div class="arch-node-sub">Async processing and retries</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-workflow-col-connector" aria-hidden="true">→</div>
+
+            <div class="arch-owned-phase">
+              <div class="arch-owned-phase-label">Impact analysis</div>
+              <div class="arch-owned-phase-body">
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Change Classifier</div>
+                  <div class="arch-node-sub">Changed files, APIs, components</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Documentation Content Index</div>
+                  <div class="arch-node-sub">CMS pages, chunks, metadata</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Relevance Engine</div>
+                  <div class="arch-node-sub">Find likely affected docs</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-workflow-col-connector" aria-hidden="true">→</div>
+
+            <div class="arch-owned-phase">
+              <div class="arch-owned-phase-label">Suggest</div>
+              <div class="arch-owned-phase-body">
+                <div class="arch-node owned highlight">
+                  <div class="arch-node-title">Suggestion Generator</div>
+                  <div class="arch-node-sub">Draft update with rationale</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Suggestion Store</div>
+                  <div class="arch-node-sub">Pending / accepted / edited / rejected</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-workflow-col-connector" aria-hidden="true">→</div>
+
+            <div class="arch-owned-phase">
+              <div class="arch-owned-phase-label">Review</div>
+              <div class="arch-owned-phase-body">
+                <div class="arch-node owned highlight trust-node">
+                  <div class="arch-node-title">Review UI</div>
+                  <div class="arch-node-sub">Compare, edit, accept, reject</div>
+                </div>
+                <div class="arch-workflow-arrow-v" aria-hidden="true">↓</div>
+                <div class="arch-node owned trust-node">
+                  <div class="arch-node-title">CMS Draft Update</div>
+                  <div class="arch-node-sub">Create draft, never auto-publish initially</div>
+                </div>
+              </div>
+            </div>
+            <div class="arch-workflow-col-connector" aria-hidden="true">→</div>
+
+            <div class="arch-owned-phase">
+              <div class="arch-owned-phase-label">Learn</div>
+              <div class="arch-owned-phase-body">
+                <div class="arch-node owned">
+                  <div class="arch-node-title">Feedback + Evaluation Store</div>
+                  <div class="arch-node-sub">Improve retrieval, prompts and ranking</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYER 3: Trust boundary -->
+      <div class="arch-layer arch-layer-trust">
+        <div class="arch-layer-heading">
+          <span class="arch-layer-num">3</span>
+          <div>
+            <div class="arch-layer-title">Human review / trust boundary</div>
+            <div class="arch-layer-desc">AI assists — humans decide what gets published</div>
+          </div>
+        </div>
+        <div class="trust-boundary-layer-flow">
+          <span class="trust-boundary-layer-step">AI-generated suggestion</span>
+          <span class="trust-boundary-layer-arrow" aria-hidden="true">→</span>
+          <span class="trust-boundary-layer-step">Human review</span>
+          <span class="trust-boundary-layer-arrow" aria-hidden="true">→</span>
+          <span class="trust-boundary-layer-step">Draft update</span>
+          <span class="trust-boundary-layer-arrow" aria-hidden="true">→</span>
+          <span class="trust-boundary-layer-step">Publish only after approval</span>
+        </div>
+        <div class="callout callout-trust" style="margin:0.75rem 0 0;">
+          <span class="badge badge-trust">Trust</span> <strong>Trust boundary:</strong> AI can suggest, but humans approve.
+        </div>
+        <div class="callout callout-trust" style="margin:0.5rem 0 0;">
+          Users should never feel the AI secretly changed documentation.
+        </div>
+      </div>
+
+    </div>
+
+    <h3>Five-layer design</h3>
+    <p>Inside the product-owned core, I would design this as five layers.</p>
+    <ol>
+      <li><strong>Ingestion</strong> — receives PR merged events from GitHub or GitLab, validates the webhook, stores a durable ChangeEvent, deduplicates it, and queues asynchronous processing.</li>
+      <li><strong>Impact analysis and document discovery</strong> — fetches the PR diff, classifies whether the change is user-facing, extracts entities like API endpoints or config keys, and retrieves likely affected CMS documents using mappings, search, semantic retrieval, and past feedback.</li>
+      <li><strong>Suggestion engine</strong> — generates a targeted documentation patch, not a full rewrite, and includes evidence, explanation, and confidence.</li>
+      <li><strong>Human review</strong> — users can accept, edit, or reject the suggestion. Accepted suggestions create a CMS draft or update through the CMS API.</li>
+      <li><strong>Learning and evaluation</strong> — store review outcomes and use them to improve ranking, confidence, style, and future suggestions.</li>
+    </ol>
+
+    <h3>Human-in-the-loop by design</h3>
+    <p>To build trust, this is a <strong>human-in-the-loop suggestion system</strong>. When a PR is merged, we analyze the code diff, classify whether the change is documentation-impacting, retrieve the relevant CMS documents, and generate a proposed edit.</p>
+    <p>The user sees the proposed diff, the affected documentation page, the code change that triggered it, an explanation, and a confidence score. The system does not auto-publish. The user can accept, edit, or reject the suggestion, and that action becomes feedback for future suggestions.</p>
+  </section>
+
+  <!-- 7 · INGESTION -->
+  <section id="layer-ingest">
+    <h2>7 · Ingestion layer</h2>
+    <h4>Ingestion workflow</h4>
+    <div class="review-diagram" role="img" aria-label="Ingestion workflow: fast webhook handler, immutable store, async workers">
+      <div class="review-diagram-screen">
+        <div class="review-diagram-label">Synchronous webhook handler — lightweight only</div>
+        <div class="flow-h" aria-label="Webhook handler steps">
+          <div class="step">Validate signature</div><div class="arrow" aria-hidden="true">→</div>
+          <div class="step">Merged PR check</div><div class="arrow" aria-hidden="true">→</div>
+          <div class="step">Verify fields</div><div class="arrow" aria-hidden="true">→</div>
+          <div class="step">Deduplicate</div><div class="arrow" aria-hidden="true">→</div>
+          <div class="step">ChangeEvent</div><div class="arrow" aria-hidden="true">→</div>
+          <div class="step">Enqueue job</div>
+        </div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">Raw payload stored immutably</div>
+          <div class="review-diagram-chip">Webhook delivery ID / merge SHA</div>
+          <div class="review-diagram-chip">Return 2xx quickly</div>
+        </div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-muted">Not in request path: fetch large diffs · call CMS · invoke AI</div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-label review-diagram-label-center">Background workers</div>
+      <div class="flow-h" aria-label="Async worker steps">
+        <div class="step">Fetch PR + diff</div><div class="arrow" aria-hidden="true">→</div>
+        <div class="step">Impact analysis</div><div class="arrow" aria-hidden="true">→</div>
+        <div class="step">Retrieve docs</div><div class="arrow" aria-hidden="true">→</div>
+        <div class="step">Generate suggestions</div><div class="arrow" aria-hidden="true">→</div>
+        <div class="step">Retries on failure</div>
+      </div>
+    </div>
+    <p>In the ingestion layer, I would store the raw webhook payload immutably for audit and replay. The synchronous webhook handler should only do lightweight work: validate the signature, check that the event is a merged PR, verify required fields, deduplicate using the webhook delivery ID or merge commit SHA, create a normalized ChangeEvent, enqueue a background job, and return quickly.</p>
+    <p>I would not fetch large diffs, call the CMS, or invoke AI in the request path. Background workers would then fetch the canonical PR data and diff from the code host, run impact analysis, retrieve relevant docs, generate suggestions, and handle retries for timeouts, rate limits, or transient failures.</p>
+  </section>
+
+  <!-- 8 · IMPACT ANALYSIS -->
+  <section id="layer-impact">
+    <h2>8 · Impact analysis layer</h2>
+    <h4>Impact analysis workflow</h4>
+    <div class="review-diagram" role="img" aria-label="Impact analysis workflow: classify, extract entities, retrieve docs, rank candidates">
+      <div class="review-diagram-box review-diagram-box-accent review-diagram-box-spaced">PR diff + metadata</div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-label review-diagram-label-center">Classify documentation impact</div>
+      <div class="review-diagram-row">
+        <div class="review-diagram-chip">File paths</div>
+        <div class="review-diagram-chip">API / schema diffs</div>
+        <div class="review-diagram-chip">Config keys</div>
+        <div class="review-diagram-chip">SDK / CLI</div>
+        <div class="review-diagram-chip">PR title + ownership</div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-row review-diagram-row-2">
+        <div class="review-diagram-outcome review-diagram-outcome-reject"><strong>No doc impact</strong><span>Internal refactor, test-only — stop here</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-accept"><strong>User-facing change</strong><span>Extract entities and continue</span></div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-screen">
+        <div class="review-diagram-label">Entity extraction + CMS index query</div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">Endpoints</div>
+          <div class="review-diagram-chip">Parameters</div>
+          <div class="review-diagram-chip">Error codes</div>
+          <div class="review-diagram-chip">Feature names</div>
+        </div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">Code-to-doc mappings</div>
+          <div class="review-diagram-chip">Keyword search</div>
+          <div class="review-diagram-chip">Metadata filter</div>
+          <div class="review-diagram-chip">Semantic search</div>
+          <div class="review-diagram-chip">Past feedback</div>
+        </div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-box review-diagram-box-accent">Ranked document sections + evidence + confidence</div>
+    </div>
+    <p>In the impact analysis layer, I would first decide whether the PR has documentation impact at all. We should classify the change using signals like changed file paths, public API changes, OpenAPI or GraphQL schema diffs, config keys, SDK methods, CLI commands, tests, PR title, and code ownership. Internal refactors or test-only changes should usually stop there.</p>
+    <p>If the change appears user-facing, we extract structured entities such as endpoints, parameters, error codes, or feature names. Then we query a local indexed mirror of the CMS, where documents are chunked by section and enriched with metadata like title, slug, tags, owner, product area, and version.</p>
+    <p>For retrieval, I would use a hybrid approach: deterministic code-to-doc mappings, keyword search, metadata filtering, semantic search, and historical feedback from accepted or rejected suggestions. The output should be a ranked list of candidate document sections with evidence and confidence, not just a page ID.</p>
+  </section>
+
+  <!-- 9 · SUGGESTION ENGINE -->
+  <section id="layer-suggest">
+    <h2>9 · Suggestion engine</h2>
+    <h4>Suggestion engine workflow</h4>
+    <div class="review-diagram" role="img" aria-label="Suggestion engine workflow: grounded context, LLM patch, validation, pending store">
+      <div class="review-diagram-screen">
+        <div class="review-diagram-label">Grounded context package</div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">PR summary</div>
+          <div class="review-diagram-chip">Diff snippets</div>
+          <div class="review-diagram-chip">Extracted entities</div>
+          <div class="review-diagram-chip">CMS section + version</div>
+          <div class="review-diagram-chip">Style guidelines</div>
+        </div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-box review-diagram-box-accent">LLM → structured patch (not full rewrite)</div>
+      <div class="review-diagram-row review-diagram-row-spaced">
+        <div class="review-diagram-chip">Proposed diff</div>
+        <div class="review-diagram-chip">Explanation</div>
+        <div class="review-diagram-chip">PR evidence</div>
+        <div class="review-diagram-chip">Assumptions</div>
+        <div class="review-diagram-chip">Uncertainty</div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-gate">
+        <div class="review-diagram-gate-title">Validate before store</div>
+        <div class="review-diagram-row review-diagram-row-3">
+          <div class="review-diagram-box">Schema match</div>
+          <div class="review-diagram-box">Same CMS version</div>
+          <div class="review-diagram-box">Scoped to section</div>
+        </div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-row review-diagram-row-2">
+        <div class="review-diagram-outcome review-diagram-outcome-edit"><strong>Store pending</strong><span>Before/after UI · confidence reasons · source evidence</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-accept"><strong>System confidence</strong><span>Retrieval quality · code-to-doc match · validation · feedback history</span></div>
+      </div>
+    </div>
+    <p>After impact analysis, the suggestion engine receives a grounded context package: the PR summary, relevant diff snippets, extracted entities like API endpoints or config keys, the current CMS document section, its version, and any team style guidelines. I would use the LLM to generate a structured, patch-style suggestion rather than a full rewrite. The output should include the proposed diff, a plain-English explanation, evidence from the PR, assumptions, and uncertainty.</p>
+    <p>Before storing it, I would validate that the output matches the schema, that the patch applies to the same CMS version, and that the suggestion is scoped to the intended section. The suggestion is stored as pending and shown in a review UI with before/after comparison, confidence reasons, and source evidence.</p>
+    <p>I would not rely purely on the LLM’s confidence; the system confidence should combine retrieval quality, exact code-to-doc matches, validation results, and historical feedback.</p>
+  </section>
+
+  <!-- 10 · REVIEW -->
+  <section id="layer-review">
+    <h2>10 · Review layer</h2>
+    <h4>Review workflow</h4>
+    <div class="review-diagram" role="img" aria-label="Review layer workflow: diff screen, user decision, safety checks, outcomes">
+      <div class="review-diagram-screen">
+        <div class="review-diagram-label">Diff-based review screen</div>
+        <div class="review-diagram-row review-diagram-row-3">
+          <div class="review-diagram-box">Current CMS section</div>
+          <div class="review-diagram-box review-diagram-box-accent">Proposed patch</div>
+          <div class="review-diagram-box">Rendered preview</div>
+        </div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">PR + diff evidence</div>
+          <div class="review-diagram-chip">Rationale</div>
+          <div class="review-diagram-chip">Assumptions</div>
+          <div class="review-diagram-chip">Confidence reasons</div>
+        </div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-label review-diagram-label-center">User decision</div>
+      <div class="review-diagram-row review-diagram-row-3">
+        <div class="review-diagram-outcome review-diagram-outcome-accept"><strong>Accept</strong><span>CMS draft or publishing queue — no auto-publish</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-edit"><strong>Edit</strong><span>Store original AI output + final accepted version</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-reject"><strong>Reject</strong><span>Structured reason: wrong page, not user-facing, already documented, incorrect</span></div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-gate">
+        <div class="review-diagram-gate-title">Safety checks before apply</div>
+        <div class="review-diagram-row review-diagram-row-2">
+          <div class="review-diagram-box">Permission check</div>
+          <div class="review-diagram-box">CMS version unchanged since suggestion?</div>
+        </div>
+        <div class="review-diagram-gate-branch">
+          <span class="review-diagram-yes">Yes → create CMS draft</span>
+          <span class="review-diagram-no">No → mark stale or regenerate</span>
+        </div>
+      </div>
+    </div>
+    <p>In the review layer, the user should see a diff-based review screen rather than a black-box generated document. The screen should show the current CMS section, the proposed patch, a rendered preview, the PR that triggered the suggestion, evidence from the diff, rationale, assumptions, and confidence reasons. The user can accept, edit, or reject each suggestion.</p>
+    <p>If they edit, we store both the original AI output and the final accepted version because that becomes valuable feedback. If they reject, we capture a structured reason such as wrong page, not user-facing, already documented, or incorrect. On accept, I would usually create a CMS draft or move it into a publishing queue rather than auto-publish.</p>
+    <p>Before applying anything, the backend checks permissions and verifies that the CMS document version has not changed since the suggestion was generated. If it has changed, we mark the suggestion stale or regenerate it. This keeps the workflow safe and preserves user trust.</p>
+  </section>
+
+  <!-- 11 · LEARNING -->
+  <section id="layer-learn">
+    <h2>11 · Learning and evaluation layer</h2>
+    <h4>Learning workflow</h4>
+    <div class="review-diagram" role="img" aria-label="Learning workflow: structured feedback, pipeline diagnosis, product evaluation loop">
+      <div class="review-diagram-label review-diagram-label-center">Structured feedback from every review action</div>
+      <div class="review-diagram-row review-diagram-row-3">
+        <div class="review-diagram-outcome review-diagram-outcome-accept"><strong>Accepted as-is</strong><span>Positive signal for pipeline quality</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-edit"><strong>Edited and accepted</strong><span>Final version stored alongside AI output</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-reject"><strong>Rejected</strong><span>Structured rejection reason captured</span></div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-screen">
+        <div class="review-diagram-label">Stored with enough context to replay generation</div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">Original AI output</div>
+          <div class="review-diagram-chip">Final accepted version</div>
+          <div class="review-diagram-chip">Rejection reasons</div>
+          <div class="review-diagram-chip">Retrieved doc sections</div>
+          <div class="review-diagram-chip">Confidence score</div>
+        </div>
+        <div class="review-diagram-row">
+          <div class="review-diagram-chip">Prompt version</div>
+          <div class="review-diagram-chip">Model version</div>
+          <div class="review-diagram-chip">CMS document version</div>
+        </div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-label review-diagram-label-center">Feedback signals → pipeline diagnosis</div>
+      <div class="review-diagram-row review-diagram-row-3">
+        <div class="review-diagram-outcome review-diagram-outcome-reject"><strong>Not user-facing</strong><span>Impact classifier needs work</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-reject"><strong>Wrong document</strong><span>Retrieval or ranking failing</span></div>
+        <div class="review-diagram-outcome review-diagram-outcome-edit"><strong>Edited before accept</strong><span>Retrieval likely OK — generation, tone, or completeness</span></div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-muted">Product evaluation loop — not automatic model self-improvement</div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-label review-diagram-label-center">Improve deliberately from feedback</div>
+      <div class="review-diagram-row">
+        <div class="review-diagram-chip">Retrieval thresholds</div>
+        <div class="review-diagram-chip">Code-to-doc mappings</div>
+        <div class="review-diagram-chip">Prompt examples + style</div>
+        <div class="review-diagram-chip">Confidence calibration</div>
+        <div class="review-diagram-chip">Eval sets before model changes</div>
+      </div>
+      <div class="review-diagram-row review-diagram-row-spaced">
+        <div class="review-diagram-chip">Acceptance rate</div>
+        <div class="review-diagram-chip">Edit rate</div>
+        <div class="review-diagram-chip">Rejection mix</div>
+        <div class="review-diagram-chip">Wrong-document rate</div>
+        <div class="review-diagram-chip">Time-to-review</div>
+        <div class="review-diagram-chip">Suggestion-to-publication</div>
+      </div>
+      <div class="review-diagram-connector" aria-hidden="true">↓</div>
+      <div class="review-diagram-box review-diagram-box-accent">Fewer irrelevant suggestions · faster review · higher trust</div>
+    </div>
+    <p>In the learning layer, every review action becomes structured feedback. We store whether the suggestion was accepted as-is, edited and accepted, or rejected, along with rejection reasons, the original AI output, the final accepted version, the retrieved document sections, confidence score, prompt version, model version, CMS document version, and enough context to replay what the system knew at generation time.</p>
+    <p>I would treat this as a product evaluation loop, not automatic model self-improvement. Rejection reason distribution tells us which part of the pipeline is failing. If users reject suggestions as not user-facing, the impact classifier needs work. If they reject them as wrong document, retrieval or ranking is failing. If they edit before accepting, retrieval was probably right, but generation, tone, or completeness needs improvement.</p>
+    <p>Over time, we can use this feedback to tune retrieval thresholds, refine code-to-doc mappings, improve prompt examples and style guidance, calibrate confidence against real acceptance rates, and build explicit evaluation sets before changing prompts or models. Key metrics would include acceptance rate, edit rate, rejection reason mix, wrong-document rate, time-to-review, and suggestion-to-publication rate. The goal is that users experience fewer irrelevant suggestions, faster review, and higher trust — not hidden behavior changes they cannot understand.</p>
+  </section>
+
+  <!-- 12 · COMPONENT REFERENCE -->
+  <section id="components">
+    <h2>12 · Component reference</h2>
+    <p class="lede">Responsibilities and design notes for every box in the architecture diagram.</p>
+
+    <h3>Layer 1 · External systems</h3>
+
+    <details class="card"><summary>Code Repository</summary><div class="body">
+      <p>Source of truth for code changes. Emits webhook events when pull requests merge or releases ship.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Hosts application and library source code</li>
+        <li>Emits PR merged / push / release webhooks</li>
+        <li>Provides diff, changed files, PR title and description via API</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>MVP: pick one provider first, likely GitHub</li>
+        <li>Product validates webhook signatures and stores raw payloads — it does not own the repo</li>
+      </ul>
+      <div class="note">External responsibility: emit events. Product responsibility: decide which events matter and process them.</div>
+    </div></details>
+
+    <details class="card"><summary>Headless CMS</summary><div class="body">
+      <p>Third-party system where developer documentation already lives. Exposes a public API for read and draft write.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Stores published and draft documentation pages</li>
+        <li>Provides CMS API for read, draft create/update, metadata</li>
+        <li>May expose version history and ownership fields</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Product indexes content for search — does not replace the CMS</li>
+        <li>Accepted suggestions become CMS drafts, not direct publishes in MVP</li>
+      </ul>
+      <div class="note">Clarify early: which CMS capabilities exist (draft only vs publish, versioning, webhooks for content changes).</div>
+    </div></details>
+
+    <details class="card"><summary>AI Provider</summary><div class="body">
+      <p>External LLM API used for summarisation and drafting. Helpful but not the owner of the workflow.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Summarise code diffs and PR context</li>
+        <li>Draft natural-language documentation updates</li>
+        <li>Never decides what gets published</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Ground prompts with retrieved doc content and change evidence</li>
+        <li>Redact secrets; respect data-handling policies</li>
+        <li>Start with general models — fine-tuning is not MVP</li>
+      </ul>
+      <div class="note">AI is part of the workflow, not the owner of the workflow.</div>
+    </div></details>
+
+    <details class="card"><summary>Users / Reviewers</summary><div class="body">
+      <p>Engineers, technical writers, or maintainers who judge whether a suggestion is correct before anything ships.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Review suggested diffs with evidence</li>
+        <li>Accept, edit, or reject suggestions</li>
+        <li>Provide rejection reasons that improve future quality</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>UX must make review faster than manual doc hunting</li>
+        <li>Trust comes from control — not from confident AI language</li>
+      </ul>
+      <div class="note">Identify the primary reviewer early — it shapes noise tolerance and UI design.</div>
+    </div></details>
+
+    <h3>Layer 2 · Product-owned components</h3>
+
+    <details class="card"><summary>Repository Event</summary><div class="body">
+      <p>Normalised signal that something meaningful changed in code — typically a merged PR or release.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Capture repo id, PR id, merge commit SHA</li>
+        <li>Trigger downstream processing after ingestion</li>
+        <li>Use idempotency: repo + PR + commit to avoid duplicates</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Not every commit needs a doc suggestion — classifier filters noise later</li>
+        <li>Release events and reconciliation scans can produce events too</li>
+      </ul>
+      <div class="note">The trigger is cheap; the expensive work happens async.</div>
+    </div></details>
+
+    <details class="card"><summary>Change Ingestion API</summary><div class="body">
+      <p>Webhook endpoint that validates incoming repository events and persists them quickly.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Validate webhook signature</li>
+        <li>Store raw event payload</li>
+        <li>Return 2xx fast — no heavy analysis here</li>
+        <li>Use idempotency key: repo_id + pr_id + merge_commit_sha</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Duplicate webhooks should not create duplicate jobs</li>
+        <li>If ingestion is slow, the code host may retry and amplify load</li>
+      </ul>
+      <div class="note">Key design choice: lightweight ingestion, async processing.</div>
+    </div></details>
+
+    <details class="card"><summary>Event Store</summary><div class="body">
+      <p>Durable log of raw repository events for replay, audit, and debugging.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Keep immutable raw webhook payload</li>
+        <li>Enable reprocessing after bug fixes</li>
+        <li>Support admin/debug views</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Helps when webhooks are lost — pairs with scheduled reconciliation</li>
+        <li>Useful for tracing why a suggestion was or was not created</li>
+      </ul>
+      <div class="note">Replay is a core part of failure recovery.</div>
+    </div></details>
+
+    <details class="card"><summary>Job Queue</summary><div class="body">
+      <p>Async backbone that runs classification, retrieval, and suggestion generation outside the webhook request.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Process events in background workers</li>
+        <li>Retry transient failures (CMS down, LLM timeout)</li>
+        <li>Dead-letter queue for poison or repeated failures</li>
+        <li>Support backpressure when many PRs merge at once</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Implementation: Inngest, SQS, BullMQ, Trigger.dev, etc.</li>
+        <li>Observability on job latency and failure rate</li>
+      </ul>
+      <div class="note">The async backbone is what keeps ingestion safe under load.</div>
+    </div></details>
+
+    <details class="card"><summary>Change Classifier</summary><div class="body">
+      <p>Understands what changed in the codebase well enough to scope documentation impact.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Read changed files, PR title, description, commit messages</li>
+        <li>Detect affected APIs, packages, components, or public surfaces</li>
+        <li>Summarise change for retrieval and LLM context</li>
+        <li>Skip or downgrade noisy changes (formatting-only, deps-only)</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Large PRs: chunk diff, summarise, prioritise high-impact paths</li>
+        <li>Output feeds relevance engine and suggestion generator</li>
+      </ul>
+      <div class="note">Combine rules/metadata with LLM summary — do not rely on LLM alone to read entire diffs.</div>
+    </div></details>
+
+    <details class="card"><summary>Documentation Content Index</summary><div class="body">
+      <p>Local searchable copy of CMS documentation, synced on a schedule or via CMS webhooks if available.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Sync CMS pages, chunks, tags, ownership metadata</li>
+        <li>Track last updated timestamps</li>
+        <li>Power fast search without hitting CMS on every PR</li>
+        <li>Handle freshness — re-sync when docs change</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Start with Postgres full-text search on indexed content</li>
+        <li>Store page ids needed for draft updates via CMS API</li>
+      </ul>
+      <div class="note">Trade-off: indexed copy vs live CMS query — index wins speed; must stay fresh.</div>
+    </div></details>
+
+    <details class="card"><summary>Relevance Engine</summary><div class="body">
+      <p>Finds which documentation pages are likely stale or affected by a code change.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Match classifier output to indexed docs</li>
+        <li>Use metadata, keyword search, code-to-doc mappings</li>
+        <li>Rank candidates; prefer precision over recall in MVP</li>
+        <li>Optionally use embeddings later — not required for v1</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Poor retrieval → irrelevant suggestions → users lose trust</li>
+        <li>Show why each page was selected in the review UI</li>
+        <li>Allow manual linking when nothing matches</li>
+      </ul>
+      <div class="note">Key scoping question — miss updates vs noisy suggestions — shapes the ranking threshold here.</div>
+    </div></details>
+
+    <details class="card"><summary>Suggestion Generator</summary><div class="body">
+      <p>Creates a proposed documentation update grounded in code change and existing doc content.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Combine diff summary + retrieved docs + style guidance</li>
+        <li>Produce suggested patch, rationale, and evidence file links</li>
+        <li>Assign confidence level</li>
+        <li>Never publish directly — output goes to suggestion store</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Ground in evidence to reduce hallucination</li>
+        <li>Human review remains mandatory for MVP</li>
+        <li>Log system version for evaluation over time</li>
+      </ul>
+      <div class="note">AI generates; product owns prompt design, grounding, and guardrails.</div>
+    </div></details>
+
+    <details class="card"><summary>Suggestion Store</summary><div class="body">
+      <p>System of record for each proposed doc update and its review lifecycle.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Store pending / accepted / edited / rejected status</li>
+        <li>Persist suggested patch, rationale, evidence, confidence</li>
+        <li>Link to repo, PR, merge commit, CMS page id</li>
+        <li>Track reviewer and reviewed_at timestamps</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Enables review UI and audit trail</li>
+        <li>system_version field supports before/after evaluation of prompt changes</li>
+      </ul>
+      <div class="note">This is where product state lives — distinct from CMS content until accepted.</div>
+    </div></details>
+
+    <details class="card"><summary>Review UI</summary><div class="body">
+      <p>Human control point: compare current doc, suggested change, evidence, and take action.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Show PR link, changed files, affected doc page</li>
+        <li>Side-by-side or diff view of current vs suggested content</li>
+        <li>Display rationale, evidence, confidence</li>
+        <li>Actions: accept, edit, reject, ignore path</li>
+        <li>Capture rejection reason dropdown + free text</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Accessibility: keyboard nav, labels, not colour-only status</li>
+        <li>Principle: make the reviewer's job easier, not harder</li>
+      </ul>
+      <div class="note">The trust boundary lives here — this is what users actually experience.</div>
+    </div></details>
+
+    <details class="card"><summary>CMS Draft Update</summary><div class="body">
+      <p>Writes an accepted (or edited) suggestion into the headless CMS as a draft only.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Call CMS API to create/update draft</li>
+        <li>Respect CMS permissions for the reviewer</li>
+        <li>Preserve version history if CMS supports it</li>
+        <li>Never auto-publish in MVP</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>If CMS is unavailable: retry queue, show user-visible delay</li>
+        <li>Audit log records who accepted what and when</li>
+      </ul>
+      <div class="note">Draft-first publishing is a deliberate trust decision, not a technical limitation.</div>
+    </div></details>
+
+    <details class="card"><summary>Feedback + Evaluation Store</summary><div class="body">
+      <p>Captures human decisions and feeds improvement loops — not magic model self-learning.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Store accept / edit / reject with reasons</li>
+        <li>Track edited patches vs original suggestion</li>
+        <li>Build evaluation sets from real examples</li>
+        <li>Improve prompts, retrieval ranking, and thresholds over time</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Rejection reason distribution is a key product metric</li>
+        <li>Phase 3+ evolution: explicit eval sets and ranking tuning</li>
+      </ul>
+      <div class="note">We improve retrieval and prompts deliberately from feedback — not fine-tune on day one.</div>
+    </div></details>
+
+    <h3>Layer 3 · Trust boundary steps</h3>
+
+    <details class="card"><summary>AI-generated suggestion</summary><div class="body">
+      <p>Output of the suggestion generator — useful draft, not authoritative truth.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Must include evidence and confidence</li>
+        <li>Stays in suggestion store until reviewed</li>
+        <li>Can be wrong — system assumes that</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Low-confidence suggestions should look uncertain, not oversold</li>
+        <li>No silent writes to CMS</li>
+      </ul>
+      <div class="note">Assistive output entering the trust boundary.</div>
+    </div></details>
+
+    <details class="card"><summary>Human review</summary><div class="body">
+      <p>Mandatory checkpoint before any documentation changes reach the CMS.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Reviewer verifies accuracy against PR and product behaviour</li>
+        <li>Can edit before accept</li>
+        <li>Rejection captures why the system was wrong</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Acceptance rate and edit-before-accept rate measure real value</li>
+        <li>Without this step, stale or wrong docs damage user trust faster than missing docs</li>
+      </ul>
+      <div class="note">Core principle: trust first, automation later.</div>
+    </div></details>
+
+    <details class="card"><summary>Draft update</summary><div class="body">
+      <p>Accepted content written to CMS as draft — visible in CMS workflow, not live docs yet.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>Separates AI-assisted draft from published documentation</li>
+        <li>Allows existing CMS review/publish flows to remain</li>
+        <li>Supports rollback via CMS version history</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Even after accept in our UI, a human may still publish via the normal CMS process</li>
+      </ul>
+      <div class="note">Two-stage trust: our review UI, then optional CMS editorial publish.</div>
+    </div></details>
+
+    <details class="card"><summary>Publish only after approval</summary><div class="body">
+      <p>Live documentation changes only after explicit human approval — never automatic in MVP.</p>
+      <h4>Responsibilities</h4><ul>
+        <li>No auto-publish from merged PRs</li>
+        <li>Audit trail of who approved what</li>
+        <li>Future: confidence-based automation only for low-risk, auditable changes</li>
+      </ul>
+      <h4>Details</h4><ul>
+        <li>Phase 5 evolution: narrow automation with revert and audit</li>
+        <li>Users should never feel AI secretly changed documentation</li>
+      </ul>
+      <div class="note">Earn the right to automate more after proving trust.</div>
+    </div></details>
+  </section>
+
+  <!-- 13 · TOOLS -->
+  <section id="tools">
+    <h2>13 · Building the MVP with online tools</h2>
+    <p class="lede">Practical implementation choices — not the architecture itself.</p>
+    <div class="mvp-tools-grid">
+      <div class="mvp-tool-card"><h4>Frontend / Review UI</h4><ul><li>Next.js</li><li>Hosted on Vercel or similar</li><li>Shows current doc, suggested diff, evidence, confidence, actions</li></ul></div>
+      <div class="mvp-tool-card"><h4>Backend / API</h4><ul><li>Next.js Route Handlers, Node API, or lightweight backend service</li><li>Handles webhooks and CMS API calls</li></ul></div>
+      <div class="mvp-tool-card"><h4>Database</h4><ul><li>Postgres via Supabase, Neon, RDS or similar</li><li>Stores events, suggestions, feedback, audit logs</li></ul></div>
+      <div class="mvp-tool-card"><h4>Queue / Jobs</h4><ul><li>Inngest, Trigger.dev, Upstash QStash, BullMQ, SQS or similar</li><li>Handles async analysis and retries</li></ul></div>
+      <div class="mvp-tool-card"><h4>Search / Retrieval</h4><ul><li>Start with Postgres full-text search + metadata matching</li><li>Add embeddings later only if needed</li></ul></div>
+      <div class="mvp-tool-card"><h4>AI Provider</h4><ul><li>OpenAI, Anthropic or similar</li><li>Used for summarisation and suggestion drafting</li><li>Never owns publishing decision</li></ul></div>
+      <div class="mvp-tool-card"><h4>CMS Integration</h4><ul><li>Read docs via CMS API</li><li>Write accepted changes as drafts only</li></ul></div>
+      <div class="mvp-tool-card"><h4>Observability</h4><ul><li>Sentry, logs, job dashboard</li><li>Track failures, latency, rejected suggestions</li></ul></div>
+      <div class="mvp-tool-card"><h4>Auth / Permissions</h4><ul><li>Auth0, Clerk or existing auth</li><li>Check reviewer permissions before allowing updates</li></ul></div>
+    </div>
+    <div class="callout callout-warn">These tools are implementation choices, not the architecture itself. The architecture should remain portable.</div>
+  </section>
+
+  <!-- 14 · RESPONSIBILITIES -->
+  <section id="responsibilities">
+    <h2>14 · External vs product-owned responsibilities</h2>
+    <div class="table-wrap"><table class="resp-table">
+      <thead><tr><th scope="col">External systems</th><th scope="col">Product-owned system</th></tr></thead>
+      <tbody>
+        <tr><td>Emit repository events</td><td>Decides which events matter</td></tr>
+        <tr><td>Store documentation</td><td>Classifies code changes</td></tr>
+        <tr><td>Provide CMS API</td><td>Finds relevant documentation</td></tr>
+        <tr><td>Provide LLM capability</td><td>Generates explainable suggestions</td></tr>
+        <tr><td>Host source code</td><td>Stores review state</td></tr>
+        <tr><td>Provide users/reviewers</td><td>Provides review UX</td></tr>
+        <tr><td></td><td>Creates CMS drafts</td></tr>
+        <tr><td></td><td>Captures feedback</td></tr>
+        <tr><td></td><td>Improves future suggestions</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 15 · BUILD SEQUENCE -->
+  <section id="build-sequence">
+    <h2>15 · Build sequence</h2>
+    <ul class="seq-list">
+      <li>Build webhook receiver and event store</li>
+      <li>Sync/index CMS documentation</li>
+      <li>Classify changed files from merged PRs</li>
+      <li>Match changed code to likely docs</li>
+      <li>Generate suggestion with evidence</li>
+      <li>Build review UI</li>
+      <li>Write accepted suggestion as CMS draft</li>
+      <li>Capture feedback and rejection reasons</li>
+      <li>Improve ranking and prompts based on feedback</li>
+    </ul>
+    <div class="callout">Build in thin vertical slices: first prove one PR can create one useful reviewable suggestion, then improve retrieval, UX and feedback loops.</div>
+  </section>
+
+  <!-- 16 · DATA MODEL -->
+  <section id="data-model">
+    <h2>16 · Data model</h2>
+    <h3>Core tables</h3>
+<pre><code>repositories
+code_change_events
+processing_jobs
+documentation_pages
+documentation_page_chunks
+code_to_doc_mappings
+documentation_suggestions
+suggestion_feedback
+audit_logs</code></pre>
+    <h3>documentation_suggestions</h3>
+<pre><code>id
+repo_id
+pr_id
+merge_commit_sha
+cms_page_id
+suggested_patch
+rationale
+evidence_files
+confidence
+status: pending | accepted | edited | rejected
+reviewer_id
+reviewed_at
+system_version
+created_at</code></pre>
+    <h3>suggestion_feedback</h3>
+<pre><code>suggestion_id
+action: accepted | edited | rejected
+edited_patch
+rejection_reason
+free_text_feedback
+reviewer_id
+created_at</code></pre>
+  </section>
+
+  <!-- 17 · TRUST MODEL -->
+  <section id="trust-model">
+    <h2>17 · Trust model</h2>
+    <div class="card open"><div class="card-head"><span class="badge badge-trust">Trust</span> Why would a user trust this?</div><div class="body"><div class="trust-grid">
+      <div class="trust-item">Human review before publish</div><div class="trust-item">Draft mode first</div><div class="trust-item">Clear diff view</div>
+      <div class="trust-item">Evidence links to PR and changed files</div><div class="trust-item">Explanation of why a doc was selected</div><div class="trust-item">Confidence level</div>
+      <div class="trust-item">Accept / edit / reject controls</div><div class="trust-item">Rejection reason capture</div><div class="trust-item">Audit trail</div>
+      <div class="trust-item">Version history</div><div class="trust-item">Permission checks</div><div class="trust-item">Feedback loop</div><div class="trust-item">No hidden changes</div>
+    </div></div></div>
+    <div class="callout callout-trust">Users should never feel the AI secretly changed documentation.</div>
+    <div class="callout callout-warn">Low-confidence suggestions should be transparent, not hidden behind confident language.</div>
+  </section>
+
+  <!-- 18 · AI APPROACH -->
+  <section id="ai-approach">
+    <h2>18 · AI / agentic approach</h2>
+    <ul>
+      <li>AI can summarise code changes.</li>
+      <li>AI can draft documentation updates.</li>
+      <li>Retrieval grounds suggestions in existing docs.</li>
+      <li>Rules and metadata help constrain scope.</li>
+      <li>Human review remains the control point.</li>
+      <li>Feedback improves prompts, retrieval, ranking and evaluation.</li>
+      <li>Do not claim the model magically learns on its own.</li>
+      <li>Start with prompt/rule/retrieval improvement before model fine-tuning.</li>
+    </ul>
+    <div class="quote"><span class="badge badge-ai">AI</span> “AI is part of the workflow, not the owner of the workflow.”</div>
+    <div class="flow-h">
+      <div class="step">Code diff + PR metadata + relevant docs + style guidance</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">LLM suggestion</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Evidence + confidence</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Human review</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Feedback</div><div class="arrow" aria-hidden="true">→</div>
+      <div class="step">Improved retrieval / prompts / evaluation</div>
+    </div>
+  </section>
+
+  <!-- 19 · FAILURE MODES -->
+  <section id="failure-modes">
+    <h2>19 · Failure modes</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Failure</th><th>Behaviour</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Duplicate webhook</td><td>Same PR processed twice</td><td>Idempotency key: repo_id + pr_id + merge_commit_sha</td></tr>
+        <tr><td>CMS API unavailable</td><td>Cannot fetch or write draft</td><td>Retry queue, dead-letter queue, user-visible delay</td></tr>
+        <tr><td>Poor retrieval</td><td>Irrelevant doc suggested</td><td>Confidence threshold, review UI, feedback capture</td></tr>
+        <tr><td>LLM hallucination</td><td>Wrong or invented update</td><td>Evidence grounding, human review, reject feedback</td></tr>
+        <tr><td>Large PR</td><td>Too much context</td><td>Chunk diff, summarise, prioritise changed areas</td></tr>
+        <tr><td>No relevant docs found</td><td>No suggestion or low-confidence</td><td>“No docs found” diagnostic, allow manual linking</td></tr>
+        <tr><td>Permission mismatch</td><td>Wrong user can approve</td><td>RBAC and CMS permission checks</td></tr>
+        <tr><td>Noisy suggestions</td><td>Users lose trust</td><td>Thresholds, batching, user preferences</td></tr>
+        <tr><td>Accepted bad suggestion</td><td>Documentation becomes wrong</td><td>Draft/version history, rollback, audit log</td></tr>
+        <tr><td>Webhook lost</td><td>Docs miss update</td><td>Scheduled reconciliation job</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 20 · SCALING -->
+  <section id="scaling">
+    <h2>20 · Scaling &amp; evolution</h2>
+    <div class="phase"><div class="phase-head">Phase 1 · Human-reviewed suggestions</div><ul><li>One repo provider · one CMS integration · draft-only updates</li></ul></div>
+    <div class="phase"><div class="phase-head">Phase 2 · Better mapping</div><ul><li>Code-to-doc mappings · ownership metadata · more reliable retrieval</li></ul></div>
+    <div class="phase"><div class="phase-head">Phase 3 · Feedback-driven improvement</div><ul><li>Rejection reasons · prompt updates · evaluation sets · ranking improvements</li></ul></div>
+    <div class="phase"><div class="phase-head">Phase 4 · Team preferences</div><ul><li>Ignore rules · preferred tone · domain-specific templates</li></ul></div>
+    <div class="phase"><div class="phase-head">Phase 5 · Confidence-based automation</div><ul><li>Low-risk updates only · still auditable · human can revert</li></ul></div>
+    <div class="phase"><div class="phase-head">Phase 6 · Broader integrations</div><ul><li>Multiple repos · multiple documentation sources · release-based workflows</li></ul></div>
+  </section>
+
+  <!-- 21 · METRICS -->
+  <section id="metrics">
+    <h2>21 · Product metrics</h2>
+    <div class="grid-2">
+      <ul>
+        <li>Suggestion acceptance rate</li>
+        <li>Edit-before-accept rate</li>
+        <li>Rejection reason distribution</li>
+        <li>Docs updated per merged PR</li>
+        <li>Review latency</li>
+        <li>Time saved per documentation update</li>
+      </ul>
+      <ul>
+        <li>Reduction in stale docs</li>
+        <li>User trust score</li>
+        <li>False positive rate</li>
+        <li>False negative review</li>
+        <li>% of suggestions with evidence</li>
+        <li>% of stale docs detected by reconciliation</li>
+      </ul>
+    </div>
+    <div class="callout">Do not judge success only by number of AI suggestions generated. The better measure is whether users accept, trust and act on useful suggestions.</div>
+  </section>
+
+  <!-- 22 · TRADE-OFFS -->
+  <section id="trade-offs">
+    <h2>22 · Trade-offs</h2>
+    <div class="grid-2">
+      <div class="mini-card"><h4>Precision vs recall</h4><p>Early MVP should favour precision to avoid noisy suggestions.</p></div>
+      <div class="mini-card"><h4>Drafts vs auto-publish</h4><p>Drafts build trust; auto-publish can come later for low-risk changes.</p></div>
+      <div class="mini-card"><h4>Live CMS query vs indexed docs</h4><p>Index improves speed and search; must handle freshness.</p></div>
+      <div class="mini-card"><h4>Keyword search vs embeddings</h4><p>Keyword/metadata simpler; embeddings help semantic matching but add complexity.</p></div>
+      <div class="mini-card"><h4>Rules vs LLM generation</h4><p>Rules constrain; LLM drafts natural language; combine both.</p></div>
+      <div class="mini-card"><h4>MVP vs platform</h4><p>Prove workflow first before scaling integrations.</p></div>
+      <div class="mini-card"><h4>Speed vs trust</h4><p>Faster automation is useless if users do not trust it.</p></div>
+    </div>
+  </section>
+
+  <!-- 23 · SECURITY -->
+  <section id="security">
+    <h2>23 · Security &amp; permissions</h2>
+    <ul>
+      <li>Validate webhook signatures.</li>
+      <li>Store secrets safely.</li>
+      <li>Respect CMS permissions.</li>
+      <li>Do not expose private repo details to unauthorised users.</li>
+      <li>Audit all accepted changes.</li>
+      <li>Avoid sending sensitive code/docs to AI provider unless allowed.</li>
+      <li>Support tenant isolation if multi-tenant.</li>
+      <li>Admins can disable automation.</li>
+      <li>Redact secrets from prompts.</li>
+    </ul>
+    <div class="callout callout-trust"><span class="badge badge-trust">Trust</span> Security is part of user trust.</div>
+    <div class="final-message">Start with a system users trust and manually review — then earn the right to automate more later.</div>
+  </section>
+
+</main>
+
+<script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../index.html';a.textContent='⌂ shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
+</body>
+</html>

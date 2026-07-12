@@ -1,29 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <!--
-  README - akeneo.html
+  README - calculated-metrics-platform.html
   Calculated Metrics Platform · Technical project walkthrough
   Arrow keys / Enter: next slide · ⌘+Enter: back · ⌘/Ctrl+Arrow: jump slides
   Space: next slide | S: speaker notes | F: fullscreen | Esc: overview
   Target ~19 min present · see Delivery Script appendix for timing
   P: presentation mode | M: sidebar | H: appendix (prep only - never mention in interview)
-  Serve: from the present/ folder, e.g. python3 -m http.server 8080 then open http://localhost:8080/akeneo.html
+  Serve: from the repo root, e.g. python3 -m http.server 8080 then open http://localhost:8080/case-studies/calculated-metrics-platform.html
 -->
 <head>
+  <script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculated Metrics Platform - Product, Architecture &amp; Delivery Walkthrough</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
   <style>
+    :root{
+      color-scheme: light;
+      --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+      --text:#1b2430; --muted:#5b6878;
+      --accent:#2563eb; --accent-2:#7c3aed;
+      --border:#dfe4ec; --code-bg:#eef1f5;
+      --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+    }
+    :root[data-theme="dark"]{
+      color-scheme: dark;
+      --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+      --text:#e6eaf0; --muted:#9aa7b8;
+      --accent:#5b9dff; --accent-2:#a78bfa;
+      --border:#2a3342; --code-bg:#10151d;
+      --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+    }
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]){
+        color-scheme: dark;
+        --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+        --text:#e6eaf0; --muted:#9aa7b8;
+        --accent:#5b9dff; --accent-2:#a78bfa;
+        --border:#2a3342; --code-bg:#10151d;
+        --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+      }
+    }
+    body{background:var(--bg);color:var(--text);}
+
+    :root{ --cat: var(--accent-2); }    /* Case Study → purple */
+
     :root {
-      --bg: #0f172a;
-      --accent: #10b981;
-      --accent-dark: #047857;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --chip: #fbbf24;
-      --chip-bg: rgba(251, 191, 36, 0.15);
       --sidebar-w: 220px;
       --slide-body: 26px;
       --slide-body-compact: 24px;
@@ -45,8 +69,8 @@
       top: 0;
       bottom: 0;
       width: var(--sidebar-w);
-      background: #0a0f1e;
-      border-right: 1px solid #1e293b;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
       overflow-y: auto;
       z-index: 100;
       padding: 1rem 0;
@@ -57,7 +81,7 @@
       font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--text-muted);
+      color: var(--muted);
       padding: 0.5rem 1rem;
       margin: 0.75rem 0 0.25rem;
     }
@@ -65,7 +89,7 @@
     #slide-nav a {
       display: block;
       padding: 0.35rem 1rem;
-      color: var(--text-muted);
+      color: var(--muted);
       text-decoration: none;
       border-left: 2px solid transparent;
       line-height: 1.35;
@@ -75,7 +99,7 @@
     #slide-nav a.active {
       color: var(--accent);
       border-left-color: var(--accent);
-      background: rgba(16, 185, 129, 0.06);
+      background: color-mix(in srgb, var(--accent) 6%, transparent);
     }
 
     #slide-nav a.section-link {
@@ -87,14 +111,26 @@
     }
 
     #slide-nav a.appendix {
-      color: #f87171;
+      color: var(--bad);
       font-size: 0.68rem;
     }
 
     /* Reveal overrides */
-    .reveal-viewport { background: var(--bg); }
+    .reveal-viewport {
+      background:
+        radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--cat) 9%, transparent), transparent 60%),
+        radial-gradient(1000px 500px at -5% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+        var(--bg);
+    }
 
     .reveal {
+      --r-background-color: var(--bg);
+      --r-main-color: var(--text);
+      --r-heading-color: var(--text);
+      --r-link-color: var(--accent);
+      --r-main-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --r-heading-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --r-code-font: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       margin-left: var(--sidebar-w);
       width: calc(100% - var(--sidebar-w));
     }
@@ -119,8 +155,8 @@
       align-items: center;
       padding: 0.65rem 0 0;
       font-size: 0.65em;
-      color: var(--text-muted);
-      border-top: 1px solid #1e293b;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
     }
 
     .slide-footer .section-label { color: var(--accent); }
@@ -142,7 +178,7 @@
 
     .reveal h1 { font-size: 1.85em; font-weight: 700; }
     .reveal h2 { font-size: 1.6em; font-weight: 600; color: var(--accent); margin-bottom: 0.55em; }
-    .reveal h3 { font-size: 1.1em; color: var(--text-muted); font-weight: 500; }
+    .reveal h3 { font-size: 1.1em; color: var(--muted); font-weight: 500; }
 
     .reveal p, .reveal li {
       font-size: var(--slide-body);
@@ -154,22 +190,22 @@
     .reveal li { margin-bottom: 0.5em; }
     .reveal li::marker { color: var(--accent); }
 
-    .reveal strong { color: #fff; }
+    .reveal strong { color: var(--text); }
 
     .reveal .mono, .reveal code {
-      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       font-size: 0.88em;
       color: var(--accent);
-      background: rgba(16, 185, 129, 0.1);
+      background: var(--code-bg);
       padding: 0.1em 0.35em;
       border-radius: 3px;
     }
 
     .chip {
       display: inline-block;
-      background: var(--chip-bg);
-      color: var(--chip);
-      border: 1px solid rgba(251, 191, 36, 0.4);
+      background: color-mix(in srgb, var(--warn) 15%, transparent);
+      color: var(--warn);
+      border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent);
       border-radius: 4px;
       padding: 0.15em 0.5em;
       font-size: 0.85em;
@@ -180,11 +216,31 @@
     /* Title slide */
     .title-slide {
       background:
-        linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+        linear-gradient(color-mix(in srgb, var(--accent) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 3%, transparent) 1px, transparent 1px);
       background-size: 40px 40px;
       justify-content: flex-start;
       padding: 0.85rem 1.5rem 0;
+    }
+
+    /* Kicker/eyebrow styled like the shared .page-badge pill; overlaid
+       top-right (clear of the h1 text) so it adds no height to the flex
+       column - the title slide is packed exactly full. */
+    .title-slide .kicker {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.5rem;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cat);
+      background: color-mix(in srgb, var(--cat) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+      border-radius: 999px;
+      padding: 3px 11px;
+      margin: 0;
+      line-height: 1.4;
     }
 
     .title-slide .title-body {
@@ -196,7 +252,7 @@
       overflow: hidden;
     }
 
-    .title-slide h1 { font-size: 1.65em; font-weight: 700; max-width: 95%; margin: 0; line-height: 1.2; color: #fff; }
+    .title-slide h1 { font-size: 1.65em; font-weight: 700; max-width: 95%; margin: 0; line-height: 1.2; color: var(--text); }
     .title-slide li.title-headline {
       font-size: 1.15em;
       font-weight: 600;
@@ -206,8 +262,8 @@
       line-height: 1.25;
     }
     .title-slide li.title-headline::before { content: none; }
-    .title-slide .subtitle { font-size: 0.9em; color: var(--text-muted); margin: 0.35rem 0 0.65rem; line-height: 1.3; }
-    .title-slide .date-line { font-size: 0.65em; color: var(--text-muted); margin-top: 0.65rem; }
+    .title-slide .subtitle { font-size: 0.9em; color: var(--muted); margin: 0.35rem 0 0.65rem; line-height: 1.3; }
+    .title-slide .date-line { font-size: 0.65em; color: var(--muted); margin-top: 0.65rem; }
 
     .title-slide ul { list-style: none; padding: 0; margin: 0.75rem 0 0; flex: 1; justify-content: center; }
     .title-slide li { font-size: 0.88em; padding-left: 1.1em; position: relative; margin-bottom: 0.35em; line-height: 1.38; }
@@ -231,7 +287,7 @@
     .section-slide .section-num {
       font-size: 4em;
       font-weight: 800;
-      color: rgba(16, 185, 129, 0.15);
+      color: color-mix(in srgb, var(--accent) 15%, transparent);
       line-height: 1;
     }
 
@@ -242,7 +298,7 @@
     }
 
     .section-slide p {
-      color: var(--text-muted);
+      color: var(--muted);
       font-size: 1em;
       margin-top: 0.75rem;
     }
@@ -270,10 +326,10 @@
     }
 
     .ba-panel {
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       border-radius: 8px;
       overflow: hidden;
-      background: #1e293b;
+      background: var(--surface);
     }
 
     .ba-panel header {
@@ -284,8 +340,8 @@
       letter-spacing: 0.05em;
     }
 
-    .ba-panel.before header { background: #334155; color: var(--text-muted); }
-    .ba-panel.after header { background: var(--accent-dark); color: #fff; }
+    .ba-panel.before header { background: var(--surface-2); color: var(--muted); }
+    .ba-panel.after header { background: var(--good); color: var(--bg); }
 
     .ba-body { padding: 0.75rem; }
 
@@ -294,7 +350,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 0.4rem 0.6rem;
-      background: #0f172a;
+      background: var(--surface-2);
       border-radius: 4px;
       margin-bottom: 0.5rem;
       font-size: 0.8em;
@@ -302,7 +358,7 @@
 
     .mock-scope {
       background: var(--accent);
-      color: #04211a;
+      color: var(--bg);
       padding: 0.2rem 0.5rem;
       border-radius: 3px;
       font-weight: 600;
@@ -310,7 +366,7 @@
     }
 
     .mock-table {
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       border-radius: 4px;
       overflow: hidden;
     }
@@ -320,12 +376,12 @@
       grid-template-columns: 1fr 1fr 1fr;
       padding: 0.3rem 0.5rem;
       font-size: 0.75em;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid var(--border);
     }
 
-    .mock-table .row.head { background: #334155; font-weight: 600; }
+    .mock-table .row.head { background: var(--surface-2); font-weight: 600; }
     .mock-table .row.blended { opacity: 0.6; }
-    .mock-table .row.scoped { background: rgba(16, 185, 129, 0.08); }
+    .mock-table .row.scoped { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 
     .mock-kpis {
       display: grid;
@@ -335,8 +391,8 @@
     }
 
     .mock-kpi {
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 4px;
       padding: 0.4rem;
       text-align: center;
@@ -347,20 +403,20 @@
 
     /* HTML flow diagrams - no scroll, presentation-native */
     .flow-panel {
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.6rem 0.7rem;
       margin-top: 0.55rem;
     }
 
-    .flow-lane + .flow-lane { margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed #334155; }
+    .flow-lane + .flow-lane { margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px dashed var(--border); }
 
     .flow-lane-label {
       font-size: 0.62em;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: var(--text-muted);
+      color: var(--muted);
       margin-bottom: 0.35rem;
       font-weight: 600;
     }
@@ -374,8 +430,8 @@
     .flow-box {
       flex: 1;
       min-width: 0;
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 6px;
       padding: 0.3rem 0.35rem;
       text-align: center;
@@ -388,20 +444,20 @@
 
     .flow-box.mine {
       border-color: var(--accent);
-      background: rgba(16, 185, 129, 0.1);
-      box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.15);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 15%, transparent);
     }
 
     .flow-box strong {
       display: block;
-      color: #fff;
+      color: var(--text);
       font-size: 1.08em;
       font-weight: 600;
     }
 
     .flow-box span {
       display: block;
-      color: var(--text-muted);
+      color: var(--muted);
       font-size: 0.88em;
       margin-top: 0.12em;
     }
@@ -428,8 +484,8 @@
       flex-direction: column;
       gap: 0.2rem;
       margin-top: 0.55rem;
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.6rem 0.7rem;
     }
@@ -445,7 +501,7 @@
       font-size: 0.58em;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--text-muted);
+      color: var(--muted);
       font-weight: 600;
       line-height: 1.2;
     }
@@ -459,8 +515,8 @@
     .arch-cell {
       flex: 1;
       min-width: 5em;
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 6px;
       padding: 0.35rem 0.45rem;
       font-size: 0.58em;
@@ -470,11 +526,11 @@
 
     .arch-cell.mine {
       border-color: var(--accent);
-      background: rgba(16, 185, 129, 0.1);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
     }
 
-    .arch-cell strong { display: block; color: #fff; font-weight: 600; }
-    .arch-cell span { color: var(--text-muted); font-size: 0.9em; }
+    .arch-cell strong { display: block; color: var(--text); font-weight: 600; }
+    .arch-cell span { color: var(--muted); font-size: 0.9em; }
 
     .arch-chevron-row {
       text-align: center;
@@ -490,15 +546,15 @@
       grid-template-columns: repeat(5, 1fr);
       gap: 0.3rem;
       margin-top: 0.55rem;
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.55rem 0.65rem;
     }
 
     .seq-step {
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 6px;
       padding: 0.35rem 0.3rem;
       font-size: 0.54em;
@@ -507,7 +563,7 @@
       position: relative;
     }
 
-    .seq-step.mine { border-color: var(--accent); background: rgba(16, 185, 129, 0.08); }
+    .seq-step.mine { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
 
     .seq-step .seq-num {
       display: block;
@@ -517,8 +573,8 @@
       margin-bottom: 0.15em;
     }
 
-    .seq-step strong { display: block; color: #fff; font-size: 1.02em; }
-    .seq-step span { color: var(--text-muted); font-size: 0.88em; }
+    .seq-step strong { display: block; color: var(--text); font-size: 1.02em; }
+    .seq-step span { color: var(--muted); font-size: 0.88em; }
 
     /* Cache / materialisation tier diagram */
     .cache-tier {
@@ -526,22 +582,22 @@
       grid-template-columns: 1fr 1fr;
       gap: 0.45rem;
       margin-top: 0.5rem;
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.55rem 0.65rem;
     }
 
     .cache-path {
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 6px;
       padding: 0.45rem 0.5rem;
     }
 
     .cache-path.hot {
       border-color: var(--accent);
-      box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.12);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
     }
 
     .cache-path-label {
@@ -553,7 +609,7 @@
     }
 
     .cache-path.hot .cache-path-label { color: var(--accent); }
-    .cache-path.cold .cache-path-label { color: var(--text-muted); }
+    .cache-path.cold .cache-path-label { color: var(--muted); }
 
     .cache-mini-row {
       display: flex;
@@ -565,8 +621,8 @@
     }
 
     .cache-mini-box {
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 4px;
       padding: 0.2rem 0.3rem;
       text-align: center;
@@ -576,20 +632,20 @@
 
     .cache-path.hot .cache-mini-box.highlight {
       border-color: var(--accent);
-      background: rgba(16, 185, 129, 0.08);
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
     }
 
-    .cache-mini-box strong { display: block; color: #fff; font-size: 1.02em; }
-    .cache-mini-box span { color: var(--text-muted); font-size: 0.85em; }
+    .cache-mini-box strong { display: block; color: var(--text); font-size: 1.02em; }
+    .cache-mini-box span { color: var(--muted); font-size: 0.85em; }
 
     .cache-mini-arrow { color: var(--accent); font-size: 0.85em; flex-shrink: 0; }
 
     .cache-path-note {
       font-size: 0.5em;
-      color: var(--text-muted);
+      color: var(--muted);
       margin-top: 0.35rem;
       line-height: 1.35;
-      border-top: 1px solid #334155;
+      border-top: 1px solid var(--border);
       padding-top: 0.3rem;
     }
 
@@ -598,18 +654,18 @@
     .cache-tier-footer {
       grid-column: 1 / -1;
       font-size: 0.52em;
-      color: var(--text-muted);
+      color: var(--muted);
       text-align: center;
       padding-top: 0.35rem;
-      border-top: 1px dashed #334155;
+      border-top: 1px dashed var(--border);
       line-height: 1.4;
     }
 
-    .cache-tier-footer strong { color: #fff; }
+    .cache-tier-footer strong { color: var(--text); }
 
     .diagram-caption {
       font-size: 0.68em;
-      color: var(--text-muted);
+      color: var(--muted);
       margin-top: 0.35rem;
       font-style: italic;
     }
@@ -632,9 +688,9 @@
       min-height: 8.5rem;
       display: block;
       border-radius: 6px;
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       object-fit: contain;
-      background: #1e293b;
+      background: var(--surface);
     }
 
     .tech-pics img.tech-pics-wide,
@@ -712,9 +768,9 @@
 
     /* Progress bar accent */
     .appendix-banner {
-      background: rgba(248, 113, 113, 0.15);
-      border: 1px solid #f87171;
-      color: #fca5a5;
+      background: color-mix(in srgb, var(--bad) 15%, transparent);
+      border: 1px solid var(--bad);
+      color: var(--bad);
       padding: 0.5rem 1rem;
       border-radius: 6px;
       font-size: 0.75em;
@@ -727,9 +783,9 @@
 
     .qa-details {
       margin-bottom: 0.5rem;
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       border-radius: 6px;
-      background: #1e293b;
+      background: var(--surface);
     }
 
     .qa-details summary {
@@ -752,21 +808,21 @@
     .qa-details .answer {
       padding: 0 0.75rem 0.6rem;
       font-size: 0.68em;
-      color: var(--text-muted);
+      color: var(--muted);
       font-style: italic;
-      border-top: 1px solid #334155;
+      border-top: 1px solid var(--border);
     }
 
     .script-block {
       font-size: 0.68em;
       line-height: 1.5;
-      color: var(--text-muted);
+      color: var(--muted);
       margin-bottom: 0.75rem;
     }
 
     .script-block .time {
       color: var(--accent);
-      font-family: "SF Mono", monospace;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       font-weight: 600;
     }
 
@@ -785,11 +841,11 @@
       right: 1.25rem;
       z-index: 200;
       padding: 0.45rem 0.75rem;
-      background: rgba(10, 15, 30, 0.92);
-      border: 1px solid #334155;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 0.72rem;
-      color: var(--text-muted);
+      color: var(--muted);
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.25s ease;
@@ -802,7 +858,7 @@
       min-width: 1.1rem;
       padding: 0.05rem 0.35rem;
       margin: 0 0.1rem;
-      border: 1px solid #475569;
+      border: 1px solid var(--border);
       border-radius: 3px;
       font-family: inherit;
       font-size: 0.9em;
@@ -811,7 +867,7 @@
     }
 
     /* Appendix */
-    .reveal .progress { background: #1e293b; height: 4px; }
+    .reveal .progress { background: var(--border); height: 4px; }
     .reveal .progress span { background: var(--accent); }
 
     .reveal .controls { color: var(--accent); }
@@ -870,6 +926,7 @@
     <!-- SLIDE 0 - Title -->
     <section data-section="Title" class="title-slide" data-nav-title="Title">
       <div class="title-body">
+      <p class="kicker">Case Study</p>
       <h1>Calculated Metrics Platform</h1>
       <p class="subtitle">Product, Architecture &amp; Delivery Walkthrough</p>
       <ul>
@@ -905,7 +962,7 @@
         <div class="ba-panel before">
           <header>Before - spreadsheet chaos</header>
           <div class="ba-body">
-            <div class="mock-header"><span>Finance model v3.xlsx</span><span style="color:#f87171;">⚠ 3 versions</span></div>
+            <div class="mock-header"><span>Finance model v3.xlsx</span><span style="color:var(--bad);">⚠ 3 versions</span></div>
             <div class="mock-table">
               <div class="row head"><span>Source</span><span>KPI A</span><span>KPI B</span></div>
               <div class="row blended"><span>Ops spreadsheet</span><span>14.2%</span><span>1.8×</span></div>
@@ -913,7 +970,7 @@
               <div class="row blended"><span>External deck (manual)</span><span>15.0%</span><span>1.9×</span></div>
             </div>
             <div class="mock-kpis">
-              <div class="mock-kpi"><div class="val" style="color:#f87171;">?</div>Inconsistent</div>
+              <div class="mock-kpi"><div class="val" style="color:var(--bad);">?</div>Inconsistent</div>
               <div class="mock-kpi"><div class="val">Days</div>Reconcile</div>
               <div class="mock-kpi"><div class="val">Off-platform</div>Workflow</div>
             </div>
@@ -986,7 +1043,7 @@
       <p class="diagram-caption">Top: how I delivered (PRD/SDD + AI under guardrails). Bottom: transform → validate → export at runtime.</p>
       <div class="slide-footer"><span class="section-label">Context</span></div>
       <aside class="notes">
-        This slide is the delivery story. In one sprint we went discovery to production by being ruthless about spec-first work. I wrote the PRD with PM - problem, users, acceptance criteria, success metrics - then the SDD: architecture, API contracts, validation rules, test plan. Only then did AI-assisted implementation kick in for scaffolding, mocks, BFF routes, and test parity. I reviewed every diff; metric definitions and calculation correctness never went through AI. CI was the gate; I owned merge and production. The bottom of the diagram is what shipped: definitions feed the rules engine, we validate before serve, BFF shapes the response, users get visualisation and export. Same pattern I'd use on Activation: spec the transform, validate the output, AI on the boring parts, engineer on the rules.
+        This slide is the delivery story. In one sprint we went discovery to production by being ruthless about spec-first work. I wrote the PRD with PM - problem, users, acceptance criteria, success metrics - then the SDD: architecture, API contracts, validation rules, test plan. Only then did AI-assisted implementation kick in for scaffolding, mocks, BFF routes, and test parity. I reviewed every diff; metric definitions and calculation correctness never went through AI. CI was the gate; I owned merge and production. The bottom of the diagram is what shipped: definitions feed the rules engine, we validate before serve, BFF shapes the response, users get visualisation and export. Same pattern I'd use on a syndication/activation product: spec the transform, validate the output, AI on the boring parts, engineer on the rules.
       </aside>
     </section>
 
@@ -1232,7 +1289,7 @@
     <section data-section="Appendix" data-nav-title="Deep-Dive Q&amp;A">
       <div class="appendix-banner">⚠ Prep only - practise privately; never reference this in the interview</div>
       <h2>Hiring Manager Deep-Dive Q&amp;A</h2>
-      <p style="font-size:0.75em;color:var(--text-muted);">For rehearsal only. Answer conversationally - do not sound rehearsed.</p>
+      <p style="font-size:0.75em;color:var(--muted);">For rehearsal only. Answer conversationally - do not sound rehearsed.</p>
       <div style="max-height:520px;overflow-y:auto;margin-top:0.5rem;">
         <details class="qa-details"><summary><strong>1. Walk me through data flow from source facts to displayed metric.</strong></summary><div class="answer">Warehouse facts + definition config → calculation service applies rules → validation → BFF shapes → UI/export. Browser never hits calculation service directly.</div></details>
         <details class="qa-details"><summary><strong>2. Why server-side calculation?</strong></summary><div class="answer">Single source of truth; client/export-then-calculate duplicates logic and drifts. Trust incident if two surfaces disagree.</div></details>
@@ -1272,7 +1329,7 @@
     <section data-section="Appendix" data-nav-title="Delivery Script">
       <div class="appendix-banner">⚠ Prep only - do not present</div>
       <h2>19-Minute Delivery Script</h2>
-      <p style="font-size:0.75em;color:var(--text-muted);">Akeneo asked for 15–20 min present. Stay under 19. Skip section dividers with Enter if running long.</p>
+      <p style="font-size:0.75em;color:var(--muted);">The hiring panel (a product-information-management platform) asked for 15–20 min present. Stay under 19. Skip section dividers with Enter if running long.</p>
       <div style="max-height:480px;overflow-y:auto;margin-top:0.75rem;">
         <div class="script-block"><span class="time">Timing guide</span><br>Problem 2 · Team &amp; delivery 2 · Architecture 3 · Decisions 3 · Technologies 1 · AI 1 · Challenges 2 · Impact 3 · Lessons 1 · Key takeaways 1 · Close · Total ≈ 18 min</div>
         <div class="script-block"><span class="time">[0:00–1:30] Hook</span><br>"Thanks. I'll walk through a product I led at Lantern - a calculated metrics platform. Customers were rebuilding derived KPIs in spreadsheets because they didn't trust in-product numbers. I owned delivery from metric definitions through calculation, API, and visualisation, using a specification-driven approach from discovery to production in one sprint. Stop me anywhere."</div>
@@ -1292,7 +1349,7 @@
     <section data-section="Appendix" data-nav-title="Focus Themes">
       <div class="appendix-banner">⚠ Prep only - rehearse the 'why' behind each decision; weave naturally into answers</div>
       <h2>Focus Themes - Demonstrating Depth + Product Mindset</h2>
-      <p style="font-size:0.72em;color:var(--text-muted);">Six lenses the panel scores on. Every technical choice should trace back to <strong>customer trust / correctness</strong> - that is the product currency here.</p>
+      <p style="font-size:0.72em;color:var(--muted);">Six lenses the panel scores on. Every technical choice should trace back to <strong>customer trust / correctness</strong> - that is the product currency here.</p>
       <div style="max-height:520px;overflow-y:auto;margin-top:0.4rem;">
 
         <h3 style="color:var(--accent);font-size:0.82em;margin:0.6rem 0 0.3rem;">1 · Requirement clarification</h3>
@@ -1422,7 +1479,7 @@
   }, true);
 
   function initTechPics() {
-    const picBase = new URL('pics/', window.location.href);
+    const picBase = new URL('../pics/', window.location.href);
     document.querySelectorAll('img[data-pic]').forEach(img => {
       img.src = new URL(img.dataset.pic, picBase).href;
     });
@@ -1521,5 +1578,6 @@
     });
   });
 </script>
+<script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../index.html';a.textContent='⌂ shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
 </body>
 </html>

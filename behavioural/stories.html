@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Story Bank · Behavioural</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+  --text:#1b2430; --muted:#5b6878;
+  --accent:#2563eb; --accent-2:#7c3aed;
+  --border:#dfe4ec; --code-bg:#eef1f5;
+  --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+  --text:#e6eaf0; --muted:#9aa7b8;
+  --accent:#5b9dff; --accent-2:#a78bfa;
+  --border:#2a3342; --code-bg:#10151d;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+    --text:#e6eaf0; --muted:#9aa7b8;
+    --accent:#5b9dff; --accent-2:#a78bfa;
+    --border:#2a3342; --code-bg:#10151d;
+    --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  }
+}
+:root{ --cat: var(--good); }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--cat) 9%, transparent), transparent 60%),
+    radial-gradient(1000px 500px at -5% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+code,pre,kbd{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+code{font-size:.88em;background:var(--code-bg);padding:.1rem .35rem;border-radius:4px}
+.page-head{max-width:1100px;margin:0 auto;padding:2.4rem 1.5rem .4rem}
+.page-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cat);
+  background:color-mix(in srgb, var(--cat) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  border-radius:999px;padding:3px 11px;margin-bottom:.9rem}
+.page-head h1{margin:0 0 .4rem;font-size:1.9rem;line-height:1.15;letter-spacing:-.02em}
+.page-sub{margin:0;color:var(--muted);font-size:1rem;max-width:72ch}
+main{max-width:1100px;margin:0 auto;padding:1rem 1.5rem 3rem}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.3rem 1.5rem;margin:1.1rem 0;
+  box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+             0 10px 28px -16px color-mix(in srgb, var(--text) 18%, transparent);
+  transition:border-color .15s, box-shadow .15s;
+}
+.card:hover{border-color:color-mix(in srgb, var(--cat) 45%, var(--border))}
+h2{display:flex;align-items:center;gap:.55rem;font-size:1.05rem;margin:.1rem 0 .8rem}
+h2::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--cat);flex:none}
+.story p{margin:.55rem 0}
+.story p:first-child{margin-top:0}
+ol.qs{margin:.2rem 0 0;padding-left:1.3rem}
+ol.qs li{margin:.45rem 0}
+ol.qs .also{color:var(--muted);font-size:.92em}
+ol.qs .also a{color:var(--cat);text-decoration:none}
+ol.qs .also a:hover{text-decoration:underline}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.2rem}
+.chip{font-size:12.5px;font-weight:600;color:var(--cat);
+  background:color-mix(in srgb, var(--cat) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  border-radius:999px;padding:3px 11px}
+.key{border-left:3px solid var(--cat);background:color-mix(in srgb, var(--cat) 6%, transparent);
+  border-radius:0 10px 10px 0;padding:.8rem 1rem;font-style:italic}
+h3{font-size:.98rem;margin:1.2rem 0 .3rem}
+.usewhen{margin-top:.7rem;padding-top:.55rem;border-top:1px dashed var(--border);
+  font-size:.85rem;color:var(--muted)}
+.usewhen strong{color:var(--accent-2);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.warn{color:var(--warn);font-size:.92rem}
+.ok{color:var(--good)}
+.src{color:var(--muted);font-size:.85rem;margin-top:2rem}
+.src a{color:var(--accent);text-decoration:none}
+.src a:hover{text-decoration:underline}
+.back{display:inline-block;font-size:.85rem;color:var(--muted);text-decoration:none;margin-bottom:.7rem}
+.back:hover{color:var(--cat)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
+th{background:var(--surface-2)}
+td a{color:var(--cat);text-decoration:none}
+td a:hover{text-decoration:underline}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s ease both}
+.rise:nth-child(2){animation-delay:.05s}
+.rise:nth-child(3){animation-delay:.1s}
+.rise:nth-child(4){animation-delay:.15s}
+.rise:nth-child(5){animation-delay:.2s}
+.rise:nth-child(6){animation-delay:.25s}
+.rise:nth-child(7){animation-delay:.3s}
+.rise:nth-child(8){animation-delay:.35s}
+.rise:nth-child(n+9){animation-delay:.4s}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="page-head rise">
+  <span class="page-badge">Behavioural</span>
+  <h1>📚 Story Bank</h1>
+  <p class="page-sub">One story per competency — synced from Notion; the wording there is canonical.</p>
+</header>
+<main>
+<section class="card rise"><h2>Stories</h2><ol class="qs">
+<li><a href="story/product-ownership.html" style="color:var(--cat);text-decoration:none;font-weight:600">📣 Product Ownership</a> <span class="also">— Product ownership, architecture and value delivery</span></li>
+<li><a href="story/ai-adoption.html" style="color:var(--cat);text-decoration:none;font-weight:600">🎟️ AI Adoption</a> <span class="also">— Scaling engineering effectiveness</span></li>
+<li><a href="story/mentorship.html" style="color:var(--cat);text-decoration:none;font-weight:600">🖋️ Mentorship</a> <span class="also">— Leadership through influence</span></li>
+<li><a href="story/technical-disagreement.html" style="color:var(--cat);text-decoration:none;font-weight:600">🔗 Technical Disagreement</a> <span class="also">— Influence without authority</span></li>
+<li><a href="story/cross-team-alignment.html" style="color:var(--cat);text-decoration:none;font-weight:600">🔎 Cross-Team Alignment</a> <span class="also">— Stakeholder management and communication</span></li>
+<li><a href="story/handling-ambiguity.html" style="color:var(--cat);text-decoration:none;font-weight:600">🌅 Handling Ambiguity</a> <span class="also">— Operating in uncertainty</span></li>
+</ol><p class="also" style="color:var(--muted);margin:.8rem 0 0">Not stories: <a href="questions.html" style="color:var(--cat)">🪀 Common Questions</a> — short answers (strengths, weaknesses, why-hire, career goals &amp; motivation…).</p></section>
+<section class="card rise"><h2>Competency mapping</h2><table><tr><th>Competency</th><th>Primary Story</th><th>Secondary Story</th></tr>
+<tr><td>Trustworthiness</td><td><a href="story/mentorship.html">Mentoring</a></td><td><a href="story/ai-adoption.html">AI Adoption</a></td></tr>
+<tr><td>Scaling</td><td><a href="story/ai-adoption.html">AI Adoption</a></td><td><a href="story/product-ownership.html">Calculated Metrics</a></td></tr>
+<tr><td>Customer Centricity</td><td><a href="story/product-ownership.html">Calculated Metrics</a></td><td><a href="story/cross-team-alignment.html">Cross-Team Alignment</a></td></tr>
+<tr><td>Value Delivery</td><td><a href="story/product-ownership.html">Calculated Metrics</a></td><td><a href="story/handling-ambiguity.html">Ambiguity</a></td></tr>
+<tr><td>Communication</td><td><a href="story/cross-team-alignment.html">Cross-Team Alignment</a></td><td><a href="story/mentorship.html">Mentoring</a></td></tr>
+<tr><td>Collaboration</td><td><a href="story/mentorship.html">Mentoring</a></td><td><a href="story/technical-disagreement.html">Technical Disagreement</a></td></tr>
+<tr><td>Critical Thinking</td><td><a href="story/technical-disagreement.html">Technical Disagreement</a></td><td><a href="story/product-ownership.html">Calculated Metrics</a></td></tr>
+<tr><td>Decision Making</td><td><a href="story/product-ownership.html">Calculated Metrics</a></td><td><a href="story/handling-ambiguity.html">Ambiguity</a></td></tr>
+<tr><td>Handling Ambiguity</td><td><a href="story/handling-ambiguity.html">Ambiguity</a></td><td><a href="story/product-ownership.html">Calculated Metrics</a></td></tr>
+<tr><td>Leadership</td><td><a href="story/mentorship.html">Mentoring</a></td><td><a href="story/ai-adoption.html">AI Adoption</a></td></tr>
+<tr><td>Stakeholder Management</td><td><a href="story/cross-team-alignment.html">Cross-Team Alignment</a></td><td><a href="story/technical-disagreement.html">Technical Disagreement</a></td></tr>
+</table></section>
+
+<section class="card rise">
+  <h2>Additional stories (local only)</h2>
+  <p class="also" style="color:var(--muted)">Not synced from Notion — edits here won't round-trip. STAR stories kept from the merged prep page, covering angles the seven Notion stories above don't. Keep each under 90 seconds spoken; same platform, different lenses — pick the angle they ask for, and have deeper detail ready for follow-ups.</p>
+</section>
+
+<section class="card rise">
+  <h2>Scope fight — MVP vs breadth <span class="chip">stakeholders</span></h2>
+  <p><strong>S:</strong> PM wanted ~10 metric types in sprint one; finance stakeholders needed every number traceable and auditable. Building everything risked missing the window or compromising correctness.<br>
+  <strong>T:</strong> Converge on a shippable, trustworthy first release.<br>
+  <strong>A:</strong> Facilitated and wrote the scope doc: MVP = 3 investor-ready KPIs (IRR, MOIC, net return) + export, with golden fixtures and validation metadata as the definition of done; breadth and self-serve authoring moved to iteration two. "Investor-ready" became a testable contract, not a debate.<br>
+  <strong>R:</strong> Both sides signed off. Shipped smaller but reliable; validated with users; extended from a solid foundation.</p>
+  <div class="key">"Cutting scope wasn't about doing less — it was about protecting the outcome."</div>
+  <p class="usewhen"><strong>Use when asked about:</strong> stakeholder disagreement · cutting scope for a milestone · prioritisation · working with PMs · handling ambiguity</p>
+</section>
+
+<section class="card rise">
+  <h2>Two-tier read model <span class="chip">technical trade-off</span></h2>
+  <p><strong>S:</strong> Live calculation of every metric was too slow for dashboards (3–8s); full pre-computation was too stale.<br>
+  <strong>T:</strong> Fast reads without lying about freshness.<br>
+  <strong>A:</strong> Two tiers — pinned/frequent metrics served from materialised snapshots (~120ms p95); ad-hoc metrics calculated live. UI shows <code>lastCalculatedAt</code> so staleness is explicit, with client-side cache dedupe on hot paths.<br>
+  <strong>R:</strong> Sub-second dashboards with an honest freshness contract. Users trust what they see; never show stale data as live.</p>
+  <p class="usewhen"><strong>Use when asked about:</strong> a trade-off you made · real-time / perceived performance · caching decisions · designing for data-heavy UI</p>
+</section>
+
+<section class="card rise">
+  <h2>Pre-GA production incident <span class="chip">production ownership</span></h2>
+  <p><strong>S:</strong> On-call through the design-partner phase before general rollout.<br>
+  <strong>T:</strong> Catch correctness issues before they reached all customers.<br>
+  <strong>A:</strong> A monitoring alert fired on an FX boundary case — a missing month-end rate caused a <em>visible</em> validation failure rather than a silent wrong number. Triaged, added a golden fixture for the pair/date, hotfixed before the all-tenant rollout; watched dashboards through launch.<br>
+  <strong>R:</strong> Zero P1 at GA. The failure mode worked as designed: visible failure, not silent drift.</p>
+  <p class="usewhen"><strong>Use when asked about:</strong> a production incident · on-call and reliability · quality under pressure · observability in practice</p>
+</section>
+
+<section class="card rise">
+  <h2>Legacy migration via feature flags <span class="chip">safe rollout</span></h2>
+  <p><strong>S:</strong> The new metrics had to ship without breaking existing export/reporting workflows customers depended on.<br>
+  <strong>T:</strong> Migrate customers from the legacy manual-export path safely.<br>
+  <strong>A:</strong> Tenant-level feature flag; UI falls back to the legacy export on rollback; old snapshots retained for forensics; two design-partner accounts before all-tenant GA.<br>
+  <strong>R:</strong> Zero P1 at launch; a real rollback story; design partners caught the FX edge case pre-GA.</p>
+  <p class="ok">Frame as <strong>strangler / incremental migration</strong> — not big-bang rewrite.</p>
+  <p class="usewhen"><strong>Use when asked about:</strong> legacy migration · de-risking a launch · incremental delivery · learning from customers</p>
+</section>
+
+<section class="card rise">
+  <h2>Technical leadership — specs, ADRs, contracts <span class="chip">tech lead</span></h2>
+  <p><strong>S:</strong> Platform feature crossing team boundaries, with an undecided hand-off to the data platform.<br>
+  <strong>T:</strong> Set technical direction the squad could execute and reuse.<br>
+  <strong>A:</strong> Authored the SDD; drove contract-first OpenAPI with generated clients; wrote a 3-option ADR for the data-platform hand-off (chose read-only mart for MVP rather than blocking on the ideal integration); established the 4-layer test checklist in the squad PR template.<br>
+  <strong>R:</strong> Next metric type needed no bespoke setup; patterns reused on later features; deployed and on-call through launch.</p>
+  <p class="usewhen"><strong>Use when asked about:</strong> technical leadership · influencing architecture · driving standards · making progress amid unknowns</p>
+</section>
+
+<section class="card rise">
+  <h2>Short supporting answers (local only)</h2>
+  <h3>How do you operate in ambiguity?</h3>
+  <p>Convert ambiguity into a written, testable scope doc. Facilitate alignment between breadth (PM) and auditability (stakeholders). Time-box spikes for unknowns — the two-hour client-side-calc spike; a half-day data-platform spike I'd run earlier next time. Ship to design partners, not all tenants, when correctness risk is high.</p>
+  <div class="key">"I don't wait for perfect requirements — I write the smallest testable scope doc, get sign-off, and ship to learn."</div>
+  <h3>How do you learn from customers?</h3>
+  <p>Design partners before full rollout — they surfaced FX and roll-up edge cases. Golden fixtures built from real customer models, not synthetic data. Post-launch: export-event analytics, support-ticket tags, time studies on reporting workflows. Qualitative signal: customers quoting in-product numbers in their own board materials.</p>
+  <h3>What did you deliberately not build?</h3>
+  <p>Client-side calculation (correctness). A generic chart builder (existing viz sufficient). Self-serve metric authoring UI (iteration two, not sprint-one scope creep). Saying no protected the definition of done and the launch date.</p>
+  <h3>What would you do differently?</h3>
+  <p>Instrument adoption/export analytics in the PRD on day one — we backfilled some analytics post-GA. Run the data-platform spike in discovery, not mid-build.</p>
+</section>
+
+<p class="src rise">Source of truth for the stories and competency mapping: <a href="https://app.notion.com/p/37c2502230b180efb53cf7c386ae272e">this story in Notion</a> — edit there, then re-sync. The "Additional stories" and "Short supporting answers" sections are local to this page.</p>
+</main>
+<script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../index.html';a.textContent='\u2302 shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
+</body>
+</html>

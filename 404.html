@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Interview Prep</title>
+<script>
+// GitHub Pages serves this for any path that isn't a real file. Preserve the
+// requested route as ?p= and bounce to the app shell, which restores it via
+// history.replaceState. Works at domain root and under a /<repo>/ base path.
+(function () {
+  var p = location.pathname;
+  var m = p.match(/^(.*?)\/(behavioural|system-design|case-studies|technical)(\/|$)/);
+  var base = m ? m[1] + '/' : '/';
+  location.replace(base + '?p=' + encodeURIComponent(p) + location.hash);
+})();
+</script>
+</head>
+<body>Redirecting…</body>
+</html>

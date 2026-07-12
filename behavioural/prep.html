@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Prepare · Behavioural</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+  --text:#1b2430; --muted:#5b6878;
+  --accent:#2563eb; --accent-2:#7c3aed;
+  --border:#dfe4ec; --code-bg:#eef1f5;
+  --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+  --text:#e6eaf0; --muted:#9aa7b8;
+  --accent:#5b9dff; --accent-2:#a78bfa;
+  --border:#2a3342; --code-bg:#10151d;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+    --text:#e6eaf0; --muted:#9aa7b8;
+    --accent:#5b9dff; --accent-2:#a78bfa;
+    --border:#2a3342; --code-bg:#10151d;
+    --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  }
+}
+:root{ --cat: var(--good); }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--cat) 9%, transparent), transparent 60%),
+    radial-gradient(1000px 500px at -5% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+code,pre,kbd{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.page-head{max-width:1100px;margin:0 auto;padding:2.4rem 1.5rem .4rem}
+.page-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cat);
+  background:color-mix(in srgb, var(--cat) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  border-radius:999px;padding:3px 11px;margin-bottom:.9rem}
+.page-head h1{margin:0 0 .4rem;font-size:1.9rem;line-height:1.15;letter-spacing:-.02em}
+.page-sub{margin:0;color:var(--muted);font-size:1rem;max-width:72ch}
+main{max-width:1100px;margin:0 auto;padding:1rem 1.5rem 3rem}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.3rem 1.5rem;margin:1.1rem 0;
+  box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+             0 10px 28px -16px color-mix(in srgb, var(--text) 18%, transparent);
+  transition:border-color .15s, box-shadow .15s;
+}
+.card:hover{border-color:color-mix(in srgb, var(--cat) 45%, var(--border))}
+h2{display:flex;align-items:center;gap:.55rem;font-size:1.05rem;margin:.1rem 0 .8rem}
+h2::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--cat);flex:none}
+h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-2);
+  margin:1.3rem 0 .45rem;font-weight:700}
+.card p{margin:.55rem 0}
+.card ul,.card ol{margin:.5rem 0;padding-left:1.35rem}
+.card li{margin-bottom:.4rem}
+.card li::marker{color:var(--accent)}
+.card a{color:var(--cat);text-decoration:none;font-weight:600}
+.card a:hover{text-decoration:underline}
+.warn{color:var(--warn);font-size:.92rem}
+.ok{color:var(--good)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s ease both}
+.rise:nth-child(2){animation-delay:.05s}
+.rise:nth-child(3){animation-delay:.1s}
+.rise:nth-child(4){animation-delay:.15s}
+.rise:nth-child(5){animation-delay:.2s}
+.rise:nth-child(6){animation-delay:.25s}
+.rise:nth-child(7){animation-delay:.3s}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="page-head rise">
+  <span class="page-badge">Behavioural</span>
+  <h1>How to Prepare</h1>
+  <p class="page-sub">Preparation playbook — what interviewers are testing, how to structure your intro, how to use your stories, questions to ask, and the day-of routine. The answers themselves live in Common Questions and the Story Bank.</p>
+</header>
+<main>
+
+<section class="card rise">
+  <h2>What interviewers are testing</h2>
+  <p>Every answer should reinforce one of these strengths:</p>
+  <ul>
+    <li><strong>Product engineer</strong> — owns outcomes, not tickets; measured impact (~65% adoption in 5 weeks; reporting 4–6h → ~20min; ~30% support-ticket drop)</li>
+    <li><strong>Ownership</strong> — PRD to production, deploy and on-call included; zero P1 at GA</li>
+    <li><strong>Architecture mindset</strong> — boundaries, validation, observability; contract-first APIs</li>
+    <li><strong>Communicator</strong> — scope docs, ADRs, stakeholder alignment across product/engineering/finance</li>
+    <li><strong>AI-forward with guardrails</strong> — daily Cursor/Claude Code, spec-driven, human-owned rules</li>
+    <li><strong>Team multiplier</strong> — mentoring, test templates, patterns the squad reuses</li>
+    <li><strong>Startup-compatible</strong> — fast delivery, ambiguity, reversible decisions, customer learning</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h2>How to structure "tell me about yourself"</h2>
+  <p>Memorise the structure, not the words. The scripted versions — one-line pitch, 90-second arc, 60-second short — live in <a href="questions.html">Common Questions</a>.</p>
+  <ul>
+    <li><strong>Structure:</strong> who you are → recent impact → how you work → why them</li>
+    <li><strong>Tone:</strong> conversational · confident · not a CV recitation</li>
+    <li>Pause after the recent-impact story — invite follow-ups</li>
+    <li>Mention AI naturally inside "how you work", not as a separate paragraph</li>
+    <li>End with the company hook so "why us?" doesn't repeat verbatim later</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h2>Using your stories</h2>
+  <ul>
+    <li>Stories are kept in <strong>STAR</strong> shape — Situation, Task, Action, Result — each with a "use when asked about…" tag</li>
+    <li>Keep each under <strong>90 seconds spoken</strong>. Same platform, different lenses — pick the angle they ask for. Have deeper detail ready for follow-ups</li>
+    <li>Pick <strong>2–3 stories per interview</strong>: one primary plus backups matched to the role</li>
+  </ul>
+  <h3>Where everything lives</h3>
+  <ul>
+    <li><a href="stories.html">Story Bank</a> — seven Notion-synced stories, the competency mapping, and local additional stories</li>
+    <li><a href="questions.html">Common Questions</a> — the full Q&amp;A bank: intro scripts, motivation &amp; fit, AI &amp; ways of working, quick answers</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h2>Questions to ask interviewers</h2>
+  <p class="warn">Pick 2–3 based on conversation flow — reference their earlier answers. Prepared questions signal seniority; save comp/logistics for the appropriate stage.</p>
+  <h3>Role (pick 1–2)</h3>
+  <ul>
+    <li>What does <strong>success look like in the first 3–6 months</strong> for this role?</li>
+    <li>What are the <strong>biggest technical challenges</strong> you expect this hire to solve?</li>
+    <li>What is the <strong>day-to-day balance of the role in practice</strong> (e.g. frontend vs backend, build vs operate)?</li>
+    <li>What <strong>distinguishes your strongest engineers</strong>?</li>
+  </ul>
+  <h3>Team &amp; engineering (pick 1–2)</h3>
+  <ul>
+    <li>What are the <strong>biggest engineering challenges</strong> facing the team right now?</li>
+    <li>What does the team own in the <strong>next six months</strong> — new verticals, new workflows, or platform scaling?</li>
+    <li>How is <strong>AI currently used</strong> across engineering — tools, workflows, guardrails?</li>
+    <li>What does the <strong>paved road</strong> look like — from PR to preview environment to production?</li>
+    <li>How do engineers <strong>partner with domain experts</strong> day-to-day?</li>
+    <li>What does <strong>mentoring and code review</strong> look like for senior engineers here?</li>
+    <li>How are squads structured — PM, design, data roles?</li>
+    <li>Where are the hardest <strong>scaling bottlenecks</strong> — ingestion, search, or serving?</li>
+  </ul>
+  <h3>Company &amp; culture (pick 1)</h3>
+  <ul>
+    <li>How much <strong>ownership do engineers have</strong> over product decisions?</li>
+    <li>How do teams <strong>balance experimentation and reliability</strong> — especially where trust or compliance is on the line?</li>
+    <li>How does the company organise <strong>ownership between product, engineering and design</strong>?</li>
+    <li>How do you <strong>measure the success</strong> of what engineering ships?</li>
+  </ul>
+  <h3>Comp &amp; logistics (only if the stage is right)</h3>
+  <ul>
+    <li>What's the compensation band for this level — base vs total?</li>
+    <li>How does equity work — options, scheme, vesting schedule?</li>
+    <li>Hybrid expectations — days in office?</li>
+    <li>Notice period / start timeline</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h2>Day-of checklist — 30 minutes before</h2>
+  <ul>
+    <li>Rehearse the <strong>90-second intro</strong> once, out loud (<a href="questions.html">Common Questions</a>)</li>
+    <li>Re-read the <strong>"why this company"</strong> answer with the three slots filled for today's company</li>
+    <li>Primary story ready: <strong><a href="stories.html">calculated metrics</a></strong> (2-minute version) — plus 2 backups matched to the role (AI adoption for AI-flavoured roles; legacy migration / two-tier trade-off for platform roles)</li>
+    <li><strong>Measure-success list</strong> and AI guardrails one-liner fresh</li>
+    <li>Pick <strong>3 questions</strong> from "Questions to ask" — matched to the interviewer's role</li>
+    <li>Verify impact numbers in case they probe (~65% adoption, ~30% ticket drop, 4–6h → ~20min, zero P1)</li>
+    <li>Test camera/mic if remote; water, quiet space, charger; this page open for prep breaks</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h2>Pitfalls — what NOT to do</h2>
+  <ul>
+    <li>Don't spend 15 minutes on framework preferences or library debates (React vs Vue, Jest vs Vitest…)</li>
+    <li>Don't recite API minutiae or lecture on LLM/transformer internals</li>
+    <li>Don't claim AI wrote your production rules or validation logic</li>
+    <li>Don't propose "connect everything to the agent" without governance</li>
+    <li>Don't answer in theory — anchor every answer to something you shipped or would ship in week one</li>
+    <li>Don't pretend deep domain expertise you don't have — use "professional finance audience" and "auditable metrics" instead</li>
+    <li>Don't bad-mouth your current employer, or incumbents in the target industry</li>
+    <li>Don't mention comp unless they raise it</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h2>Success criteria — what the interviewer should believe afterwards</h2>
+  <ul>
+    <li class="ok">✅ Strong senior <strong>product engineer</strong> — owns outcomes, not tickets</li>
+    <li class="ok">✅ <strong>Ownership</strong> — PRD to production, on-call included</li>
+    <li class="ok">✅ Good <strong>communicator</strong> — concise, structured; scope docs, ADRs, stakeholder alignment</li>
+    <li class="ok">✅ <strong>Architecture mindset</strong> — boundaries, validation, observability</li>
+    <li class="ok">✅ <strong>AI-forward with guardrails</strong> — practical builder, uses AI with discipline</li>
+    <li class="ok">✅ Can <strong>mentor</strong> and multiply the team</li>
+    <li class="ok">✅ Helps the team <strong>move faster without sacrificing trust</strong> — worth progressing</li>
+  </ul>
+  <p class="warn">If the interview runs short, make sure AI + ownership + product landed. If it runs long, don't repeat — deepen with examples. Close warmly: thank them, express genuine interest in the mission, ask your 2–3 questions.</p>
+</section>
+
+</main>
+<script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../index.html';a.textContent='⌂ shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
+</body>
+</html>

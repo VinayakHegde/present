@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Prep</title>
+<script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+  --text:#1b2430; --muted:#5b6878;
+  --accent:#2563eb; --accent-2:#7c3aed;
+  --border:#dfe4ec; --code-bg:#eef1f5;
+  --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+  --text:#e6eaf0; --muted:#9aa7b8;
+  --accent:#5b9dff; --accent-2:#a78bfa;
+  --border:#2a3342; --code-bg:#10151d;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+    --text:#e6eaf0; --muted:#9aa7b8;
+    --accent:#5b9dff; --accent-2:#a78bfa;
+    --border:#2a3342; --code-bg:#10151d;
+    --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; display:flex; background:var(--bg); color:var(--text);
+  font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+/* category colors — must match the pages' --cat values */
+.c-behavioural{--cat:var(--good)}
+.c-system-design{--cat:var(--accent)}
+.c-case-studies{--cat:var(--accent-2)}
+.c-technical{--cat:var(--warn)}
+/* ---------- sidebar ---------- */
+aside{
+  width:260px; min-width:260px; height:100vh; display:flex; flex-direction:column;
+  background:var(--surface); border-right:1px solid var(--border);
+}
+.brand{
+  display:flex; align-items:center; gap:8px; padding:14px 16px 10px;
+}
+.brand a{font-weight:700; font-size:15px; color:var(--text); text-decoration:none; flex:1}
+#themeBtn{
+  border:1px solid var(--border); background:var(--surface-2); color:var(--muted);
+  border-radius:8px; padding:4px 9px; cursor:pointer; font-size:12px;
+}
+#themeBtn:hover{color:var(--text)}
+.filter{padding:0 16px 10px}
+.filter input{
+  width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:8px;
+  background:var(--bg); color:var(--text); font-size:13px; outline:none;
+}
+.filter input:focus{border-color:var(--accent)}
+nav{flex:1; overflow-y:auto; padding:4px 8px 16px}
+.cat{margin:12px 8px 4px; font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted);
+  display:flex; align-items:center; gap:6px}
+.cat::before{content:''; width:8px; height:8px; border-radius:3px; background:var(--cat, var(--muted)); flex:none}
+nav a{
+  display:flex; align-items:center; padding:7px 10px; margin:1px 0; border-radius:8px;
+  color:var(--text); text-decoration:none; font-size:13.5px;
+}
+nav a .t{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+nav a:hover{background:var(--surface-2)}
+nav a.active{background:var(--cat, var(--accent)); color:var(--surface)}
+nav a.hidden{display:none}
+.chev{flex:none; margin-left:6px; font-size:10px; color:var(--muted);
+  transition:transform .15s; padding:2px 4px; border-radius:4px}
+.chev:hover{color:var(--text); background:var(--surface-2)}
+a.active .chev{color:var(--surface)}
+a.open .chev{transform:rotate(90deg)}
+nav .sub{display:none; margin:0 0 2px 13px; padding-left:7px;
+  border-left:1px solid var(--border)}
+nav .sub.open{display:block}
+nav .sub a{font-size:12.8px; padding:5px 10px; color:var(--muted)}
+nav .sub a:hover{color:var(--text)}
+nav .sub a.active{color:var(--surface)}
+.cat.hidden{display:none}
+.side-foot{
+  padding:10px 16px; border-top:1px solid var(--border);
+  font-size:11.5px; color:var(--muted);
+}
+.side-foot a{color:var(--accent); text-decoration:none}
+.side-foot kbd{
+  background:var(--surface-2); border:1px solid var(--border); border-radius:4px;
+  padding:0 4px; font:11px ui-monospace, monospace;
+}
+/* ---------- main ---------- */
+main{flex:1; height:100vh; display:flex; flex-direction:column; min-width:0}
+iframe{flex:1; width:100%; border:0; background:var(--bg); display:none}
+#welcome{flex:1; overflow-y:auto; padding:48px; display:none;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--accent-2) 8%, transparent), transparent 60%),
+    radial-gradient(1000px 500px at -5% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+    var(--bg);
+}
+#welcome.show{display:block}
+iframe.show{display:block}
+#welcome h1{margin:0 0 6px; font-size:26px; letter-spacing:-.02em}
+#welcome p.sub{color:var(--muted); margin:0 0 32px}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; max-width:920px}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  padding:16px 18px; animation:rise .5s ease both;
+  box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+             0 10px 28px -16px color-mix(in srgb, var(--text) 18%, transparent);
+  transition:border-color .15s, box-shadow .15s;
+}
+.card:hover{border-color:color-mix(in srgb, var(--cat, var(--accent)) 45%, var(--border))}
+.card:nth-child(2){animation-delay:.05s}
+.card:nth-child(3){animation-delay:.1s}
+.card:nth-child(4){animation-delay:.15s}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.card h2{margin:0 0 8px; font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--cat, var(--muted)); display:flex; align-items:center; gap:7px}
+.card h2::before{content:''; width:8px; height:8px; border-radius:3px; background:var(--cat, var(--muted)); flex:none}
+.card a{display:block; padding:4px 0; color:var(--text); text-decoration:none; font-size:14px}
+.card a:hover{color:var(--cat, var(--accent))}
+@media (max-width:720px){ aside{display:none} }
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">
+    <a href="/" data-route="">Interview Prep</a>
+    <button id="themeBtn" title="Cycle theme (auto → light → dark)">◐ auto</button>
+  </div>
+  <div class="filter"><input id="filter" type="search" placeholder="Filter pages…  ( / )"></div>
+  <nav id="nav"></nav>
+  <div class="side-foot">
+    <span id="rawLink"></span>
+    <div><kbd>[</kbd> <kbd>]</kbd> prev / next · <kbd>/</kbd> filter</div>
+  </div>
+</aside>
+<main>
+  <div id="welcome"></div>
+  <iframe id="frame" title="content"></iframe>
+</main>
+
+<script>
+const PAGES = [
+  {cat:'Behavioural',   title:'How to Prepare',                   path:'behavioural/prep'},
+  {cat:'Behavioural',   title:'Common Questions',                 path:'behavioural/questions'},
+  {cat:'Behavioural',   title:'Story Bank',                       path:'behavioural/stories'},
+  {cat:'Behavioural',   title:'Product Ownership',       parent:'behavioural/stories', path:'behavioural/story/product-ownership'},
+  {cat:'Behavioural',   title:'AI Adoption',             parent:'behavioural/stories', path:'behavioural/story/ai-adoption'},
+  {cat:'Behavioural',   title:'Mentorship',              parent:'behavioural/stories', path:'behavioural/story/mentorship'},
+  {cat:'Behavioural',   title:'Technical Disagreement',  parent:'behavioural/stories', path:'behavioural/story/technical-disagreement'},
+  {cat:'Behavioural',   title:'Cross-Team Alignment',    parent:'behavioural/stories', path:'behavioural/story/cross-team-alignment'},
+  {cat:'Behavioural',   title:'Handling Ambiguity',      parent:'behavioural/stories', path:'behavioural/story/handling-ambiguity'},
+  {cat:'System Design', title:'Stock Price Alert System',         path:'system-design/stock-price-alerts'},
+  {cat:'System Design', title:'Fair Draw Winner Selection',       path:'system-design/fair-draw-selection'},
+  {cat:'System Design', title:'Two-Tier Read Model',              path:'system-design/two-tier-read-model'},
+  {cat:'System Design', title:'AI Suggestion Pipeline',           path:'system-design/ai-suggestion-pipeline'},
+  {cat:'Case Studies',  title:'Calculated Metrics Platform (deck)', path:'case-studies/calculated-metrics-platform'},
+  {cat:'Case Studies',  title:'Take-Home Case Study Review',      path:'case-studies/take-home-review'},
+  {cat:'Technical',     title:'Technical Reference',              path:'technical/reference'},
+];
+
+// BASE = where the shell lives ('/' locally, '/<repo>/' on GitHub project pages).
+// Derived by stripping a known category route off the current path, so the shell
+// works no matter which route it was loaded (or SPA-fallback-served) under.
+const CAT_RE = /(behavioural|system-design|case-studies|technical)(\/.*)?$/;
+let BASE = location.pathname.replace(/index\.html$/, '').replace(CAT_RE, '');
+if (!BASE.endsWith('/')) BASE += '/';
+
+// route: BASE + path with a trailing '/index' stripped; file: BASE + path + '.html'
+const routeOf = p => BASE + p.path.replace(/\/index$/, '');
+const fileOf  = p => BASE + p.path + '.html';
+
+const nav = document.getElementById('nav');
+const frame = document.getElementById('frame');
+const welcome = document.getElementById('welcome');
+const rawLink = document.getElementById('rawLink');
+const filter = document.getElementById('filter');
+const themeBtn = document.getElementById('themeBtn');
+
+/* ---------- build sidebar ---------- */
+const catClass = c => 'c-' + c.toLowerCase().replace(/\s+/g, '-');
+const manualOpen = new Set();
+let lastCat = null, subWrap = null;
+const parentLinks = new Map();   // parent path -> its <a>
+for (const p of PAGES) {
+  if (p.cat !== lastCat) {
+    const h = document.createElement('div');
+    h.className = 'cat ' + catClass(p.cat); h.textContent = p.cat; h.dataset.cat = p.cat;
+    nav.appendChild(h); lastCat = p.cat; subWrap = null;
+  }
+  const a = document.createElement('a');
+  a.href = routeOf(p); a.className = catClass(p.cat);
+  a.dataset.route = routeOf(p); a.dataset.cat = p.cat;
+  const t = document.createElement('span');
+  t.className = 't'; t.textContent = p.title;
+  a.appendChild(t);
+  if (p.parent) {
+    if (!subWrap || subWrap.dataset.parent !== p.parent) {
+      subWrap = document.createElement('div');
+      subWrap.className = 'sub'; subWrap.dataset.parent = p.parent;
+      nav.appendChild(subWrap);
+      const pl = parentLinks.get(p.parent);
+      if (pl && !pl.querySelector('.chev')) {
+        const c = document.createElement('span');
+        c.className = 'chev'; c.textContent = '▸';
+        c.addEventListener('click', e => {
+          e.preventDefault(); e.stopPropagation();
+          manualOpen.has(p.parent) ? manualOpen.delete(p.parent) : manualOpen.add(p.parent);
+          updateSubs();
+        });
+        pl.appendChild(c);
+      }
+    }
+    subWrap.appendChild(a);
+  } else {
+    nav.appendChild(a); subWrap = null;
+    parentLinks.set(p.path, a);
+  }
+}
+
+/* a sub-group is open if manually toggled, or the active page is the parent or inside it */
+function updateSubs() {
+  document.querySelectorAll('nav .sub').forEach(sub => {
+    const parent = sub.dataset.parent;
+    const pl = parentLinks.get(parent);
+    const activeInside = !!sub.querySelector('a.active') || (pl && pl.classList.contains('active'));
+    const open = manualOpen.has(parent) || activeInside || sub.classList.contains('force');
+    sub.classList.toggle('open', open);
+    if (pl) pl.classList.toggle('open', open);
+  });
+}
+
+/* ---------- welcome view ---------- */
+(function buildWelcome(){
+  const byCat = {};
+  for (const p of PAGES) { if (!p.parent) (byCat[p.cat] ||= []).push(p); }
+  const childCount = path => PAGES.filter(p => p.parent === path).length;
+  let html = '<h1>Interview Prep</h1><p class="sub">One place for behavioural prep, system designs, case studies and technical revision. Every page also opens standalone.</p><div class="cards">';
+  for (const [cat, pages] of Object.entries(byCat)) {
+    html += `<div class="card ${catClass(cat)}"><h2>${cat}</h2>` +
+      pages.map(p => {
+        const n = childCount(p.path);
+        return `<a href="${routeOf(p)}" data-route="${routeOf(p)}">${p.title}${n ? ` <span style="color:var(--muted);font-size:.85em">· ${n} stories</span>` : ''}</a>`;
+      }).join('') +
+      '</div>';
+  }
+  welcome.innerHTML = html + '</div>';
+})();
+
+/* ---------- routing ---------- */
+function render(route) {
+  if (route.length > 1) route = route.replace(/\/+$/, '');
+  const page = PAGES.find(p => routeOf(p) === route);
+  document.querySelectorAll('nav a').forEach(a =>
+    a.classList.toggle('active', a.dataset.route === route));
+  updateSubs();
+  if (!page) {
+    welcome.classList.add('show'); frame.classList.remove('show');
+    frame.removeAttribute('src');
+    rawLink.innerHTML = '';
+    document.title = 'Interview Prep';
+    return;
+  }
+  welcome.classList.remove('show'); frame.classList.add('show');
+  const file = fileOf(page);
+  // compare against the iframe's LIVE location, not the src attribute — links
+  // clicked inside the iframe navigate it without changing the attribute
+  let cur = frame.getAttribute('src');
+  try { if (frame.contentWindow.location.href !== 'about:blank') cur = frame.contentWindow.location.pathname; } catch (e) {}
+  if (cur !== file) frame.src = file;
+  rawLink.innerHTML = `<a href="${file}" target="_blank">open standalone ↗</a>`;
+  document.title = page.title + ' · Interview Prep';
+}
+
+function go(route, push = true) {
+  route = route || BASE;
+  if (push && location.pathname !== route) history.pushState({}, '', route);
+  render(route);
+}
+
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-route]');
+  if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  e.preventDefault();
+  go(a.dataset.route || BASE);
+});
+document.querySelector('.brand a').href = BASE;
+window.addEventListener('popstate', () => render(location.pathname));
+
+/* ---------- theme ---------- */
+function applyTheme(mode, save) {
+  const root = document.documentElement;
+  if (mode === 'light' || mode === 'dark') root.setAttribute('data-theme', mode);
+  else root.removeAttribute('data-theme');
+  themeBtn.textContent = mode === 'light' ? '☀ light' : mode === 'dark' ? '☾ dark' : '◐ auto';
+  if (save) {
+    try {
+      if (mode === 'auto') localStorage.removeItem('prep-theme');
+      else localStorage.setItem('prep-theme', mode);
+    } catch (e) {}
+  }
+  try {
+    const doc = frame.contentDocument;
+    if (doc) {
+      if (mode === 'light' || mode === 'dark') doc.documentElement.setAttribute('data-theme', mode);
+      else doc.documentElement.removeAttribute('data-theme');
+    }
+  } catch (e) {}
+}
+let themeMode = (() => { try { return localStorage.getItem('prep-theme') || 'auto'; } catch (e) { return 'auto'; } })();
+applyTheme(themeMode, false);
+themeBtn.addEventListener('click', () => {
+  themeMode = themeMode === 'auto' ? 'light' : themeMode === 'light' ? 'dark' : 'auto';
+  applyTheme(themeMode, true);
+});
+/* Links clicked INSIDE the iframe (story bank → story, cross-links) navigate the
+   iframe only; mirror each navigation into the browser URL and sidebar. */
+function syncFromFrame() {
+  let fp;
+  try { fp = frame.contentWindow.location.pathname; } catch (e) { return; }
+  const page = PAGES.find(p => fileOf(p) === fp);
+  if (!page || !frame.classList.contains('show')) return;
+  const route = routeOf(page);
+  if (location.pathname !== route) history.replaceState({}, '', route);
+  document.querySelectorAll('nav a').forEach(a =>
+    a.classList.toggle('active', a.dataset.route === route));
+  updateSubs();
+  rawLink.innerHTML = `<a href="${fp}" target="_blank">open standalone ↗</a>`;
+  document.title = page.title + ' · Interview Prep';
+}
+frame.addEventListener('load', () => { applyTheme(themeMode, false); frame.focus(); syncFromFrame(); });
+
+/* ---------- filter ---------- */
+filter.addEventListener('input', () => {
+  const q = filter.value.trim().toLowerCase();
+  const visibleCats = new Set();
+  document.querySelectorAll('nav a').forEach(a => {
+    const hit = !q || a.textContent.toLowerCase().includes(q) || a.dataset.cat.toLowerCase().includes(q);
+    a.classList.toggle('hidden', !hit);
+    if (hit) visibleCats.add(a.dataset.cat);
+  });
+  document.querySelectorAll('nav .cat').forEach(c =>
+    c.classList.toggle('hidden', !visibleCats.has(c.dataset.cat)));
+  // while filtering, force-open sub-groups that contain a match
+  document.querySelectorAll('nav .sub').forEach(sub =>
+    sub.classList.toggle('force', !!q && !!sub.querySelector('a:not(.hidden)')));
+  updateSubs();
+});
+
+/* ---------- keyboard ---------- */
+window.addEventListener('keydown', e => {
+  if (e.target === filter) { if (e.key === 'Escape') filter.blur(); return; }
+  if (e.key === '/') { e.preventDefault(); filter.focus(); filter.select(); return; }
+  if (e.key === '[' || e.key === ']') {
+    const i = PAGES.findIndex(p => routeOf(p) === location.pathname);
+    const n = e.key === ']'
+      ? (i < 0 ? 0 : Math.min(i + 1, PAGES.length - 1))
+      : (i < 0 ? PAGES.length - 1 : Math.max(i - 1, 0));
+    go(routeOf(PAGES[n]));
+  }
+});
+
+/* file:// fallback: pushState routing needs a server */
+if (location.protocol === 'file:') {
+  welcome.insertAdjacentHTML('afterbegin',
+    '<p style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--muted)">Opened via <code>file://</code> — navigation needs the dev server: run <code>./serve.py</code> and open <a href="http://localhost:8000">localhost:8000</a>. Individual pages still open fine directly.</p>');
+}
+
+/* GitHub Pages deep links: 404.html bounces to BASE?p=<original-path> */
+const deepLink = new URLSearchParams(location.search).get('p');
+if (deepLink && deepLink.startsWith('/')) history.replaceState({}, '', deepLink);
+render(location.pathname);
+</script>
+</body>
+</html>
