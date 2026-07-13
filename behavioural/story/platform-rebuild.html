@@ -4,7 +4,7 @@
 <script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Handling Ambiguity · Behavioural Story</title>
+<title>Platform Rebuild · Behavioural Story</title>
 <style>
 :root{
   color-scheme: light;
@@ -84,6 +84,10 @@ ol.qs .also a:hover{text-decoration:underline}
 .src a:hover{text-decoration:underline}
 .back{display:inline-block;font-size:.85rem;color:var(--muted);text-decoration:none;margin-bottom:.7rem}
 .back:hover{color:var(--cat)}
+.star-label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--cat);margin:1rem 0 .25rem}
+.star-label:first-child{margin-top:0}
+
 table{border-collapse:collapse;width:100%;font-size:.95rem}
 th,td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
 th{background:var(--surface-2)}
@@ -101,23 +105,35 @@ td a:hover{text-decoration:underline}
 <body>
 <header class="page-head rise">
   <a class="back" href="../stories.html">&larr; Story Bank</a><br><span class="page-badge">Behavioural · Story</span>
-  <h1>🌅 Handling Ambiguity</h1>
-  <p class="page-sub">Operating in uncertainty</p>
+  <h1>🏗️ Platform Rebuild</h1>
+  <p class="page-sub">Architecture and leadership at scale — local story, not yet in Notion</p>
 </header>
 <main>
-<section class="card rise"><h2>The story</h2><div class="story">
-<p>Many product problems begin with incomplete information and unclear requirements.</p>
-<p>Rather than waiting for certainty, I focus on identifying assumptions, reducing risk and validating ideas quickly.</p>
-<p>I break problems into smaller decisions, gather feedback early and iterate based on evidence.</p>
-<p>I've found that successful delivery is usually less about perfect planning. It's more about making informed decisions. And it's about remaining adaptable as new information emerges.</p>
+<section class="card rise"><h2>The story — STAR</h2>
+<div class="story">
+<p class="star-label">Situation</p>
+<p>When I joined Lantern, part of the product had been built by an external agency.</p>
+<p>The product worked, but every new feature introduced regressions. Different teams were blocking each other because everything was tightly connected.</p>
+<p class="star-label">Task</p>
+<p>My goal was to build a better foundation. Multiple teams should be able to work independently, without slowing each other down.</p>
+<p class="star-label">Action</p>
+<p>I first spent time understanding the product and how every team worked.</p>
+<p>I didn't immediately suggest a new framework.</p>
+<p>I worked with engineering leadership, backend engineers and Product to understand what was causing the problems.</p>
+<p>We agreed to split the system into smaller frontend applications with clear responsibilities.</p>
+<p>We also agreed API contracts early so frontend and backend teams could work in parallel.</p>
+<p>Instead of rebuilding everything, we migrated one area at a time.</p>
+<p>At the same time, I introduced shared standards and documentation so every team followed the same approach.</p>
+<p class="star-label">Result</p>
+<p>Engineering grew from one frontend engineer to around twenty engineers across four teams.</p>
+<p>Teams could deploy independently.</p>
+<p>Frontend could prototype before backend was finished.</p>
+<p>The number of integration issues reduced significantly.</p>
+<p>I also became the person other teams came to when they had frontend architecture questions.</p>
 </div></section>
-<section class="card rise"><h2>Questions this story answers</h2><ol class="qs">
-<li>Tell me about a decision you made without all the information. <span class="also">— also: <a href="product-ownership.html">Product Ownership</a></span></li>
-<li>How do you deal with ambiguity?</li>
-<li>Tell me about a situation where requirements were unclear.</li>
-</ol></section>
-<section class="card rise"><h2>Covers</h2><div class="chips"><span class="chip">✅ Decision Making</span><span class="chip">✅ Critical Thinking</span><span class="chip">✅ Value Delivery</span></div></section>
-<p class="src rise">Source of truth: <a href="https://app.notion.com/p/37c2502230b1804cad36debc3fc93119">this story in Notion</a> — edit there, then re-sync.</p>
+<section class="card rise"><h2>Learning</h2><p class="key">Architecture is not about choosing technology. It's about helping teams move faster together.</p></section>
+<section class="card rise"><h2>Good for</h2><div class="chips"><span class="chip">✅ Leadership</span><span class="chip">✅ Ambiguity</span><span class="chip">✅ Architecture</span><span class="chip">✅ Stakeholder alignment</span><span class="chip">✅ Technical ownership</span></div></section>
+<p class="src rise">Local story — not yet in Notion. If it earns its keep, add it to the Notion story bank so both stay in sync.</p>
 </main>
 <script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../../index.html';a.textContent='\u2302 shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
 </body>

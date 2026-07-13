@@ -98,6 +98,14 @@ h3{font-size:1.05rem;margin:.1rem 0 .8rem}
 }
 .soundbite-label{display:block;font-size:.7rem;font-style:normal;text-transform:uppercase;
   letter-spacing:.07em;color:var(--accent);font-weight:700;margin-bottom:.35rem}
+.beats{margin:.7rem 0 0;padding:0;list-style:none}
+.beats li{display:flex;gap:.6rem;align-items:baseline;margin:.4rem 0;font-size:.93rem}
+.beats .b{flex:none;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--cat);background:color-mix(in srgb, var(--cat) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  border-radius:999px;padding:1px 9px;min-width:5.4em;text-align:center}
+.ladder{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.85rem;
+  color:var(--muted);background:var(--code-bg);border-radius:8px;padding:.5rem .8rem;margin:.6rem 0 0}
 .warn{color:var(--warn);font-size:.92rem}
 .ok{color:var(--good)}
 .table-wrap{overflow-x:auto;margin:.5rem 0;-webkit-overflow-scrolling:touch}
@@ -137,74 +145,72 @@ th{background:var(--surface-2)}
 </head>
 <body>
 <header class="page-head rise">
-  <span class="page-badge">Behavioural</span>
+  <span class="page-badge">Behavioural · Reference bank</span>
   <h1>🪀 Common Questions</h1>
-  <p class="page-sub">Full Q&amp;A bank — intro scripts, motivation &amp; fit, AI &amp; ways of working, plus quick answers synced from Notion. Delivery guidance lives in <a href="prep.html" style="color:var(--cat);text-decoration:none;font-weight:600">How to Prepare</a>.</p>
+  <p class="page-sub">Full Q&amp;A reference bank, ordered the way interviews actually flow: positioning → motivation → how I work → stories → leadership → self-awareness → AI → closing. For the five-minute scan before an interview, use <a href="flow.html" style="color:var(--cat);text-decoration:none;font-weight:600">Interview Flow</a>. Delivery guidance lives in <a href="prep.html" style="color:var(--cat);text-decoration:none;font-weight:600">How to Prepare</a>.</p>
 </header>
 <nav class="toc rise" id="toc" aria-label="On this page"></nav>
 <main>
 
-<h2 class="rise">Introduce yourself</h2>
+<h2 class="rise" id="intro-positioning">1 · Introduction &amp; positioning</h2>
 
 <section class="card rise">
-  <h3>One-line pitch (memorise)</h3>
-  <div class="soundbite">"I'm a senior engineer and Tech Lead who ships user-facing financial products end-to-end — React and TypeScript on the surface, with enough backend and architecture to own the full delivery. I care about product outcomes, not just tickets, and I've mentored engineers while owning production."</div>
-</section>
-
-<section class="card rise">
-  <h3>Canonical "tell me about yourself" (90-second arc)</h3>
+  <h3>The intro — "tell me about yourself" (~1 minute)</h3>
   <div class="soundbite">
-    <span class="soundbite-label">The arc</span>
-    "I'm a senior engineer and tech lead with 15 years building products end-to-end — mostly React and TypeScript on the surface, with enough backend and architecture to own the full delivery. At Lantern I lead work on a B2B finance data platform: I write PRDs and SDDs, design APIs and validation boundaries, and ship to production with full ownership. Recently I led a calculated metrics platform from discovery to production in one sprint — configurable KPIs, server-validated numbers, export and visualisation — using specification-driven development and AI-assisted implementation under my review. I'm looking for a role where engineers own product outcomes, move fast in ambiguity, and use AI seriously — not as a gimmick. [Company] stood out because <em>&lt;one-line hook from the "why this company" template&gt;</em>."
+    <span class="soundbite-label">Say this — short sentences, one breath each</span>
+    <p style="margin:.3rem 0">"I'm a product-minded technical lead with around 16 years of experience. My core stack is React and TypeScript. I know enough backend and architecture to own a delivery end to end.</p>
+    <p style="margin:.3rem 0">Right now I'm at Lantern, a B2B finance data platform. I take work from PRD to production. I help shape the specs. I design the frontend and integration boundaries. And I work with backend engineers on the APIs and validation.</p>
+    <p style="margin:.3rem 0">I work spec-driven, with AI-assisted implementation under my review.</p>
+    <p style="margin:.3rem 0">Now I'm looking for a role where engineers own product outcomes, move fast in ambiguity, and use AI seriously."</p>
   </div>
-  <p>Memorise the structure, not the words — see <a href="prep.html">How to Prepare</a> for the structure, tone and pausing guidance.</p>
-</section>
-
-<section class="card rise">
-  <h3>60-second short version (for brief intro calls)</h3>
-  <ul>
-    <li><strong>Today:</strong> Tech Lead / Senior Engineer at Lantern — B2B finance data platform</li>
-    <li><strong>Expertise:</strong> React, TypeScript, frontend architecture, product delivery; FastAPI/Postgres/AWS on the backend slice</li>
-    <li><strong>Leadership:</strong> mentoring, technical ownership, system design — senior IC, not pure management</li>
-    <li><strong>Recent win:</strong> calculated metrics platform — configurable KPIs, export, viz — discovery to production in one sprint</li>
-    <li><strong>Why interested:</strong> one line from the "why this company" template</li>
+  <p class="minihead">Memorise the beats, not the words</p>
+  <ul class="beats">
+    <li><span class="b">Who</span><span><strong>product-minded technical lead, ~16 years</strong> — React/TS surface → enough backend/architecture to <strong>own full delivery</strong></span></li>
+    <li><span class="b">Now</span><span><strong>Lantern, B2B finance data</strong> — PRD → production: shape specs · FE + integration boundaries · partner with BE on APIs &amp; validation</span></li>
+    <li><span class="b">Craft</span><span><strong>spec-driven + AI under my review</strong> — one clause, no more</span></li>
+    <li><span class="b">Want</span><span><strong>own · move · use</strong> — own outcomes · move fast in ambiguity · use AI seriously</span></li>
   </ul>
+  <p class="ladder">WHO → NOW → CRAFT → WANT &nbsp;·&nbsp; stop cleanly — let them pick the follow-up</p>
+  <p><strong>Held back on purpose:</strong> the proof point — <em>"first production release of calculated metrics in one sprint, after scope and foundations were agreed"</em> — comes out when they ask for a recent example. If asked "why us?", answer with the <a href="#motivation-fit">three-reason pattern</a>. More time / senior panel → add one line on mentoring after NOW. See <a href="prep.html">How to Prepare</a> for tone and pausing guidance.</p>
+  <p class="warn">AI gets <strong>one clause</strong> here ("with AI-assisted implementation under my review") — no more. Expand only if they ask; the detail lives in <a href="#ai-engineering">AI-assisted engineering</a>. Leading with AI makes you an "AI workflow candidate" instead of a senior product engineer.</p>
 </section>
 
 <section class="card rise">
   <h3>Positioning — full-stack, frontend-leaning</h3>
-  <div class="soundbite">"I'm full-stack end-to-end, but my delivery strength is owning the user-facing surface and the BFF contract — React, TypeScript, React Query — while designing the API and data boundaries with backend engineers. I don't just hand off to BE; I own the integration, the cache model, and the auth-shaped responses. On calculated metrics I led both the export/viz layer and the backend service contracts."</div>
+  <div class="soundbite">"I'm full-stack end to end. My delivery strength is the user-facing surface and the BFF contract — React, TypeScript, React Query. I design the API and data boundaries with backend engineers. I don't just hand off to them. I own the integration and the server-state strategy: query keys, invalidation, and consistency across product surfaces. I also own the auth-shaped responses. On calculated metrics I led the export and visualisation layer, and the backend service contracts."</div>
   <ul>
     <li><strong>Don't say:</strong> "I'm a frontend engineer" or "I'm backend-only"</li>
     <li><strong>Do say:</strong> full-stack owner · strong on the consumption layer + API contracts · comfortable in Python services</li>
   </ul>
 </section>
 
-<h2 class="rise">Motivation &amp; fit</h2>
+<section class="card rise">
+  <h3>"What are you looking for — and not looking for — in your next role?"</h3>
+  <p><strong>Looking for:</strong> a product-focused engineering role where I stay hands-on. I want to solve meaningful problems, influence architecture, and work closely with Product, Design and Engineering. I want an environment where engineers are trusted to think beyond implementation and own outcomes. And a team that adopts AI-assisted engineering thoughtfully — AI improves delivery speed, but quality and judgement stay human-owned.</p>
+  <p><strong>Not looking for:</strong> a role where engineering is handed tickets with little context or ownership. I do my best work when I understand the problem. I want to influence the solution. And I want to help the team improve how it builds software.</p>
+  <p class="minihead">If hybrid/office expectations come up</p>
+  <div class="soundbite">"I'm comfortable with hybrid working. The office time should be purposeful: collaboration, planning, design discussions and team alignment."</div>
+</section>
 
 <section class="card rise">
-  <h3>"Why are you looking to move?" (30 sec, positive framing)</h3>
-  <div class="soundbite">"I've grown a lot at Lantern — I led a major platform delivery, mentored engineers, and established spec-driven and AI-assisted practices the squad still uses. I'm ready for the next chapter: tighter product ownership, and a problem space I care about. I'm not running from anything — I'm running toward higher ownership and impact."</div>
+  <h3>"Why are you looking to move?" / "Why are you leaving?" — canonical answer (30 sec, positive framing)</h3>
+  <div class="soundbite">"I've learned a lot at Lantern and I'm proud of what we built. I led a major platform delivery. I mentored engineers. I established spec-driven and AI-assisted practices the squad still uses. Now I'm looking for deeper product and engineering challenges, broader ownership, and continued hands-on growth. I'm not running from anything. I'm running toward higher ownership and impact."</div>
   <ul>
     <li><strong>Natural breakpoint:</strong> just shipped a major platform piece end-to-end — right moment for a new challenge</li>
     <li><strong>Right seniority:</strong> ready for senior IC ownership across a product domain, not single features</li>
     <li><strong>Growth, not escape:</strong> scale / consumer impact / AI-critical product — pick the axis that fits the company</li>
   </ul>
+  <p class="minihead">Memorise the beats, not the words</p>
+  <ul class="beats">
+    <li><span class="b">Grown</span><span><strong>3 verbs</strong> — <strong>led</strong> a platform delivery · <strong>mentored</strong> engineers · <strong>established</strong> spec-driven + AI practices <em>the squad still uses</em></span></li>
+    <li><span class="b">Ready</span><span><strong>2 wants</strong> — deeper <strong>product + engineering challenges</strong> · broader <strong>ownership</strong> + hands-on growth</span></li>
+    <li><span class="b">Frame</span><span><strong>1 flip</strong> — not running <em>from</em> anything → running <em>toward</em> higher ownership + impact <em>(keep word-perfect)</em></span></li>
+  </ul>
+  <p class="ladder">GROWN (led · mentored · established) → READY (challenges · ownership) → TOWARD &nbsp;·&nbsp; 3 verbs, 2 wants, 1 flip</p>
   <p class="warn">Never bad-mouth the current employer. Frame as: <em>"I've grown here; ready for the next scale."</em> If they probe notice period or timing, answer factually and keep the energy forward-looking.</p>
 </section>
 
-<section class="card rise">
-  <h3>"What are you looking for — and not looking for — in your next role?"</h3>
-  <p><strong>Looking for:</strong> a product-focused engineering role where I stay hands-on, solve meaningful problems, influence architecture, and work closely with Product, Design and Engineering. Environments where engineers are trusted to think beyond implementation and own outcomes — and teams adopting AI-assisted engineering thoughtfully, where AI improves delivery speed but quality and judgement remain human-owned.</p>
-  <p><strong>Not looking for:</strong> a role where engineering is handed tickets with little context or ownership. I do my best work when I understand the problem, can influence the solution, and can help the team improve how it builds software.</p>
-  <p class="minihead">If hybrid/office expectations come up</p>
-  <div class="soundbite">"I'm comfortable with hybrid working where the office time is purposeful: collaboration, planning, design discussions and team alignment."</div>
-</section>
-
-<section class="card rise">
-  <h3>"Why a startup / scale-up vs a larger company?"</h3>
-  <p>I've led delivery and want a tighter loop between engineering decision and customer outcome. Startups reward end-to-end ownership and spec-driven speed — how I already work. Add a mission I care about and a stack close enough to be productive immediately.</p>
-</section>
+<h2 class="rise" id="motivation-fit">2 · Motivation &amp; company fit</h2>
 
 <section class="card rise">
   <h3>"Why this company?" — the three-reason pattern (30 seconds, always the same shape)</h3>
@@ -231,35 +237,19 @@ th{background:var(--surface-2)}
       <td>"The stack is almost exactly what I ship with today — productive from week one" · "Senior IC scope: design systems, mentor, own production — not pure management" · "Engineering is the business, not a cost centre" · "Small team owning a platform from the ground up"</td>
     </tr>
   </table></div>
-</section>
-
-<section class="card rise">
-  <h3>"Why this industry?" — when the domain has a bad reputation (acknowledge → reframe → purpose)</h3>
-  <p>Pattern for any domain people side-eye (debt collection, gambling-adjacent, ad-tech…):</p>
-  <ol>
-    <li><strong>Acknowledge</strong> the reputation honestly — the default playbook in the industry is genuinely bad</li>
-    <li><strong>Reframe</strong> — this company's mission is to fix the industry with technology, transparency and better customer journeys, not to do the bad thing more efficiently</li>
-    <li><strong>Purpose</strong> — connect to your own track record of building trust in products (validated numbers, visible failure modes) and wanting that skill applied where it changes real people's experience</li>
-  </ol>
-  <div class="soundbite">"You're right — the industry's default playbook is aggressive and opaque. That's exactly why I'm interested: the mission isn't to do it harder, it's to give people clarity, dignity, and workable paths forward. I've spent my career on trust in financial products — I want that same product discipline applied to outcomes that change someone's day-to-day life."</div>
-  <p class="warn">This question tests values, not domain expertise. Be sincere — no stigma tourism, no bad-mouthing incumbents generically.</p>
-</section>
-
-<section class="card rise">
-  <h3>"Why financial products?" — domain motivation (transferable)</h3>
-  <div class="soundbite">"Finance products have the hardest correctness bar. A wrong number isn't a UX bug — it's a trust incident. That forces better engineering: validation at the boundary, auditable data flows, server-side truth. I find that constraint motivating — the domain makes you a better engineer."</div>
-  <ul>
-    <li><strong>High stakes = better craft:</strong> correctness, auditability, explicit trade-offs matter more than in consumer apps</li>
-    <li><strong>Real users, real workflows:</strong> professionals depend on the product for decisions — not vanity metrics</li>
-    <li><strong>Data + rules complexity:</strong> transforms, aggregations, FX, roll-ups — interesting engineering, not CRUD</li>
-    <li><strong>Already in the domain:</strong> B2B finance platform — calculated metrics, reporting, portfolio analytics</li>
-  </ul>
+  <p class="minihead">Generic fallback — if research wasn't possible</p>
+  <div class="soundbite">"You're solving interesting product and data challenges at scale. I like the emphasis on ownership, collaboration and engineering quality. The conversations so far suggest engineers here are trusted to influence outcomes, not just implement requirements. That's the environment where I do my best work."</div>
 </section>
 
 <section class="card rise">
   <h3>"Why this role?" — role-fit close</h3>
-  <div class="soundbite">"Senior engineer here isn't a narrow specialist slot — it's own the problem, own the design, own production. That's exactly how I've operated as tech lead: PRD to deploy, on-call included. The team matches my strengths — correctness, observability, customer-facing flows — and the stack is close enough that I'd be productive quickly while picking up the rest on the job. I'm aligned on impact, not title inflation."</div>
+  <div class="soundbite">"Senior engineer here isn't a narrow specialist slot. It's own the problem, own the design, own production. That's exactly how I've operated as tech lead — PRD to deploy, on-call included. The team matches my strengths: correctness, observability, customer-facing flows. The stack is close enough that I'd be productive quickly. I'd pick up the rest on the job. I'm aligned on impact, not title inflation."</div>
   <p class="warn">Only mention compensation if they raise it.</p>
+</section>
+
+<section class="card rise">
+  <h3>"Why a startup / scale-up vs a larger company?"</h3>
+  <p>I've led delivery and want a tighter loop between engineering decision and customer outcome. Startups reward end-to-end ownership and spec-driven speed — how I already work. Add a mission I care about and a stack close enough to be productive immediately.</p>
 </section>
 
 <section class="card rise">
@@ -274,12 +264,333 @@ th{background:var(--surface-2)}
   <p class="warn">Don't apologise for gaps; show learning velocity. Answer, pivot, move on.</p>
 </section>
 
+<h2 class="rise" id="how-i-work">3 · How I work with Product &amp; Engineering</h2>
+
 <section class="card rise">
-  <h3>What would you do in your first 30 days?</h3>
-  <p>Listen — codebase, team workflows, on-call patterns, how AI is used today. Ship a small meaningful improvement with review from the squad. Document one workflow improvement (spec template, test pattern, observability gap). Build trust before proposing larger architectural changes.</p>
+  <h3>How do you work with product managers?</h3>
+  <p>Co-author the PRD. I bring technical constraints and acceptance criteria. The PM brings user and business context. I translate ambiguity into engineering-safe definitions. I push back with alternatives, not nos: "not 10 metrics in sprint one, but 3 with golden fixtures and a path to configurable definitions in iteration two."</p>
+  <p><strong>If they follow with "give us an example"</strong> → <a href="story/financial-reporting.html">Financial Reporting Discovery</a>. Principle first, story second.</p>
 </section>
 
-<h2 class="rise">AI &amp; ways of working</h2>
+<section class="card rise">
+  <h3>How do you ensure quality while keeping velocity high?</h3>
+  <p>Build quality into the workflow, not into a final gate. That means small PRs, clear acceptance criteria, good automated checks, and early conversations about edge cases. Reusable patterns — API calls, error handling, testing, feature flags — mean engineers aren't reinventing decisions. AI helps on tests, mocks and boilerplate. Human review stays on architecture, security, and production behaviour.</p>
+  <p class="ok">The balance is not speed versus quality — good engineering practices usually improve both over time.</p>
+</section>
+
+<section class="card rise">
+  <h3>"How do you manage multiple priorities?"</h3>
+  <p>Rank by, in order:</p>
+  <ol>
+    <li><strong>Customer / business impact</strong></li>
+    <li><strong>Urgency and severity</strong> — is anything degrading right now?</li>
+    <li><strong>Regulatory / security risk</strong></li>
+    <li><strong>Dependencies</strong> — what unblocks other people</li>
+    <li><strong>Reversibility</strong> — irreversible decisions get time; reversible ones get speed</li>
+    <li><strong>Effort</strong> — last, as a tiebreaker</li>
+  </ol>
+  <div class="soundbite">"Prioritisation should be visible and shared — not privately decided inside Engineering. I'd rather have a stakeholder disagree with the ranking than not know it exists."</div>
+  <p class="minihead">Use for</p>
+  <p>Prioritisation · transparency · working with Product/TPM</p>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a decision made with incomplete information"</h3>
+  <div class="soundbite">"I separate the irreversible part from the reversible parts. Reversible decisions I make quickly and cheaply. For the irreversible one, I validate the riskiest assumption first. I document what we assumed. And I set a review point, so we course-correct on evidence rather than opinion."</div>
+  <p>Full story: <a href="story/handling-ambiguity.html">Handling Ambiguity</a>.</p>
+  <p class="minihead">Use for</p>
+  <p>Ambiguity · startup pace · judgement under uncertainty</p>
+</section>
+
+<section class="card rise">
+  <h3>"How do you say no?" <em>(Product/TPM interviews)</em></h3>
+  <div class="soundbite">"I avoid a bare no. I explain the constraint and the risk the request creates. Then I offer an alternative that still supports the outcome they're after. Usually that's a smaller slice now, with a path to the rest."</div>
+  <p>Worked example: <a href="story/scope-under-pressure.html">Scope Under Pressure</a> — "not 10 metrics in sprint one, but 3 with golden fixtures and a path to configurable definitions."</p>
+  <p class="minihead">Use for</p>
+  <p>Stakeholder management · scope negotiation · collaboration with Product</p>
+</section>
+
+<section class="card rise">
+  <h3>How do you measure product impact? (feature-level)</h3>
+  <p><strong>Quantitative:</strong> product analytics (usage/export events), support-ticket tags, time studies on the workflow you replaced. <strong>Qualitative:</strong> customers using in-product numbers in their own external materials. <strong>Technical:</strong> no production incidents, latency improvements, patterns adopted by other squads. Instrument success metrics in the PRD on day one.</p>
+</section>
+
+<section class="card rise">
+  <h3>How much should people be allowed to make mistakes?</h3>
+  <p>Mistakes are fine where impact is controlled and learning is real. That means local dev, test environments, small reversible changes, internal tooling. Customer data, payments, security and production reliability need stronger guardrails. Good culture creates safe boundaries: review, testing, feature flags, monitoring, rollback plans, blameless learning. When something goes wrong, I care about two things. Did we understand why? And did we improve the system?</p>
+  <div class="soundbite">"The goal is not zero mistakes. The goal is controlled risk and fast learning."</div>
+</section>
+
+<section class="card rise">
+  <h3>What distinguishes senior engineers?</h3>
+  <p>Ownership beyond their PR — product outcomes, unblocking others, making good scope calls, leaving the codebase better. (Mirror this in how you answer — it's likely what they're listening for.)</p>
+</section>
+
+<h2 class="rise" id="core-stories">4 · Core STAR stories</h2>
+
+<section class="card rise">
+  <h3>The five stories — use in this order</h3>
+  <p><strong>Principle first, story second:</strong> interviewers usually ask "how do you normally work with X?" before "give us an example". Answer the principle from section 3, then offer the story. Don't open with Platform Rebuild every time. Financial Reporting is easier to follow and gives an early customer-focused win. Save the biggest story for the hardest question.</p>
+  <ol>
+    <li><a href="story/financial-reporting.html">🔍 <strong>Financial Reporting Discovery</strong></a> — finding the real customer problem behind the stated request.<br><em>Good for:</em> customer focus · ambiguous requirements · working with Product · changing direction after feedback</li>
+    <li><a href="story/platform-rebuild.html">🏗️ <strong>Platform Rebuild</strong></a> — agency-built product → platform for four teams; the broadest, most senior story.<br><em>Good for:</em> hardest problem · architecture · organisational scaling · influence · long-term ownership</li>
+    <li><a href="story/contract-first-collaboration.html">🤝 <strong>Contract-First Collaboration</strong></a> — removing FE/BE dependencies with agreed API contracts.<br><em>Good for:</em> cross-team working · blocked delivery · API contracts · parallel working · programme management</li>
+    <li><a href="story/ai-adoption.html">🎟️ <strong>AI Adoption</strong></a> — introducing AI-assisted development with guardrails.<br><em>Good for:</em> change management · influencing sceptical engineers · productivity · process improvement — <span class="warn">supporting evidence, don't let it dominate</span></li>
+    <li><a href="story/mentorship.html">🖋️ <strong>Mentorship</strong></a> — developing engineers and scaling through others; leadership questions arrive later.<br><em>Good for:</em> developing engineers · scaling through others · team improvement · senior leadership</li>
+  </ol>
+</section>
+
+<section class="card rise">
+  <h3>Question → story map</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Question</th><th>Best story</th></tr>
+    <tr><td>Ambiguous requirement</td><td><a href="story/financial-reporting.html">Financial Reporting</a></td></tr>
+    <tr><td>Product disagreement</td><td><a href="story/financial-reporting.html">Financial Reporting</a> or <a href="story/scope-under-pressure.html">Scope Under Pressure</a> (phased delivery)</td></tr>
+    <tr><td>Influencing senior people</td><td><a href="story/platform-rebuild.html">Platform Rebuild</a></td></tr>
+    <tr><td>Hardest problem</td><td><a href="story/platform-rebuild.html">Platform Rebuild</a></td></tr>
+    <tr><td>Cross-team blocker / dependencies</td><td><a href="story/contract-first-collaboration.html">Contract-First Collaboration</a></td></tr>
+    <tr><td>Change management</td><td><a href="story/ai-adoption.html">AI Adoption</a></td></tr>
+    <tr><td>Developing others</td><td><a href="story/mentorship.html">Mentorship</a></td></tr>
+    <tr><td>Incomplete information</td><td><a href="story/handling-ambiguity.html">Handling Ambiguity</a></td></tr>
+  </table></div>
+  <p>The full bank with competency mapping lives in the <a href="stories.html">Story Bank</a>.</p>
+</section>
+
+<section class="card rise">
+  <h3>"What problem did you solve that had the biggest combination of technical, organisational and product complexity?"</h3>
+  <div class="soundbite">
+    <span class="soundbite-label">Hook — open with this</span>
+    "The hardest problem I've solved wasn't a single technical bug. It was transforming an existing product into something an engineering organisation could actually scale."
+  </div>
+
+  <p class="minihead">The situation</p>
+  <ul>
+    <li>Joined Lantern with the product already live — large parts built by <strong>external agencies</strong></li>
+    <li>It worked, but <strong>every new feature increased regression risk</strong></li>
+    <li>Everything tightly coupled → teams couldn't work independently → delivery getting <strong>slower, not faster</strong></li>
+  </ul>
+
+  <p class="minihead">The goal — not a rewrite</p>
+  <p>Create an <strong>engineering platform</strong> where multiple teams could build features safely and independently — <em>while the business kept delivering to customers</em>.</p>
+
+  <p class="minihead">What I did — people first, then architecture</p>
+  <ol>
+    <li><strong>Understand before proposing</strong> — spent time on the technical architecture and on how teams actually worked. Aligned with Product, backend engineers and engineering leadership before any technical proposal</li>
+    <li><strong>Micro-frontend architecture</strong> — independently deployable services</li>
+    <li><strong>Clear contracts</strong> between frontend and backend</li>
+    <li><strong>Shared design system</strong> + common engineering standards</li>
+    <li><strong>Incremental migration</strong> — no risky big-bang rewrite</li>
+    <li><strong>AI-assisted development last</strong> — only after the foundations. PRD-driven workflow: Product + Engineering jointly refine requirements → AI generates implementation → every change through human technical and product review</li>
+  </ol>
+
+  <p class="minihead">If challenged — "why micro-frontends? Don't they add complexity?"</p>
+  <div class="soundbite">"We chose independently deployable frontend domains because teams had distinct ownership boundaries and release needs. The organisational shape justified the architectural cost. I wouldn't use micro-frontends for a single team or a tightly coupled product."</div>
+
+  <p class="minihead">The result</p>
+  <ul>
+    <li>Engineering grew from essentially <strong>one frontend engineer → ~20 engineers across four product teams</strong></li>
+    <li>Teams deliver independently; frontend prototypes validated before backend implementation</li>
+    <li>Throughput up significantly <strong>without losing ownership of quality</strong></li>
+  </ul>
+
+  <div class="soundbite">
+    <span class="soundbite-label">Why it was the hardest — close with this</span>
+    "The technical solution was only one part. The bigger challenge was aligning people and changing how teams worked — while the product kept evolving. It required technical judgement, communication and patience much more than writing code."
+  </div>
+
+  <p class="ladder">HOOK → coupled legacy → platform goal → people first → 5 moves (MFE · contracts · design system · incremental · AI last) → 1 → 20 engineers → CLOSE</p>
+
+  <p class="minihead">Follow-up — "What made it difficult?"</p>
+  <ul>
+    <li><strong>No pause button</strong> — couldn't stop feature delivery; customers were already on the platform</li>
+    <li><strong>Alignment</strong> — several teams had to agree common standards instead of everyone solving problems differently</li>
+    <li><strong>Stability</strong> — improve the architecture incrementally without destabilising existing customers</li>
+  </ul>
+
+  <p>Full STAR version: <a href="story/platform-rebuild.html">Platform Rebuild story</a>.</p>
+</section>
+
+<h2 class="rise" id="leadership-stakeholders">5 · Leadership &amp; stakeholders</h2>
+
+<section class="card rise">
+  <h3>"Tell me about a disagreement with Product"</h3>
+  <p>Shape: Product wanted the full scope on the original date. I disagreed on feasibility. Instead of a flat no, I laid out the customer impact of each option, the risk profile, and a phased alternative that protected the launch date. We shipped the phase-one slice on time, and the rest on evidence.</p>
+  <div class="soundbite">"Disagreement with Product isn't a turf question — it's a data question. I bring the customer impact, the risk, and an alternative. Once we decide, I commit fully."</div>
+  <p>Stories: <a href="story/financial-reporting.html">Financial Reporting</a> (disagreement on what the problem was) · <a href="story/scope-under-pressure.html">Scope Under Pressure</a> (disagreement on scope vs date).</p>
+  <p class="minihead">Use for</p>
+  <p>Product conflict · scope vs deadline · disagree-and-commit</p>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a time you influenced someone more senior" <em>(essential for Staff)</em></h3>
+  <p>Shape: Product / a manager / leadership wanted full scope on the original date. I proposed <strong>phased delivery</strong>. I didn't argue from opinion. I showed the customer impact of each option, the risk profile, and a concrete alternative that protected the launch. They chose the phased plan.</p>
+  <div class="soundbite">"I didn't challenge the person's authority. I challenged the assumptions — by showing the customer impact, the risk, and the alternatives."</div>
+  <p>Full story: <a href="story/scope-under-pressure.html">Scope Under Pressure</a>. For influencing leadership on architecture: <a href="story/platform-rebuild.html">Platform Rebuild</a>.</p>
+  <p class="minihead">Use for</p>
+  <p>Influence without authority · managing up · disagreement with leadership</p>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a time you changed your mind" <em>(asked at Cint)</em></h3>
+  <ul class="beats">
+    <li><span class="b">Situation</span><span>I initially preferred a <strong>more flexible architecture</strong> for a new capability</span></li>
+    <li><span class="b">Task</span><span>Choose a design that met <strong>current customer needs</strong>, not hypothetical ones</span></li>
+    <li><span class="b">Action</span><span>Another engineer showed the flexibility <strong>added complexity without evidence of future use</strong> — I reviewed the assumptions, changed my recommendation, and backed the simpler design</span></li>
+    <li><span class="b">Result</span><span>Faster delivery, easier maintenance</span></li>
+    <li><span class="b">Learning</span><span>Strong opinions, loosely held</span></li>
+  </ul>
+  <div class="soundbite">"I care more about reaching the right decision than defending my original position."</div>
+  <p class="minihead">Use for</p>
+  <p>Openness to feedback · ego check · decision-making · pairs with the over-engineering mistake story</p>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a project you stopped or chose not to build" <em>(strong product-engineering signal)</em></h3>
+  <p>Shape: a prototype or discovery spike <strong>invalidated the core assumption</strong>. Customer feedback showed the value wasn't there. I recommended stopping rather than protecting sunk cost. We redirected the effort to what users actually needed.</p>
+  <div class="soundbite">"The cheapest feature to maintain is the one you didn't build. Killing it was the product decision — the prototype's job was to make that call cheap."</div>
+  <p>Related: <a href="story/financial-reporting.html">Financial Reporting Discovery</a> — finding the real problem behind the stated request.</p>
+  <p class="minihead">Use for</p>
+  <p>Product thinking · sunk-cost discipline · validating before building</p>
+</section>
+
+<h2 class="rise" id="self-awareness">6 · Mistakes, feedback &amp; self-awareness</h2>
+
+<section class="card rise" id="biggest-mistake">
+  <h3>"What was one of the biggest mistakes you've made in your career?" — primary answer</h3>
+  <div class="soundbite">
+    <span class="soundbite-label">Hook — open with this</span>
+    "One of the biggest mistakes I made earlier in my career was jumping into implementation too quickly because I thought I already understood the problem."
+  </div>
+
+  <p class="minihead">What happened</p>
+  <ul>
+    <li>A stakeholder explained a feature → I <strong>immediately started on the technical solution</strong></li>
+    <li>Built a large part of it — and technically it <strong>worked well</strong></li>
+    <li>At the user demo: we'd solved <strong>the requirement they described, not the problem they were trying to solve</strong></li>
+    <li>Had to change a significant part of the implementation — we'd never validated our assumptions about the user's workflow</li>
+  </ul>
+
+  <p class="minihead">What changed since</p>
+  <ul>
+    <li><strong>Business outcome before architecture</strong> — much more time understanding the problem first</li>
+    <li><strong>Talk directly to Product / customers</strong> where possible: who is the user? what does success look like? what are we assuming?</li>
+    <li><strong>Shaped how I introduced AI-assisted development</strong> — AI doesn't write code until the PRD has been refined several times by both Product and Engineering</li>
+  </ul>
+
+  <div class="soundbite">
+    <span class="soundbite-label">Lesson — close with this</span>
+    "Engineers shouldn't optimise for writing code first. We should optimise for understanding the problem first. A well-understood problem is far more valuable than a quickly generated solution."
+  </div>
+
+  <p class="ladder">HOOK → jumped to solution → worked technically, wrong problem → rework → outcome-first + validate assumptions → PRD before AI → LESSON</p>
+
+  <p class="minihead">⚠ Fill before use — ground it in a real project</p>
+  <ul>
+    <li>What the feature was</li>
+    <li>Who the user was</li>
+    <li>What was misunderstood</li>
+    <li>What had to be rebuilt</li>
+    <li>What it cost — time, trust, delivery</li>
+  </ul>
+  <p class="warn">Right now this is a pattern, not a grounded event. Interviewers will probe for specifics — prepare them in advance, never invent them in the room.</p>
+</section>
+
+<section class="card rise">
+  <h3>Alternative answer — the over-engineering mistake (more technical)</h3>
+  <p>Use when the interviewer is technical or the "wrong problem" story has already come up.</p>
+  <div class="soundbite">
+    <span class="soundbite-label">Hook</span>
+    "Earlier in my career I believed good architecture meant building something that could solve every future problem."
+  </div>
+  <ul>
+    <li>Designed systems that were <strong>technically elegant but more flexible than the business needed</strong></li>
+    <li>Looking back: spent time <strong>solving problems that didn't exist yet</strong></li>
+    <li>Realised over time: <strong>simple architecture with clear extension points</strong> beats predicting every future requirement</li>
+  </ul>
+  <div class="soundbite">
+    <span class="soundbite-label">Lesson</span>
+    "Today I build the smallest solution that solves today's problem well, while leaving room to evolve when we have real evidence."
+  </div>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a time you received difficult feedback"</h3>
+  <div class="soundbite">"In a recent interview process I got direct feedback. My technical thinking was strong, but my answers took too long to reach the point. I changed my approach: answer first, pause, then add context. Later interview feedback specifically praised my communication."</div>
+  <ul>
+    <li><strong>Why this works:</strong> recent, specific, and shows <em>measurable behavioural change</em> — not a generic "I welcome feedback"</li>
+    <li><strong>Alternative:</strong> early-career feedback that I moved too quickly into solutions → ties into the biggest-mistake arc</li>
+  </ul>
+  <p class="minihead">Use for</p>
+  <p>Coachability · self-awareness · communication growth</p>
+</section>
+
+<section class="card rise">
+  <h3>What are your weaknesses?</h3>
+  <p>Earlier in my career I moved too quickly into implementation, before fully understanding the problem. Then I over-corrected for a while. I spent too long exploring options, because I wanted to understand every trade-off. Today I time-box discovery. I validate the riskiest assumptions first. I decide once the remaining uncertainty is acceptable.</p>
+  <p class="warn">This deliberately connects to the <a href="#biggest-mistake">biggest mistake</a> story — one arc (rushed → over-corrected → calibrated), not two contradictory flaws. If both come up in one interview, name the arc explicitly.</p>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a failure" <em>(distinct from "biggest mistake")</em></h3>
+  <p>A mistake is a bad decision; a failure is an <strong>outcome that fell short</strong>. Shape to use:</p>
+  <ul>
+    <li>Feature technically completed and shipped — but <strong>adoption was weak</strong> because user discovery was insufficient</li>
+    <li>We measured the low usage honestly instead of declaring victory</li>
+    <li>Simplified the flow based on what users actually did, and adoption improved</li>
+  </ul>
+  <div class="soundbite">"Shipping isn't the outcome — adoption is. We treated the launch as a hypothesis, measured it, and fixed it."</div>
+  <p class="warn">Fill this with a real project you can defend in every detail before using it — do not improvise specifics in the room.</p>
+  <p class="minihead">Use for</p>
+  <p>Failure · measuring impact · intellectual honesty</p>
+</section>
+
+<section class="card rise">
+  <h3>"Tell me about a production incident" <em>(highly likely for Lead roles)</em></h3>
+  <p>Structure to walk through — have one real incident prepared against it:</p>
+  <ol>
+    <li><strong>Customer-visible issue</strong> — what users saw, how it surfaced</li>
+    <li><strong>Severity assessment</strong> — blast radius, data risk, who's affected</li>
+    <li><strong>Communication &amp; ownership</strong> — who I informed, taking point</li>
+    <li><strong>Mitigation first</strong> — restore service before root-causing</li>
+    <li><strong>Root-cause analysis</strong> — blameless, evidence preserved</li>
+    <li><strong>Prevention</strong> — the guardrail, test, or alert that now exists</li>
+  </ol>
+  <div class="soundbite">"During an incident I separate restoration from diagnosis: restore service first, then investigate fully without losing evidence."</div>
+  <p class="minihead">Use for</p>
+  <p>On-call ownership · calm under pressure · blameless culture</p>
+</section>
+
+<section class="card rise">
+  <h3>"What would your manager say about you?" <em>(asked at zeroheight)</em></h3>
+  <div class="soundbite">"They'd probably say three things. I bring structure to ambiguous problems. I take ownership beyond my immediate tasks. And I help other engineers move faster. They'd also say I sometimes challenge assumptions strongly. But I do it because I care about the outcome. And I support the final decision once it's made."</div>
+  <p class="ok">Strength + honest edge + disagree-and-commit close. Keep the edge genuine — it pre-empts the reference check.</p>
+  <p class="minihead">Use for</p>
+  <p>Self-awareness · references alignment · team fit</p>
+</section>
+
+<section class="card rise">
+  <h3>What do you admire in peers? / What should peers improve?</h3>
+  <p><strong>Admire:</strong> engineers who combine curiosity with ownership — technically strong, ask good questions, care about the customer outcome, take responsibility beyond their own ticket, and challenge ideas constructively.</p>
+  <p><strong>Improve:</strong> surfacing assumptions and trade-offs earlier. Engineers sometimes jump into implementation before the team agrees what problem is being solved. I encourage lightweight design notes and ADRs — not heavy process, just enough alignment to avoid rework.</p>
+  <div class="soundbite">"I'd like teams to make implicit assumptions explicit earlier."</div>
+  <p class="ok">Frame the improvement as constructive, not critical.</p>
+</section>
+
+<h2 class="rise" id="ai-engineering">7 · AI-assisted engineering</h2>
+
+<section class="card rise">
+  <h3>Which answer to reach for — routing table</h3>
+  <p>These cards overlap by design (same story, different angles). Pick one per question — don't chain them. <strong>For most interviews, AI is supporting evidence, not your identity</strong> — one clause in the intro, depth only when asked.</p>
+  <div class="table-wrap"><table>
+    <tr><th>If they ask…</th><th>Use</th></tr>
+    <tr><td>"How do you use AI?"</td><td>Current AI use (next card)</td></tr>
+    <tr><td>"Give me a concrete example"</td><td>Rebuild a previous project</td></tr>
+    <tr><td>"What do humans still own?"</td><td>Humans own vs AI accelerates</td></tr>
+    <tr><td>"How do you control AI risk?"</td><td>AI guardrails</td></tr>
+    <tr><td>"Did it actually make you faster?"</td><td>Measurement + throughput caveat</td></tr>
+    <tr><td>"How has AI changed your process?"</td><td>Preferred delivery flow (reference)</td></tr>
+  </table></div>
+</section>
 
 <section class="card rise">
   <h3>How do you currently use AI? / What role does AI play day-to-day?</h3>
@@ -294,34 +605,9 @@ th{background:var(--surface-2)}
 </section>
 
 <section class="card rise">
-  <h3>Definitions worth using consistently</h3>
-  <ul>
-    <li><strong>Specification-driven development</strong> — lock problem, acceptance criteria, and contracts before implementation; code follows spec, not the reverse</li>
-    <li><strong>PRD-driven development</strong> — the product requirements doc defines users, success metrics, scope and definition-of-done; engineering extends it with technical constraints</li>
-    <li><strong>AIAD (AI-Assisted Development)</strong> — AI executes against written specs under engineer review; CI and human sign-off gate production</li>
-  </ul>
-</section>
-
-<section class="card rise">
-  <h3>Preferred delivery flow (human-owned decisions vs AI-accelerated execution)</h3>
-  <div class="flow-row">
-    <div class="flow-box human"><strong>Problem</strong><span>users · pain</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box human"><strong>PRD</strong><span>acceptance · metrics</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box human"><strong>SDD</strong><span>architecture · tests</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box mine"><strong>AI impl</strong><span>scaffold · mocks</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box human"><strong>Review</strong><span>every diff</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box"><strong>Testing</strong><span>CI gate</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box"><strong>Production</strong><span>deploy · on-call</span></div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-box"><strong>Monitoring</strong><span>errors · latency</span></div>
-  </div>
-  <p class="diagram-caption">Green = human-owned decisions · Purple = AI-accelerated execution</p>
+  <h3>How would you rebuild a previous project using AI? — the concrete example</h3>
+  <p>Walk the pipeline on the calculated-metrics story: (1) <strong>PRD</strong> with PM — problem, users, acceptance criteria, success metrics. (2) <strong>SDD</strong> — architecture, API contracts, validation rules, 4-layer test plan. (3) <strong>AI-assisted implementation</strong> — scaffolding, mocks, BFF routes, test parity from SDD context. (4) <strong>Review</strong> — every diff; metric definitions and calculation logic human-written. (5) <strong>Testing</strong> — 50+ tests, CI on every commit, golden fixtures from customer models. (6) <strong>Monitoring</strong> — error tracking and dashboards from day one; on-call through launch.</p>
+  <div class="soundbite">"AI compressed implementation time. It did not replace the spec, the architecture, or the production sign-off. The first production release landed in one sprint. That was possible because scope and foundations were agreed before AI touched code."</div>
 </section>
 
 <section class="card rise">
@@ -351,42 +637,6 @@ th{background:var(--surface-2)}
 </section>
 
 <section class="card rise">
-  <h3>How would you rebuild a previous project using AI?</h3>
-  <p>Walk the pipeline on the calculated-metrics story: (1) <strong>PRD</strong> with PM — problem, users, acceptance criteria, success metrics. (2) <strong>SDD</strong> — architecture, API contracts, validation rules, 4-layer test plan. (3) <strong>AI-assisted implementation</strong> — scaffolding, mocks, BFF routes, test parity from SDD context. (4) <strong>Review</strong> — every diff; metric definitions and calculation logic human-written. (5) <strong>Testing</strong> — 50+ tests, CI on every commit, golden fixtures from customer models. (6) <strong>Monitoring</strong> — error tracking and dashboards from day one; on-call through launch.</p>
-  <div class="soundbite">"AI compressed implementation time; it did not replace the spec, the architecture, or the production sign-off. One sprint discovery-to-production because the spec was locked before AI touched code."</div>
-</section>
-
-<section class="card rise">
-  <h3>What do you do with time saved through AI?</h3>
-  <ul>
-    <li><strong>Architecture</strong> — whiteboard trade-offs, ADRs, cross-team boundaries before code</li>
-    <li><strong>Product discussions</strong> — sharper PRDs, clearer acceptance criteria with PM</li>
-    <li><strong>Validation</strong> — golden fixtures, edge-case review, correctness over velocity</li>
-    <li><strong>Stakeholder engagement</strong> — scope docs, design partners, alignment on MVP</li>
-    <li><strong>Quality</strong> — more test coverage, observability, documentation — not more tickets closed</li>
-  </ul>
-  <div class="soundbite">"AI buys implementation speed; I reinvest it in judgement — architecture, product clarity, and quality — because that's what keeps production safe at pace."</div>
-  <p class="warn">Anti-pattern to avoid: "I take on more stories." Good answer: higher-leverage work — e.g. tests shipped in the same merge instead of a follow-up PR.</p>
-</section>
-
-<section class="card rise">
-  <h3>What is the role of software engineers in an AI world?</h3>
-  <ul>
-    <li><strong>Less typing code</strong> — more specifying intent and reviewing output</li>
-    <li><strong>More judgement</strong> — what to build, what not to build, what ships</li>
-    <li><strong>More systems thinking</strong> — boundaries, failure modes, data flows</li>
-    <li><strong>More validation</strong> — tests, fixtures, observability — AI output is plausible but not trustworthy by default</li>
-    <li><strong>More product understanding</strong> — engineers closer to "why", not just "how"</li>
-  </ul>
-  <div class="soundbite">"The engineer becomes editor-in-chief of the system — AI drafts, humans own correctness, architecture, and customer trust. In regulated, high-trust domains this matters more, not less."</div>
-</section>
-
-<section class="card rise">
-  <h3>How much of your code is AI-generated?</h3>
-  <p>AI accelerated repetitive work — scaffolding, mocks, tests, adapter boilerplate — roughly half the time on those tasks. Architecture, contracts, validation rules, security boundaries and production config stayed engineer-owned. I don't quote a percentage of lines — that's the wrong metric. The right metric: did we ship with full test parity and zero P1? Yes.</p>
-</section>
-
-<section class="card rise">
   <h3>What are your AI guardrails?</h3>
   <ol>
     <li>Spec before codegen</li>
@@ -396,11 +646,6 @@ th{background:var(--surface-2)}
     <li>Business rules and compliance logic authored or explicitly reviewed by an engineer</li>
     <li>I deploy and am on-call — incentive alignment for quality</li>
   </ol>
-</section>
-
-<section class="card rise">
-  <h3>How would AI change engineering at a new company?</h3>
-  <p>I'd expect AI on boilerplate — handlers, test fixtures, scaffolding — while engineers own domain correctness, customer journey design, and observability. I'd advocate for shared spec-driven practices and measured adoption — not mandating tools, but documenting what works so the team compounds velocity safely.</p>
 </section>
 
 <section class="card rise">
@@ -414,55 +659,177 @@ th{background:var(--surface-2)}
     <li>Error reduction · quality signals — defects, rework, CI failures on AI-assisted code</li>
     <li>Satisfaction feedback — especially from skeptics</li>
   </ul>
-  <div class="soundbite">"I'd baseline before launch, pick two quantitative and one qualitative metric per tool, and review at 4 weeks — kill or double down based on adoption, not demo applause."</div>
+  <div class="soundbite">"I'd baseline before launch. I'd pick two quantitative metrics and one qualitative metric per tool. Then review at 4 weeks — kill or double down based on adoption, not demo applause."</div>
 </section>
 
 <section class="card rise">
-  <h3>How do you measure product impact? (feature-level)</h3>
-  <p><strong>Quantitative:</strong> product analytics (usage/export events), support-ticket tags, time studies on the workflow you replaced. <strong>Qualitative:</strong> customers using in-product numbers in their own external materials. <strong>Technical:</strong> zero P1, latency improvements, patterns adopted by other squads. Instrument success metrics in the PRD on day one.</p>
+  <h3>If you quote a throughput number ("~2 features per sprint → ~10") — always attach the caveat</h3>
+  <div class="soundbite">"It wasn't a controlled experiment, and the features varied in size. So I don't treat it as a precise productivity multiplier. What I can say: throughput clearly improved during comparable delivery periods. Cycle time got shorter, and we completed more product slices."</div>
+  <p class="warn">Never state the multiplier without the caveat — an unqualified 5× claim reads as inflated and invites a credibility probe. Caveat first or immediately after, then move on.</p>
 </section>
 
 <section class="card rise">
-  <h3>How do you ensure quality while keeping velocity high?</h3>
-  <p>Build quality into the workflow rather than treating it as a final gate: small PRs, clear acceptance criteria, good automated checks, early conversations about edge cases. Reusable patterns (API calls, error handling, testing, feature flags) mean engineers aren't reinventing decisions. AI helps on tests, mocks, boilerplate — human review stays on architecture, security, and production behaviour.</p>
-  <p class="ok">The balance is not speed versus quality — good engineering practices usually improve both over time.</p>
+  <h3>What do you do with time saved through AI?</h3>
+  <ul>
+    <li><strong>Architecture</strong> — whiteboard trade-offs, ADRs, cross-team boundaries before code</li>
+    <li><strong>Product discussions</strong> — sharper PRDs, clearer acceptance criteria with PM</li>
+    <li><strong>Validation</strong> — golden fixtures, edge-case review, correctness over velocity</li>
+    <li><strong>Stakeholder engagement</strong> — scope docs, design partners, alignment on MVP</li>
+    <li><strong>Quality</strong> — more test coverage, observability, documentation — not more tickets closed</li>
+  </ul>
+  <div class="soundbite">"AI buys implementation speed. I reinvest it in judgement: architecture, product clarity, and quality. That's what keeps production safe at pace."</div>
+  <p class="warn">Anti-pattern to avoid: "I take on more stories." Good answer: higher-leverage work — e.g. tests shipped in the same merge instead of a follow-up PR.</p>
 </section>
 
 <section class="card rise">
-  <h3>How much should people be allowed to make mistakes?</h3>
-  <p>Mistakes are fine where impact is controlled and learning is real — local dev, test environments, small reversible changes, internal tooling. Customer data, payments, security and production reliability need stronger guardrails. Good culture creates safe boundaries: review, testing, feature flags, monitoring, rollback plans, blameless learning. When something goes wrong I care about whether we understood why and improved the system.</p>
-  <div class="soundbite">"The goal is not zero mistakes. The goal is controlled risk and fast learning."</div>
+  <h3>What is the role of software engineers in an AI world?</h3>
+  <ul>
+    <li><strong>Less typing code</strong> — more specifying intent and reviewing output</li>
+    <li><strong>More judgement</strong> — what to build, what not to build, what ships</li>
+    <li><strong>More systems thinking</strong> — boundaries, failure modes, data flows</li>
+    <li><strong>More validation</strong> — tests, fixtures, observability — AI output is plausible but not trustworthy by default</li>
+    <li><strong>More product understanding</strong> — engineers closer to "why", not just "how"</li>
+  </ul>
+  <div class="soundbite">"The engineer becomes editor-in-chief of the system. AI drafts. Humans own correctness, architecture, and customer trust. In regulated, high-trust domains this matters more, not less."</div>
 </section>
 
 <section class="card rise">
-  <h3>What do you admire in peers? / What should peers improve?</h3>
-  <p><strong>Admire:</strong> engineers who combine curiosity with ownership — technically strong, ask good questions, care about the customer outcome, take responsibility beyond their own ticket, and challenge ideas constructively.</p>
-  <p><strong>Improve:</strong> surfacing assumptions and trade-offs earlier. Engineers sometimes jump into implementation before the team agrees what problem is being solved. I encourage lightweight design notes and ADRs — not heavy process, just enough alignment to avoid rework.</p>
-  <div class="soundbite">"I'd like teams to make implicit assumptions explicit earlier."</div>
-  <p class="ok">Frame the improvement as constructive, not critical.</p>
+  <h3>Reference — definitions worth using consistently</h3>
+  <ul>
+    <li><strong>Specification-driven development</strong> — lock problem, acceptance criteria, and contracts before implementation; code follows spec, not the reverse</li>
+    <li><strong>PRD-driven development</strong> — the product requirements doc defines users, success metrics, scope and definition-of-done; engineering extends it with technical constraints</li>
+    <li><strong>AIAD (AI-Assisted Development)</strong> — AI executes against written specs under engineer review; CI and human sign-off gate production</li>
+  </ul>
 </section>
 
 <section class="card rise">
-  <h3>What distinguishes senior engineers?</h3>
-  <p>Ownership beyond their PR — product outcomes, unblocking others, making good scope calls, leaving the codebase better. (Mirror this in how you answer — it's likely what they're listening for.)</p>
+  <h3>Reference — preferred delivery flow (human-owned decisions vs AI-accelerated execution)</h3>
+  <div class="flow-row">
+    <div class="flow-box human"><strong>Problem</strong><span>users · pain</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box human"><strong>PRD</strong><span>acceptance · metrics</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box human"><strong>SDD</strong><span>architecture · tests</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box mine"><strong>AI impl</strong><span>scaffold · mocks</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box human"><strong>Review</strong><span>every diff</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Testing</strong><span>CI gate</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Production</strong><span>deploy · on-call</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Monitoring</strong><span>errors · latency</span></div>
+  </div>
+  <p class="diagram-caption">Green = human-owned decisions · Purple = AI-accelerated execution</p>
 </section>
 
 <section class="card rise">
-  <h3>How do you work with product managers?</h3>
-  <p>Co-author the PRD — I bring technical constraints and acceptance criteria; PM brings user and business context. I translate ambiguity into engineering-safe definitions. Push back with alternatives, not nos — "not 10 metrics in sprint one, but 3 with golden fixtures and a path to configurable definitions in iteration two."</p>
+  <h3>Reference — how much of your code is AI-generated?</h3>
+  <p>AI accelerated repetitive work: scaffolding, mocks, tests, adapter boilerplate. It saved roughly half the time on those tasks. Architecture, contracts, validation rules, security boundaries and production config stayed engineer-owned. I don't quote a percentage of lines. That's the wrong metric. The right metric: did we ship with full test parity and no production incidents? Yes.</p>
 </section>
 
-<h2 class="rise">Quick answers — synced from Notion</h2>
+<section class="card rise">
+  <h3>Reference — how would AI change engineering at a new company?</h3>
+  <p>I'd expect AI on boilerplate: handlers, test fixtures, scaffolding. Engineers own domain correctness, customer journey design, and observability. I'd advocate for shared spec-driven practices and measured adoption. Don't mandate tools. Document what works, so the team compounds velocity safely.</p>
+</section>
 
-<section class="card rise"><h3>Career goals &amp; motivation — key message</h3><p class="soundbite"><span class="soundbite-label">Key message</span>I want to remain a hands-on technologist, solve meaningful problems, and continue growing through increasing technical impact.</p><p>Anchor for: career goals · where in five years · when were you most satisfied · why work here.</p></section>
-<section class="card rise"><h3>What are your strengths?</h3><ul><li>Product thinking</li><li>Ownership</li><li>Communication</li><li>Technical leadership</li><li>Ability to bridge business and engineering</li></ul></section>
-<section class="card rise"><h3>What are your weaknesses?</h3><p>I sometimes spend too much time exploring options before making a decision because I want to understand trade-offs properly. Over time I've learned to time-box discovery and make decisions earlier while still managing risk.</p></section>
-<section class="card rise"><h3>Why should we hire you?</h3><p>You are looking for someone who can combine technical depth, product thinking, ownership and collaboration. Throughout my career I've consistently operated at the intersection of engineering, product and delivery. I enjoy solving complex problems, helping teams grow, and delivering outcomes that matter to customers. I believe that combination would allow me to contribute quickly while also helping the wider team succeed.</p></section>
-<section class="card rise"><h3>Why do you want to work here?</h3><p>Company is solving interesting product and data challenges at scale, and I like the emphasis on ownership, collaboration and engineering quality. The conversations I've had so far suggest a culture where engineers are trusted to influence outcomes rather than simply implement requirements, which is the environment where I do my best work.</p></section>
-<section class="card rise"><h3>Why are you leaving?</h3><p>I'm grateful for the experience I've gained, but I'm looking for an environment where I can continue growing, take on new challenges and contribute to a company with ambitious growth plans and strong product focus.</p></section>
-<section class="card rise"><h3>Where do you see yourself in five years?</h3><p>I still see myself as a technologist. I enjoy staying close to technology and solving problems. I expect I'll have broader influence and responsibility than I do today, but I want to remain involved in architecture, engineering and product decisions rather than moving entirely away from technology.</p></section>
+<h2 class="rise" id="future-closing">8 · Future contribution &amp; closing</h2>
 
-<p class="src rise">Source of truth for the "Quick answers" section: <a href="https://app.notion.com/p/37c2502230b1800bbd8df1577d5373d8">General</a> and <a href="https://app.notion.com/p/37c2502230b1806db79fe62c715321f6">Career Growth and Motivation</a> in Notion — edit there, then re-sync. All other sections on this page are local only.</p>
+<section class="card rise">
+  <h3>What would you do in your first 30 days?</h3>
+  <p>Listen — codebase, team workflows, on-call patterns, how AI is used today. Ship a small meaningful improvement with review from the squad. Document one workflow improvement (spec template, test pattern, observability gap). Build trust before proposing larger architectural changes.</p>
+</section>
+
+<section class="card rise">
+  <h3>Where do you see yourself in five years?</h3>
+  <p>I still see myself as a technologist. I enjoy staying close to technology and solving problems. I expect I'll have broader influence and responsibility than I do today. But I want to stay involved in architecture, engineering and product decisions, rather than moving away from technology.</p>
+  <p class="minihead">Anchor — career goals key message</p>
+  <div class="soundbite">"I want to remain a hands-on technologist, solve meaningful problems, and continue growing through increasing technical impact."</div>
+  <p>Same anchor works for: career goals · when were you most satisfied · why work here.</p>
+</section>
+
+<section class="card rise">
+  <h3>What are your strengths?</h3>
+  <ul>
+    <li>Product thinking</li>
+    <li>Ownership</li>
+    <li>Communication</li>
+    <li>Technical leadership</li>
+    <li>Ability to bridge business and engineering</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h3>"Why should we hire you?" — the closing summary</h3>
+  <div class="soundbite">"You need someone who can own the frontend and full-stack direction. Someone who works closely with Product, and helps several teams deliver consistently. My background combines exactly those three things: hands-on technical depth, product thinking, and experience creating standards that help other engineers move faster."</div>
+  <p class="ok">This question usually comes near the end — treat it as a summary of everything already discussed. Reference back to specifics from the conversation ("as we talked about with the platform work…") rather than introducing new claims.</p>
+</section>
+
+<h2 class="rise" id="industry-specific">9 · Industry-specific answers</h2>
+
+<section class="card rise">
+  <h3>"Why financial products?" — domain motivation (for finance-domain companies)</h3>
+  <div class="soundbite">"Finance products have the hardest correctness bar. A wrong number isn't a UX bug — it's a trust incident. That forces better engineering: validation at the boundary, auditable data flows, and server-side truth. Server-side truth means every surface uses the same calculation logic. Nobody reimplements formulas in dashboards, exports or spreadsheets. I find that constraint motivating. The domain makes you a better engineer."</div>
+  <ul>
+    <li><strong>High stakes = better craft:</strong> correctness, auditability, explicit trade-offs matter more than in consumer apps</li>
+    <li><strong>Real users, real workflows:</strong> professionals depend on the product for decisions — not vanity metrics</li>
+    <li><strong>Data + rules complexity:</strong> transforms, aggregations, FX, roll-ups — interesting engineering, not CRUD</li>
+    <li><strong>Already in the domain:</strong> B2B finance platform — calculated metrics, reporting, portfolio analytics</li>
+  </ul>
+  <p class="warn">Company-specific — only for finance-domain interviews. For other domains, adapt the same shape: hardest constraint of <em>their</em> domain → why that constraint makes engineering better → your track record with it.</p>
+</section>
+
+<section class="card rise">
+  <h3>"Why this industry?" — when the domain has a bad reputation (acknowledge → reframe → purpose)</h3>
+  <p>Pattern for any domain people side-eye (debt collection, gambling-adjacent, ad-tech…):</p>
+  <ol>
+    <li><strong>Acknowledge</strong> the reputation honestly — the default playbook in the industry is genuinely bad</li>
+    <li><strong>Reframe</strong> — this company's mission is to fix the industry with technology, transparency and better customer journeys. Not to do the bad thing more efficiently</li>
+    <li><strong>Purpose</strong> — connect to your track record of building trust in products (validated numbers, visible failure modes). Say you want that skill applied where it changes real people's experience</li>
+  </ol>
+  <div class="soundbite">"You're right — the industry's default playbook is aggressive and opaque. That's exactly why I'm interested. The mission isn't to do the same thing harder. It's to give people clarity, dignity, and workable paths forward. I've spent my career building trust in financial products. I want that same discipline applied to outcomes that change someone's day-to-day life."</div>
+  <p class="warn">This question tests values, not domain expertise. Be sincere — no stigma tourism, no bad-mouthing incumbents generically.</p>
+</section>
+
+<h2 class="rise" id="questions-to-ask">10 · Questions to ask the interviewer</h2>
+
+<section class="card rise">
+  <h3>How to choose — 2–3 questions, matched to the audience</h3>
+  <ul>
+    <li><strong>Reference the conversation</strong> — "you mentioned X earlier…" beats any prepared question</li>
+    <li><strong>Never ask</strong> anything answerable from the website, and don't ask about compensation/process here</li>
+    <li><strong>Signal your positioning</strong> — every question below reinforces product-minded ownership</li>
+  </ul>
+</section>
+
+<section class="card rise">
+  <h3>Starter set — pick by who's in the room</h3>
+  <p class="minihead">For engineers / peers</p>
+  <ul>
+    <li>"What does the path from idea to production look like here — who writes the spec, who reviews, who deploys?"</li>
+    <li>"Where does quality actually get enforced — review culture, CI, or ownership norms?"</li>
+    <li>"How is AI used in the team today — and what's worked or flopped?"</li>
+  </ul>
+  <p class="minihead">For the hiring manager</p>
+  <ul>
+    <li>"What would a great first six months look like — what would you want shipped or changed?"</li>
+    <li>"What's the hardest thing about this team's roadmap right now?"</li>
+    <li>"How do engineers influence <em>what</em> gets built, not just <em>how</em>?"</li>
+  </ul>
+  <p class="minihead">For Product / TPM</p>
+  <ul>
+    <li>"How do Product and Engineering resolve scope disagreements here?"</li>
+    <li>"What's a recent example of the team cutting scope well — or badly?"</li>
+  </ul>
+  <p class="minihead">Company-specific slots — fill from research the night before</p>
+  <ul>
+    <li><em>&lt;question about a recent launch, announcement or engineering blog post&gt;</em></li>
+    <li><em>&lt;question about the hardest constraint in their domain&gt;</em></li>
+  </ul>
+</section>
+
+<p class="src rise">This page is now the source of truth. The former Notion "quick answers" (<a href="https://app.notion.com/p/37c2502230b1800bbd8df1577d5373d8">General</a>, <a href="https://app.notion.com/p/37c2502230b1806db79fe62c715321f6">Career Growth and Motivation</a>) have been merged into the sections above — treat those Notion pages as archive.</p>
 </main>
 <script>
 /* Section-title pill bar with scroll-spy — one pill per h2 group. */
@@ -474,7 +841,7 @@ th{background:var(--surface-2)}
   for (const h of h2s) {
     if (!h.id) h.id = slug(h.textContent.trim());
     const a = document.createElement('a');
-    a.href = '#' + h.id; a.textContent = h.textContent.trim();
+    a.href = '#' + h.id; a.textContent = h.textContent.trim().replace(/^\d+\s·\s/, '');
     toc.appendChild(a);
     links.set(h, a);
   }

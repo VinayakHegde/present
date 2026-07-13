@@ -4,7 +4,7 @@
 <script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Handling Ambiguity · Behavioural Story</title>
+<title>Scope Under Pressure · Behavioural Story</title>
 <style>
 :root{
   color-scheme: light;
@@ -84,6 +84,10 @@ ol.qs .also a:hover{text-decoration:underline}
 .src a:hover{text-decoration:underline}
 .back{display:inline-block;font-size:.85rem;color:var(--muted);text-decoration:none;margin-bottom:.7rem}
 .back:hover{color:var(--cat)}
+.star-label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--cat);margin:1rem 0 .25rem}
+.star-label:first-child{margin-top:0}
+
 table{border-collapse:collapse;width:100%;font-size:.95rem}
 th,td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
 th{background:var(--surface-2)}
@@ -101,23 +105,31 @@ td a:hover{text-decoration:underline}
 <body>
 <header class="page-head rise">
   <a class="back" href="../stories.html">&larr; Story Bank</a><br><span class="page-badge">Behavioural · Story</span>
-  <h1>🌅 Handling Ambiguity</h1>
-  <p class="page-sub">Operating in uncertainty</p>
+  <h1>⏳ Scope Under Pressure</h1>
+  <p class="page-sub">Stakeholder disagreement on a tight schedule — local story, not yet in Notion</p>
 </header>
 <main>
-<section class="card rise"><h2>The story</h2><div class="story">
-<p>Many product problems begin with incomplete information and unclear requirements.</p>
-<p>Rather than waiting for certainty, I focus on identifying assumptions, reducing risk and validating ideas quickly.</p>
-<p>I break problems into smaller decisions, gather feedback early and iterate based on evidence.</p>
-<p>I've found that successful delivery is usually less about perfect planning. It's more about making informed decisions. And it's about remaining adaptable as new information emerges.</p>
+<section class="card rise"><h2>The story — STAR</h2>
+<div class="story">
+<p class="star-label">Situation</p>
+<p>The calculated metrics platform had a one-sprint window from discovery to production.</p>
+<p>The PM wanted around ten metric types in the first release. Finance stakeholders needed every number to be traceable and auditable.</p>
+<p>Building everything risked missing the window — or shipping numbers we couldn't stand behind.</p>
+<p class="star-label">Task</p>
+<p>Converge on a shippable, trustworthy first release inside the sprint — without losing either stakeholder.</p>
+<p class="star-label">Action</p>
+<p>I didn't pick a side. I reframed the disagreement around the outcome both sides actually wanted: numbers investors could trust, delivered on time.</p>
+<p>I facilitated the discussion and wrote the scope doc myself so the decision was concrete, not a debate.</p>
+<p>The MVP became three investor-ready KPIs — IRR, MOIC, net return — plus export.</p>
+<p>We turned "investor-ready" into a testable contract. Golden fixtures and validation metadata were the definition of done.</p>
+<p>Breadth and self-serve authoring moved explicitly to iteration two. Nothing was rejected — only sequenced.</p>
+<p class="star-label">Result</p>
+<p>Both sides signed off, and we shipped inside the sprint.</p>
+<p>The release was smaller but reliable. We validated it with users. Then we extended from a solid foundation.</p>
 </div></section>
-<section class="card rise"><h2>Questions this story answers</h2><ol class="qs">
-<li>Tell me about a decision you made without all the information. <span class="also">— also: <a href="product-ownership.html">Product Ownership</a></span></li>
-<li>How do you deal with ambiguity?</li>
-<li>Tell me about a situation where requirements were unclear.</li>
-</ol></section>
-<section class="card rise"><h2>Covers</h2><div class="chips"><span class="chip">✅ Decision Making</span><span class="chip">✅ Critical Thinking</span><span class="chip">✅ Value Delivery</span></div></section>
-<p class="src rise">Source of truth: <a href="https://app.notion.com/p/37c2502230b1804cad36debc3fc93119">this story in Notion</a> — edit there, then re-sync.</p>
+<section class="card rise"><h2>Learning</h2><p class="key">Cutting scope isn't about doing less — it's about protecting the outcome. Stakeholder disagreements dissolve when a quality bar becomes a testable contract instead of an opinion.</p></section>
+<section class="card rise"><h2>Good for</h2><div class="chips"><span class="chip">✅ Stakeholder disagreement</span><span class="chip">✅ Tight deadlines</span><span class="chip">✅ Prioritisation</span><span class="chip">✅ Working with PMs</span><span class="chip">✅ Decision making</span></div></section>
+<p class="src rise">Local story — not yet in Notion. If it earns its keep, add it to the Notion story bank so both stay in sync.</p>
 </main>
 <script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../../index.html';a.textContent='\u2302 shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
 </body>

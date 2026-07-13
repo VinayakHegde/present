@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem('prep-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Flow · Behavioural</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#eef1f5;
+  --text:#1b2430; --muted:#5b6878;
+  --accent:#2563eb; --accent-2:#7c3aed;
+  --border:#dfe4ec; --code-bg:#eef1f5;
+  --good:#15803d; --warn:#b45309; --bad:#b91c1c;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+  --text:#e6eaf0; --muted:#9aa7b8;
+  --accent:#5b9dff; --accent-2:#a78bfa;
+  --border:#2a3342; --code-bg:#10151d;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0e1116; --surface:#161b23; --surface-2:#1d2430;
+    --text:#e6eaf0; --muted:#9aa7b8;
+    --accent:#5b9dff; --accent-2:#a78bfa;
+    --border:#2a3342; --code-bg:#10151d;
+    --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  }
+}
+:root{ --cat: var(--accent-2); }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--cat) 9%, transparent), transparent 60%),
+    radial-gradient(1000px 500px at -5% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  color:var(--text);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+code,pre,kbd{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.page-head{max-width:1100px;margin:0 auto;padding:2.4rem 1.5rem .4rem}
+.page-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cat);
+  background:color-mix(in srgb, var(--cat) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  border-radius:999px;padding:3px 11px;margin-bottom:.9rem}
+.page-head h1{margin:0 0 .4rem;font-size:1.9rem;line-height:1.15;letter-spacing:-.02em}
+.page-sub{margin:0;color:var(--muted);font-size:1rem;max-width:72ch}
+main{max-width:1100px;margin:0 auto;padding:.4rem 1.5rem 3rem}
+html{scroll-behavior:smooth}
+h2{display:flex;align-items:center;gap:.55rem;font-size:.95rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--accent);font-weight:700;margin:2.2rem 0 .2rem}
+h2::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--cat);flex:none}
+h3{font-size:1.05rem;margin:.1rem 0 .8rem}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.3rem 1.5rem;margin:1.1rem 0;
+  box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+             0 10px 28px -16px color-mix(in srgb, var(--text) 18%, transparent);
+  transition:border-color .15s, box-shadow .15s;
+}
+.card:hover{border-color:color-mix(in srgb, var(--cat) 45%, var(--border))}
+.card p{margin:.55rem 0}
+.card ul,.card ol{margin:.5rem 0;padding-left:1.35rem}
+.card li{margin-bottom:.4rem}
+.card li::marker{color:var(--accent)}
+.card a{color:var(--cat);text-decoration:none;font-weight:600}
+.card a:hover{text-decoration:underline}
+.minihead{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-2);
+  font-weight:700;margin:1rem 0 .3rem}
+.soundbite{
+  background:color-mix(in srgb, var(--accent), transparent 92%);
+  border-left:4px solid var(--accent);
+  padding:.8rem 1rem;margin:.65rem 0;font-style:italic;
+  border-radius:0 8px 8px 0;line-height:1.55;
+}
+.soundbite-label{display:block;font-size:.7rem;font-style:normal;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--accent);font-weight:700;margin-bottom:.35rem}
+.ladder{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.85rem;
+  color:var(--muted);background:var(--code-bg);border-radius:8px;padding:.5rem .8rem;margin:.6rem 0 0}
+.warn{color:var(--warn);font-size:.92rem}
+.ok{color:var(--good)}
+.table-wrap{overflow-x:auto;margin:.5rem 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:320px}
+th,td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left;vertical-align:top;line-height:1.45}
+th{background:var(--surface-2)}
+.flow-row{display:flex;align-items:stretch;gap:.3rem;flex-wrap:wrap;margin:.75rem 0 .35rem}
+.flow-box{flex:1;min-width:6em;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:6px;padding:.4rem .45rem;text-align:center;font-size:.72rem;line-height:1.3}
+.flow-box strong{display:block;color:var(--text);font-size:1.05em}
+.flow-box span{display:block;color:var(--muted);font-size:.9em;margin-top:.1em}
+.flow-arrow{color:var(--accent);align-self:center;flex-shrink:0;font-size:.85rem}
+.story{display:flex;gap:.7rem;align-items:baseline;margin:.55rem 0;font-size:.95rem}
+.story .n{flex:none;font-size:.7rem;font-weight:700;color:var(--cat);
+  background:color-mix(in srgb, var(--cat) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+  border-radius:999px;width:1.6em;height:1.6em;display:flex;align-items:center;justify-content:center;align-self:center}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.rise{animation:rise .5s ease both}
+.rise:nth-child(2){animation-delay:.05s}
+.rise:nth-child(3){animation-delay:.1s}
+.rise:nth-child(4){animation-delay:.15s}
+.rise:nth-child(5){animation-delay:.2s}
+.rise:nth-child(6){animation-delay:.25s}
+.rise:nth-child(7){animation-delay:.3s}
+.rise:nth-child(8){animation-delay:.35s}
+.rise:nth-child(n+9){animation-delay:.4s}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="page-head rise">
+  <span class="page-badge">Behavioural · Layer 1</span>
+  <h1>🧭 Interview Flow</h1>
+  <p class="page-sub">The five-minute scan before any interview — beats and soundbites only, in the order the conversation actually moves. Depth lives in <a href="questions.html" style="color:var(--cat);text-decoration:none;font-weight:600">Common Questions</a> and the <a href="stories.html" style="color:var(--cat);text-decoration:none;font-weight:600">Story Bank</a>.</p>
+</header>
+<main>
+
+<section class="card rise">
+  <h3>The arc — how the conversation moves</h3>
+  <div class="flow-row">
+    <div class="flow-box"><strong>Intro</strong><span>~1 min</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Motivation</strong><span>why move · why us</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>How I work</strong><span>principles</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Stories</strong><span>STAR examples</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Leadership</strong><span>influence</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Self-aware</strong><span>mistake · feedback</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><strong>Closing</strong><span>why hire · your Qs</span></div>
+  </div>
+  <p class="warn">Principle first, story second — answer "how do you normally…" from principles, then offer the example. AI gets one clause in the intro; expand only if asked.</p>
+</section>
+
+<h2 class="rise">1 · Opening</h2>
+
+<section class="card rise">
+  <p class="ladder">WHO → NOW → CRAFT → WANT &nbsp;·&nbsp; stop cleanly — let them pick the follow-up</p>
+  <ul>
+    <li><strong>Who:</strong> product-minded technical lead, ~16 years — React/TS surface, enough backend/architecture to own full delivery</li>
+    <li><strong>Now:</strong> Lantern, B2B finance data — shape specs · FE + integration boundaries · partner with BE on APIs &amp; validation</li>
+    <li><strong>Craft:</strong> spec-driven, AI-assisted under my review — one clause, no more</li>
+    <li><strong>Want:</strong> own outcomes · move fast in ambiguity · use AI seriously</li>
+    <li><strong>Held back:</strong> calculated metrics proof point — deploy when they ask for an example</li>
+  </ul>
+  <p><a href="questions.html#intro-positioning">Full script + positioning →</a></p>
+</section>
+
+<h2 class="rise">2 · Motivation</h2>
+
+<section class="card rise">
+  <p class="ladder">GROWN (led · mentored · established) → READY (challenges · ownership) → TOWARD &nbsp;·&nbsp; 3 verbs, 2 wants, 1 flip</p>
+  <div class="soundbite">"I'm not running from anything — I'm running toward higher ownership and impact."</div>
+  <p><strong>Why this company — three slots, filled the night before.</strong> The problem <em>&lt;their domain&gt;</em> → the fit <em>&lt;stack/culture match&gt;</em> → the role <em>&lt;where my strengths land&gt;</em>.</p>
+  <p><a href="questions.html#motivation-fit">Templates + worked one-liners →</a></p>
+</section>
+
+<h2 class="rise">3 · How I work — one-liners</h2>
+
+<section class="card rise">
+  <ul>
+    <li><strong>With PMs:</strong> co-author the PRD — alternatives, not nos</li>
+    <li><strong>Quality:</strong> built into the workflow, not a final gate — good practice improves speed <em>and</em> quality</li>
+    <li><strong>Priorities:</strong> impact → urgency → risk → dependencies → reversibility → effort; ranking visible and shared</li>
+    <li><strong>Incomplete info:</strong> reversible decisions fast; irreversible ones get the riskiest assumption validated first</li>
+    <li><strong>Saying no:</strong> constraint + risk + an alternative that still serves the outcome</li>
+  </ul>
+  <p><a href="questions.html#how-i-work">Full principles →</a></p>
+</section>
+
+<h2 class="rise">4 · The five stories — in this order</h2>
+
+<section class="card rise">
+  <div class="story"><span class="n">1</span><span><a href="story/financial-reporting.html">🔍 Financial Reporting Discovery</a> — found the real problem behind the stated request. <em>Customer focus · ambiguity · Product · changing direction</em></span></div>
+  <div class="story"><span class="n">2</span><span><a href="story/platform-rebuild.html">🏗️ Platform Rebuild</a> — agency-built product → platform for four teams (1 → ~20 engineers). <em>Hardest problem · architecture · org scaling · influence</em></span></div>
+  <div class="story"><span class="n">3</span><span><a href="story/contract-first-collaboration.html">🤝 Contract-First Collaboration</a> — API contracts removed FE/BE blocking. <em>Cross-team · dependencies · parallel delivery</em></span></div>
+  <div class="story"><span class="n">4</span><span><a href="story/ai-adoption.html">🎟️ AI Adoption</a> — AI-assisted development with guardrails. <em>Change management · sceptics · productivity — supporting evidence, don't lead with it</em></span></div>
+  <div class="story"><span class="n">5</span><span><a href="story/mentorship.html">🖋️ Mentorship</a> — scaling through others. <em>Developing engineers · leadership</em></span></div>
+  <p>Open with story 1 when possible — an early customer-focused win that's easy to follow. Save Platform Rebuild for the hardest question.</p>
+</section>
+
+<h2 class="rise">5 · Question → story map</h2>
+
+<section class="card rise">
+  <div class="table-wrap"><table>
+    <tr><th>They ask about…</th><th>Reach for</th></tr>
+    <tr><td>Ambiguous requirement</td><td>Financial Reporting</td></tr>
+    <tr><td>Product disagreement</td><td>Financial Reporting · Scope Under Pressure</td></tr>
+    <tr><td>Influencing senior people / hardest problem</td><td>Platform Rebuild</td></tr>
+    <tr><td>Cross-team blocker / dependencies</td><td>Contract-First Collaboration</td></tr>
+    <tr><td>Change management</td><td>AI Adoption</td></tr>
+    <tr><td>Developing others</td><td>Mentorship</td></tr>
+    <tr><td>Incomplete information</td><td>Handling Ambiguity</td></tr>
+    <tr><td>Saying no / scope vs date</td><td>Scope Under Pressure</td></tr>
+  </table></div>
+</section>
+
+<h2 class="rise">6 · Self-awareness arc</h2>
+
+<section class="card rise">
+  <p class="ladder">MISTAKE (rushed to code) → FEEDBACK (too long to the point → answer first) → WEAKNESS (over-corrected → now time-boxed) &nbsp;·&nbsp; one arc, not three flaws</p>
+  <ul>
+    <li><strong>Mistake:</strong> "jumped into implementation too quickly — solved the requirement they described, not the problem they had" → <em>optimise for understanding the problem first</em></li>
+    <li><strong>Feedback:</strong> "answers took too long to reach the point → answer first, pause, add context — later feedback praised communication"</li>
+    <li><strong>Weakness:</strong> "rushed early, over-corrected into over-exploring — today I time-box discovery and validate the riskiest assumption first"</li>
+  </ul>
+  <p class="warn">Mistake story still needs real grounding (feature, user, cost) — <a href="questions.html#biggest-mistake">checklist here</a>.</p>
+</section>
+
+<h2 class="rise">7 · Closing</h2>
+
+<section class="card rise">
+  <div class="soundbite"><span class="soundbite-label">Why should we hire you — summary close</span>"You need someone who can own the frontend and full-stack direction. You need someone who works closely with Product and helps several teams deliver consistently. My background combines exactly those three things: hands-on technical depth, product thinking, and experience creating standards. Those standards help other engineers move faster."</div>
+  <p class="minihead">Your questions — pick 2–3 by audience</p>
+  <ul>
+    <li><strong>Engineers:</strong> "What does idea → production look like here — who specs, who reviews, who deploys?"</li>
+    <li><strong>Manager:</strong> "What would a great first six months look like — what would you want shipped or changed?"</li>
+    <li><strong>Product/TPM:</strong> "How do Product and Engineering resolve scope disagreements here?"</li>
+    <li><em>+ one company-specific question from research the night before</em></li>
+  </ul>
+  <p><a href="questions.html#questions-to-ask">Full starter set →</a></p>
+</section>
+
+</main>
+<script>(function(){if(window.self!==window.top)return;var a=document.createElement('a');a.href='../index.html';a.textContent='⌂ shell';a.style.cssText='position:fixed;top:10px;right:10px;z-index:999;font:12px system-ui;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--muted);border:1px solid var(--border);text-decoration:none;opacity:.7';document.body.appendChild(a);})();</script>
+</body>
+</html>

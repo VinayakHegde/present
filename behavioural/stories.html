@@ -116,13 +116,17 @@ td a:hover{text-decoration:underline}
   <p class="page-sub">One story per competency — synced from Notion; the wording there is canonical.</p>
 </header>
 <main>
-<section class="card rise"><h2>Stories</h2><ol class="qs">
-<li><a href="story/product-ownership.html" style="color:var(--cat);text-decoration:none;font-weight:600">📣 Product Ownership</a> <span class="also">— Product ownership, architecture and value delivery</span></li>
+<section class="card rise"><h2>Stories</h2><p class="also" style="color:var(--muted);margin:.2rem 0 .6rem">Core five in interview order (see <a href="flow.html" style="color:var(--cat)">🧭 Interview Flow</a>) — the rest below are situational.</p><ol class="qs">
+<li><a href="story/financial-reporting.html" style="color:var(--cat);text-decoration:none;font-weight:600">🔍 Financial Reporting Discovery</a> <span class="also">— Finding the real customer problem · local</span></li>
+<li><a href="story/platform-rebuild.html" style="color:var(--cat);text-decoration:none;font-weight:600">🏗️ Platform Rebuild</a> <span class="also">— Architecture and leadership at scale · local</span></li>
+<li><a href="story/contract-first-collaboration.html" style="color:var(--cat);text-decoration:none;font-weight:600">🤝 Contract-First Collaboration</a> <span class="also">— Removing FE/BE dependencies · local</span></li>
 <li><a href="story/ai-adoption.html" style="color:var(--cat);text-decoration:none;font-weight:600">🎟️ AI Adoption</a> <span class="also">— Scaling engineering effectiveness</span></li>
 <li><a href="story/mentorship.html" style="color:var(--cat);text-decoration:none;font-weight:600">🖋️ Mentorship</a> <span class="also">— Leadership through influence</span></li>
+<li><a href="story/product-ownership.html" style="color:var(--cat);text-decoration:none;font-weight:600">📣 Product Ownership</a> <span class="also">— Product ownership, architecture and value delivery</span></li>
 <li><a href="story/technical-disagreement.html" style="color:var(--cat);text-decoration:none;font-weight:600">🔗 Technical Disagreement</a> <span class="also">— Influence without authority</span></li>
 <li><a href="story/cross-team-alignment.html" style="color:var(--cat);text-decoration:none;font-weight:600">🔎 Cross-Team Alignment</a> <span class="also">— Stakeholder management and communication</span></li>
 <li><a href="story/handling-ambiguity.html" style="color:var(--cat);text-decoration:none;font-weight:600">🌅 Handling Ambiguity</a> <span class="also">— Operating in uncertainty</span></li>
+<li><a href="story/scope-under-pressure.html" style="color:var(--cat);text-decoration:none;font-weight:600">⏳ Scope Under Pressure</a> <span class="also">— Stakeholder disagreement on a tight schedule · local</span></li>
 </ol><p class="also" style="color:var(--muted);margin:.8rem 0 0">Not stories: <a href="questions.html" style="color:var(--cat)">🪀 Common Questions</a> — short answers (strengths, weaknesses, why-hire, career goals &amp; motivation…).</p></section>
 <section class="card rise"><h2>Competency mapping</h2><table><tr><th>Competency</th><th>Primary Story</th><th>Secondary Story</th></tr>
 <tr><td>Trustworthiness</td><td><a href="story/mentorship.html">Mentoring</a></td><td><a href="story/ai-adoption.html">AI Adoption</a></td></tr>
@@ -140,18 +144,9 @@ td a:hover{text-decoration:underline}
 
 <section class="card rise">
   <h2>Additional stories (local only)</h2>
-  <p class="also" style="color:var(--muted)">Not synced from Notion — edits here won't round-trip. STAR stories kept from the merged prep page, covering angles the seven Notion stories above don't. Keep each under 90 seconds spoken; same platform, different lenses — pick the angle they ask for, and have deeper detail ready for follow-ups.</p>
+  <p class="also" style="color:var(--muted)">Not synced from Notion — edits here won't round-trip. STAR stories kept from the merged prep page, covering angles the seven Notion stories above don't. Keep each under 90 seconds spoken. Same platform, different lenses — pick the angle they ask for. Have deeper detail ready for follow-ups.</p>
 </section>
 
-<section class="card rise">
-  <h2>Scope fight — MVP vs breadth <span class="chip">stakeholders</span></h2>
-  <p><strong>S:</strong> PM wanted ~10 metric types in sprint one; finance stakeholders needed every number traceable and auditable. Building everything risked missing the window or compromising correctness.<br>
-  <strong>T:</strong> Converge on a shippable, trustworthy first release.<br>
-  <strong>A:</strong> Facilitated and wrote the scope doc: MVP = 3 investor-ready KPIs (IRR, MOIC, net return) + export, with golden fixtures and validation metadata as the definition of done; breadth and self-serve authoring moved to iteration two. "Investor-ready" became a testable contract, not a debate.<br>
-  <strong>R:</strong> Both sides signed off. Shipped smaller but reliable; validated with users; extended from a solid foundation.</p>
-  <div class="key">"Cutting scope wasn't about doing less — it was about protecting the outcome."</div>
-  <p class="usewhen"><strong>Use when asked about:</strong> stakeholder disagreement · cutting scope for a milestone · prioritisation · working with PMs · handling ambiguity</p>
-</section>
 
 <section class="card rise">
   <h2>Two-tier read model <span class="chip">technical trade-off</span></h2>
@@ -166,7 +161,7 @@ td a:hover{text-decoration:underline}
   <h2>Pre-GA production incident <span class="chip">production ownership</span></h2>
   <p><strong>S:</strong> On-call through the design-partner phase before general rollout.<br>
   <strong>T:</strong> Catch correctness issues before they reached all customers.<br>
-  <strong>A:</strong> A monitoring alert fired on an FX boundary case — a missing month-end rate caused a <em>visible</em> validation failure rather than a silent wrong number. Triaged, added a golden fixture for the pair/date, hotfixed before the all-tenant rollout; watched dashboards through launch.<br>
+  <strong>A:</strong> A monitoring alert fired on an FX boundary case. A missing month-end rate caused a <em>visible</em> validation failure rather than a silent wrong number. Triaged, added a golden fixture for the pair/date, hotfixed before the all-tenant rollout; watched dashboards through launch.<br>
   <strong>R:</strong> Zero P1 at GA. The failure mode worked as designed: visible failure, not silent drift.</p>
   <p class="usewhen"><strong>Use when asked about:</strong> a production incident · on-call and reliability · quality under pressure · observability in practice</p>
 </section>
@@ -175,7 +170,7 @@ td a:hover{text-decoration:underline}
   <h2>Legacy migration via feature flags <span class="chip">safe rollout</span></h2>
   <p><strong>S:</strong> The new metrics had to ship without breaking existing export/reporting workflows customers depended on.<br>
   <strong>T:</strong> Migrate customers from the legacy manual-export path safely.<br>
-  <strong>A:</strong> Tenant-level feature flag; UI falls back to the legacy export on rollback; old snapshots retained for forensics; two design-partner accounts before all-tenant GA.<br>
+  <strong>A:</strong> Tenant-level feature flag. UI falls back to the legacy export on rollback. Old snapshots retained for forensics. Two design-partner accounts before all-tenant GA.<br>
   <strong>R:</strong> Zero P1 at launch; a real rollback story; design partners caught the FX edge case pre-GA.</p>
   <p class="ok">Frame as <strong>strangler / incremental migration</strong> — not big-bang rewrite.</p>
   <p class="usewhen"><strong>Use when asked about:</strong> legacy migration · de-risking a launch · incremental delivery · learning from customers</p>
@@ -185,7 +180,7 @@ td a:hover{text-decoration:underline}
   <h2>Technical leadership — specs, ADRs, contracts <span class="chip">tech lead</span></h2>
   <p><strong>S:</strong> Platform feature crossing team boundaries, with an undecided hand-off to the data platform.<br>
   <strong>T:</strong> Set technical direction the squad could execute and reuse.<br>
-  <strong>A:</strong> Authored the SDD; drove contract-first OpenAPI with generated clients; wrote a 3-option ADR for the data-platform hand-off (chose read-only mart for MVP rather than blocking on the ideal integration); established the 4-layer test checklist in the squad PR template.<br>
+  <strong>A:</strong> Authored the SDD. Drove contract-first OpenAPI with generated clients. Wrote a 3-option ADR for the data-platform hand-off — chose read-only mart for MVP rather than blocking on the ideal integration. Established the 4-layer test checklist in the squad PR template.<br>
   <strong>R:</strong> Next metric type needed no bespoke setup; patterns reused on later features; deployed and on-call through launch.</p>
   <p class="usewhen"><strong>Use when asked about:</strong> technical leadership · influencing architecture · driving standards · making progress amid unknowns</p>
 </section>
